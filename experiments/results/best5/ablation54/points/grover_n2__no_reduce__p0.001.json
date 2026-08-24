@@ -1,0 +1,1 @@
+{"tag": "grover_n2__no_reduce", "p": 0.001, "decoder": "mwpm", "shots": 80000, "errors": 111, "ler": 0.0013875}

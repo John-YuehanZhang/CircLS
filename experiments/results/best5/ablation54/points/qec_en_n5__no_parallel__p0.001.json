@@ -1,0 +1,1 @@
+{"tag": "qec_en_n5__no_parallel", "p": 0.001, "decoder": "mwpm", "shots": 10000, "errors": 455, "ler": 0.0455}

@@ -49,6 +49,8 @@ wait
 echo "ALL DONE" >> $SP/b5_master.log
 
 # Reproducibility: every jsonl in experiments/results/best5/ starts with a
-# provenance row (circls sha, versions, argv).  Tables regenerate via
-# ablation_table.py / formula_deviation_table.py with --outdir pointed at
-# the corresponding subdirectory; no number is ever hand-copied.
+# provenance row (circls sha, versions, argv).  The scripted tables
+# (ablation family, dscaling, per-program, formula/block-budget) emit
+# their LaTeX bodies directly from the data; the remaining tables were
+# transcribed from these records and have been verified cell-by-cell
+# against them (see experiments/REPRODUCE.md).

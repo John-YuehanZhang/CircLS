@@ -1,0 +1,1 @@
+{"tag": "qec_en_n5_tclass_full_d5", "p": 0.001, "seed": 803748, "target": 300, "cap": 3000000, "pm": {"shots": 30000, "errors": 350, "ler": 0.011666666666666667, "s": 0.9}, "pm2": {"shots": 30000, "errors": 350, "ler": 0.011666666666666667, "conflicted_edges": 0, "s": 1.4}}

@@ -57,7 +57,7 @@ def collect_qec():
         return pts
     for line in QEC.read_text().splitlines():
         r = json.loads(line)
-        cfg = {"full": "dynamic", "static": "static"}.get(r["config"])
+        cfg = {"full": "dynamic", "static": "static"}.get(r.get("config"))
         if cfg:
             pts[(cfg, r["d"])] = r
     return pts

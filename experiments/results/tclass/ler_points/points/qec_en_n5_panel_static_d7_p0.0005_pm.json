@@ -1,0 +1,1 @@
+{"tag": "qec_en_n5_panel_static_d7", "p": 0.0005, "seed": 861556, "target": 100, "cap": 1000000, "pm": {"shots": 490000, "errors": 100, "ler": 0.00020408163265306123, "s": 24.9}, "pm2": {"shots": 490000, "errors": 100, "ler": 0.00020408163265306123, "conflicted_edges": 0, "s": 24.2}}

@@ -1,0 +1,1 @@
+{"tag": "bell_n4_tclass_full_d3", "p": 0.0005, "seed": 842341, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 593, "ler": 0.0593, "s": 0.5}, "pm2": {"shots": 10000, "errors": 593, "ler": 0.0593, "conflicted_edges": 0, "s": 1.5}}

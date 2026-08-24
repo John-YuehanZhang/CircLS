@@ -60,6 +60,20 @@ def normalize_qasm(text: str) -> Tuple[str, List[str]]:
     # comment fix landed in _statements but missed this census, so a
     # '// qreg ...' line spuriously triggered the multi-register flatten).
     _nocomment_text = "\n".join(l.split("//")[0] for l in text.splitlines())
+    # gate-definition blocks are not rescuable and defeat every
+    # ';'-statement pass below: a gate body's braces are not ';'-aligned,
+    # so the statement after the closing '}' arrives GLUED to it
+    # ("}\nqreg cin[1]") and the head-keyed scans (qreg drop, reset
+    # refusal, measure census) all miss it — measured on
+    # QASMBench adder_n10/bigadder_n18, where the flatten emitted a bogus
+    # leftover qreg.  In OPENQASM 2.0 braces occur only in gate bodies,
+    # and the Clifford front-end rejects every `gate` statement anyway,
+    # so refusing here loses nothing and keeps the safety gates sound.
+    if "{" in _nocomment_text:
+        raise ValueError(
+            "contains a gate-definition block — its braces are not "
+            "';'-statement-aligned, so the normalization passes cannot "
+            "scan it faithfully; not rescuable")
     qregs = _QREG_RE.findall(_nocomment_text)
     if not qregs:
         raise ValueError("no qreg declaration found")

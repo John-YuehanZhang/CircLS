@@ -1,7 +1,7 @@
 """Generate the A2 ablation table from experiments/results/ablation/*.jsonl.
 
-Zero hand-copied numbers: this script is the ONLY path from raw results to
-the paper table.  It refuses mixed provenance (all configs must come from
+For THIS table the script is the only path from raw results to the
+LaTeX body (no cell is transcribed by hand).  It refuses mixed provenance (all configs must come from
 the same clean commit) unless --allow-mixed.
 
 Outputs (to the results dir): ablation_table.md (human review),

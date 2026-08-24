@@ -1,0 +1,1 @@
+{"tag": "simon_n6_tclass_full_d5", "p": 0.0005, "seed": 818744, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 2150, "ler": 0.215, "s": 6.9}, "pm2": {"shots": 10000, "errors": 844, "ler": 0.0844, "conflicted_edges": 54, "s": 26.5}}

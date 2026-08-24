@@ -1,0 +1,1 @@
+{"tag": "adder_n4_tclass_full_d3", "p": 0.0005, "seed": 842922, "target": 300, "cap": 3000000, "pm": {"shots": 20000, "errors": 523, "ler": 0.02615, "s": 0.6}, "pm2": {"shots": 20000, "errors": 523, "ler": 0.02615, "conflicted_edges": 0, "s": 1.4}}

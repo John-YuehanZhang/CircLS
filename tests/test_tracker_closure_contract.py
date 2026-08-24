@@ -280,3 +280,35 @@ def test_steady_round_compression_still_fires_without_reservations():
     obs_ids = [int(i.gate_args_copy()[0]) for i in circuit.flattened()
                if i.name == 'OBSERVABLE_INCLUDE']
     assert obs_ids and all(i == 0 for i in obs_ids)
+
+
+def test_canonicalization_sentinel_row_first_measurement_emits_detector():
+    """The [-1] sentinel has TWO producers with opposite needs, and the
+    mid-circuit exact-match path must serve the canonicalization one:
+    stabilizer_canonicalization files "code stabilizer, deterministic from
+    init, just not measured YET" rows as [[-1]], and that row's FIRST
+    measurement is a legitimate deterministic check.  Regression for a
+    blanket suppress that keyed on the sentinel alone and silently dropped
+    these detectors (cross_ls d=3: 59 -> 49 detectors, graphlike distance
+    2 -> 1)."""
+    from lightstim.ir.tracker import SyndromeTracker, UNMEASURED_STAB_RECORD
+
+    n = 2
+    row = np.zeros(2 * n, dtype=np.uint8)
+    row[[n + 0, n + 1]] = 1                      # Z0 Z1
+    tracker = SyndromeTracker(n, 0)
+    tracker.stabilizers.matrix = row.reshape(1, -1)
+    tracker.stabilizers.records = [[UNMEASURED_STAB_RECORD]]
+
+    circuit = stim.Circuit()
+    circuit.append("MPP", [stim.target_z(0), stim.target_combiner(),
+                           stim.target_z(1)])
+    tracker.process_mid_measurement(
+        circuit=circuit,
+        back_propagated_paulis=row.reshape(1, -1),
+        syn_coords=[(0.0, 0.0)],
+    )
+    detectors = [i for i in circuit.flattened() if i.name == "DETECTOR"]
+    assert len(detectors) == 1, (
+        "first measurement of a canonicalization-filed ([-1]) stabilizer "
+        f"row must emit its deterministic detector; got {len(detectors)}")

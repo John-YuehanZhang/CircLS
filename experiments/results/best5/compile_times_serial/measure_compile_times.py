@@ -1,8 +1,8 @@
 import contextlib, io, json, sys, time
 from pathlib import Path
-SP = Path("/nvme2n1/yuehan_zhang/claude_tmp/claude-1041/-nvme2n1-yuehan-zhang/2f1c189c-a42c-406b-a2ef-c01703612f0b/scratchpad")
-sys.path.insert(0, str(SP / "circls_dev"))
-sys.path.insert(0, str(SP / "circls_dev" / "experiments"))
+ROOT = Path(__file__).resolve().parents[4]     # the repo root
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "experiments"))
 
 # serial, uncontended per-compile timing (compile-time is wall-clock; parallel load inflates it)
 PAIRS = [("c45_qrng_n4", "c45_qrng_n4_k1_f0", 3, "qrng_n4", 0.02),

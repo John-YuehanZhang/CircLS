@@ -1,0 +1,1 @@
+{"tag": "cat_state_n4__no_parallel", "p": 0.001, "decoder": "mwpm", "shots": 60000, "errors": 101, "ler": 0.0016833333333333333}

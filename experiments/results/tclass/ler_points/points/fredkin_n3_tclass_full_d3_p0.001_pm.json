@@ -1,0 +1,1 @@
+{"tag": "fredkin_n3_tclass_full_d3", "p": 0.001, "seed": 820751, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 5766, "ler": 0.5766, "s": 0.8}, "pm2": {"shots": 10000, "errors": 5766, "ler": 0.5766, "conflicted_edges": 0, "s": 2.6}}

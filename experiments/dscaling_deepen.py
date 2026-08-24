@@ -15,6 +15,7 @@ scripts).  Output: results/best5/dscaling/points_d11_deep.jsonl.
 import hashlib
 import json
 import multiprocessing as mp
+import os
 import sys
 from pathlib import Path
 
@@ -23,7 +24,10 @@ sys.path.insert(0, str(ROOT / "experiments"))
 sys.path.insert(0, str(ROOT))
 OUT_FILE = (ROOT / "experiments" / "results" / "best5" / "dscaling"
             / "points_d11_deep.jsonl")
-CIRC_DIR = Path("/nvme2n1/yuehan_zhang/claude_tmp/ext911_circuits_8ysf2jtf")
+# the archived ext911 circuit exports this deepen pass re-samples; point
+# DSCALING_CIRC_DIR at your own exported circuits when re-running
+CIRC_DIR = Path(os.environ.get("DSCALING_CIRC_DIR",
+                               "/path/to/ext911_circuit_exports"))
 
 POINTS = [  # (name, config) — all at d = 11, p = 5e-4
     ("teleport_4", "static"), ("bv_8", "static"), ("dj_8", "static"),

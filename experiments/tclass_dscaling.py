@@ -1,15 +1,22 @@
-"""Non-Clifford distance scaling: Toffoli-3 under the Y-state
-approximation, dynamic vs static, d = 3 to 11 at p = 5e-4.
+"""Non-Clifford distance scaling under the Y-state approximation:
+dynamic vs static, d = 3 to 11 at p = 5e-4, for any tclass program
+(``--program``, default toffoli_n3).
 
-Panel (b) of the distance-scaling figure: the same dynamic/static
-comparison as the DJ-16 panel, on the S-proxy toffoli_n3 (7 source T
-gates, 7 |Y> gadgets).  Static = liveness and first-use init both
+The dynamic/static comparison of the DJ-16 panel, on an S-proxy
+non-Clifford program.  Static = liveness and first-use init both
 removed, as in the Clifford runs.  Protocol: every point targets 100
 failures; the dynamic p = 5e-4 points at d = 5, 7, 9 deepen to 400,
 matching the six-program policy; shot caps 1e6 (d = 3..7), 2e6
 (d = 9), 4e6 (d = 11), both configs.  PyMatching-only gate,
 per-point deterministic seeds, raw counts.  Two-stage pools.
-Output: results/tclass/points_toffoli_dscaling.jsonl.
+Output: results/tclass/points_<program>_dscaling.jsonl.
+
+fig:dscaling panel (b) shows adder_n4; its shipped data file
+(results/tclass/points_adder_panel.jsonl) was assembled from
+development-session shard runs that PREDATE this parameterized entry
+point, so its rows carry no seeds/commit (see the file's leading note
+row).  ``--program adder_n4`` regenerates the panel with fresh seeds:
+statistically compatible values, not byte-identical.
 """
 import json
 import multiprocessing as mp
@@ -20,14 +27,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "experiments"))
 sys.path.insert(0, str(ROOT))
-OUT_FILE = (ROOT / "experiments" / "results" / "tclass"
-            / "points_toffoli_dscaling.jsonl")
+def _out_file(name):
+    return (ROOT / "experiments" / "results" / "tclass"
+            / f"points_{name}_dscaling.jsonl")
 
-NAME = "toffoli_n3"
+NAME = "toffoli_n3"          # overridden by --program
 CONFIGS = ["full", "static"]
-DS = [3, 5, 7, 9, 11]
+DS = [3, 5, 7, 9, 11]        # overridden by --ds
 P = 5e-4
-SEED0 = 231100
+SEED0 = 231100               # overridden by --seed0; per-program defaults below
+SEED0_DEFAULTS = {"toffoli_n3": 231100, "adder_n4": 241100,
+                  "qec_en_n5": 251100}
 COMPILE_WORKERS = 10
 SAMPLE_WORKERS = 10
 
@@ -39,7 +49,9 @@ def _depth(config, d):
 
 
 def _compile_job(task):
-    config, d, seed, workdir = task
+    config, d, seed, workdir, name = task
+    global NAME
+    NAME = name
     import contextlib, io, time
     from benchsuite import tclass_suite
     from ablation import compile_kwargs
@@ -70,10 +82,13 @@ def _compile_job(task):
     path = Path(workdir) / f"{config}_d{d}.stim"
     path.write_text(str(cp.circuit))
     return {"row": row, "circuit": str(path), "seed": seed,
-            "compile_s": t_compile, "config": config, "d": d}
+            "compile_s": t_compile, "config": config, "d": d,
+            "name": name}
 
 
 def _sample_job(task):
+    global NAME
+    NAME = task["name"]
     import time
     import stim
     import pymatching as _pm
@@ -82,6 +97,8 @@ def _sample_job(task):
     circuit = stim.Circuit(Path(task["circuit"]).read_text())
     noisy = inject_uniform_noise(circuit, P)
     target, cap = _depth(task["config"], task["d"])
+    if task.get("cap"):
+        cap = task["cap"]
     t0 = time.time()
     try:
         m = _pm.Matching.from_detector_error_model(
@@ -99,24 +116,48 @@ def _sample_job(task):
 
 
 def main():
+    import argparse
+    global NAME, DS, SEED0
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--program", default="toffoli_n3",
+                    help="tclass benchmark name (e.g. adder_n4)")
+    ap.add_argument("--ds", nargs="+", type=int, default=None,
+                    help="distances (default 3 5 7 9 11)")
+    ap.add_argument("--seed0", type=int, default=None)
+    ap.add_argument("--allow-dirty", action="store_true",
+                    help="throwaway runs from a dirty tree")
+    ap.add_argument("--cap", nargs="*", default=[], metavar="D=SHOTS",
+                    help="per-distance shot-cap override, e.g. 11=80000000 "
+                         "(the shipped d=11 panel aggregates 72M shots; the "
+                         "built-in 4M cap reaches only ~10-15 failures there)")
+    args = ap.parse_args()
+    NAME = args.program
+    if args.ds:
+        DS = args.ds
+    SEED0 = (args.seed0 if args.seed0 is not None
+             else SEED0_DEFAULTS.get(NAME, 231100 + 7000 * (hash(NAME) % 97)))
+    caps = {int(k): int(v) for k, v in
+            (x.split("=") for x in args.cap)}
+    out_file = _out_file(NAME)
     from provenance import provenance
-    if OUT_FILE.exists():
-        print(f"skip: {OUT_FILE} exists", flush=True)
+    if out_file.exists():
+        print(f"skip: {out_file} exists", flush=True)
         return
-    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    prov = {**provenance(False), "experiment": "tclass-toffoli-dscaling",
-            "what": "toffoli_n3 (Y-state approximation) dynamic vs static "
-                    "at d = 3..11, p = 5e-4 — panel (b) of fig:dscaling",
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    prov = {**provenance(args.allow_dirty), "experiment": f"tclass-{NAME}-dscaling",
+            "what": f"{NAME} (Y-state approximation) dynamic vs static "
+                    f"at d = {DS}, p = 5e-4",
             "protocol": {"p": P, "target_errors": 100,
                          "deep_dynamic": {"d": [5, 7, 9], "target": 400},
                          "caps": {"default": 1_000_000, "d9": 2_000_000,
                                   "d11": 4_000_000},
+                         "cap_overrides": caps,
                          "decoder": "mwpm", "seed0": SEED0}}
-    workdir = tempfile.mkdtemp(prefix="toffoli_dsc_")
+    workdir = tempfile.mkdtemp(prefix=f"{NAME}_dsc_")
     tasks = []
     for i, (config, d) in enumerate((c, d) for c in CONFIGS for d in DS):
-        tasks.append((config, d, SEED0 + i, workdir))
-    with open(OUT_FILE, "w") as f:
+        tasks.append((config, d, SEED0 + i, workdir, NAME))
+    with open(out_file, "w") as f:
         f.write(json.dumps(prov) + "\n")
         f.flush()
         compiled = []
@@ -126,13 +167,15 @@ def main():
                 f.flush()
                 print(json.dumps(r["row"]), flush=True)
                 if r.get("circuit"):
+                    if r["d"] in caps:
+                        r["cap"] = caps[r["d"]]
                     compiled.append(r)
         with mp.get_context("spawn").Pool(SAMPLE_WORKERS) as pool:
             for row in pool.imap_unordered(_sample_job, compiled):
                 f.write(json.dumps(row) + "\n")
                 f.flush()
                 print(json.dumps(row), flush=True)
-    print("TOFFOLI DSCALING DONE", flush=True)
+    print(f"{NAME.upper()} DSCALING DONE", flush=True)
 
 
 if __name__ == "__main__":

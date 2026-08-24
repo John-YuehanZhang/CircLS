@@ -1719,14 +1719,19 @@ class SyndromeTracker:
                         for r in full_records[row_idx]:
                             if r >= 0:
                                 args.append(stim.target_rec(r - self.total_measurements))
-                        # sentinel-tagged row = UNWATCHED gauge direction: its
-                        # init parity is unbanked, so a closure detector here
-                        # would be per-shot random — suppress, exactly like the
-                        # terminal-readout consumer (the Step-3 rebuild then
-                        # re-records the direction from this measurement)
-                        if (UNMEASURED_STAB_RECORD not in full_records[row_idx]
-                                and (no_detector_mask is None
-                                     or not no_detector_mask[i])):
+                        # A sentinel-tagged ([-1]) row here is NOT suppressed:
+                        # the sentinel has two producers with opposite needs.
+                        # stabilizer_canonicalization files "code stabilizer,
+                        # deterministic from init, just not measured YET" rows
+                        # as [-1] — their FIRST measurement is a legitimate
+                        # deterministic check (cross_ls d=3: 10 such detectors;
+                        # suppressing them drops the graphlike distance 2->1).
+                        # The unwatched-gauge [-1] (PMM budget-full filing)
+                        # never reaches this exact-match path in any suite;
+                        # its forbidden closure is handled where it can leak,
+                        # the terminal-readout consumer.
+                        if (no_detector_mask is None
+                                or not no_detector_mask[i]):
                             coords = list(syn_coords[i]) + [0]
                             _append_detector(
                                 circuit, args, coords,

@@ -179,3 +179,33 @@ def test_normalize_qasm_ignores_commented_qreg():
     assert "qreg q[3]" in stmts
     assert "x q[0]" in stmts
     assert not any("flatten" in n for n in notes)
+
+
+def test_normalize_qasm_refuses_gate_definition_blocks():
+    # A gate body's braces are not ';'-statement-aligned: the statement
+    # after the closing '}' arrives glued to it ("}\nqreg cin[1]"), so the
+    # head-keyed passes (qreg drop, reset refusal, measure census) all
+    # miss it — the flatten emitted a bogus leftover qreg (measured on
+    # QASMBench adder_n10/bigadder_n18), a glued measure survived
+    # alongside the appended full measurement, and a glued reset slipped
+    # past the not-rescuable refusal.  The Clifford front-end rejects
+    # every `gate` statement anyway, so the normalizer must refuse these
+    # files loudly instead of scanning them wrong.
+    from circls.interop.nwqec.qasm_norm import normalize_qasm
+
+    gate_then_qreg = (
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\n'
+        "gate majority a,b,c {\n  cx c,b;\n  cx c,a;\n  ccx a,b,c;\n}\n"
+        "qreg cin[1];\nqreg a[4];\n"
+        "cx a[0],a[1];\nmeasure a[0] -> c[0];\n"
+    )
+    with pytest.raises(ValueError, match="gate-definition"):
+        normalize_qasm(gate_then_qreg)
+
+    gate_then_reset = (
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\n'
+        "gate g a {\n  x a;\n}\n"
+        "reset q[0];\nmeasure q[0] -> c[0];\n"
+    )
+    with pytest.raises(ValueError, match="gate-definition"):
+        normalize_qasm(gate_then_reset)

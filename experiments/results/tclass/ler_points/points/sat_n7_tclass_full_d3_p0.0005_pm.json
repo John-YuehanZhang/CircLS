@@ -1,0 +1,1 @@
+{"tag": "sat_n7_tclass_full_d3", "p": 0.0005, "seed": 827081, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 2689, "ler": 0.2689, "s": 11.9}, "pm2": {"shots": 10000, "errors": 2689, "ler": 0.2689, "conflicted_edges": 0, "s": 27.2}}

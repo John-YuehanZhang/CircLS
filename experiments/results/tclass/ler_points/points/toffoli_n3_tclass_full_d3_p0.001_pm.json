@@ -1,0 +1,1 @@
+{"tag": "toffoli_n3_tclass_full_d3", "p": 0.001, "seed": 805582, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 3558, "ler": 0.3558, "s": 0.5}, "pm2": {"shots": 10000, "errors": 3558, "ler": 0.3558, "conflicted_edges": 0, "s": 1.3}}

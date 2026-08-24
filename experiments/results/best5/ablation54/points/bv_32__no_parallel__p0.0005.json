@@ -1,0 +1,1 @@
+{"tag": "bv_32__no_parallel", "p": 0.0005, "decoder": "mwpm", "shots": 10000, "errors": 5545, "ler": 0.5545}

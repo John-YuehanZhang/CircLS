@@ -1,0 +1,1 @@
+{"tag": "twistedghz_8_clifford_full_d3", "p": 0.0005, "seed": 803316, "target": 300, "cap": 3000000, "pm": {"shots": 10000, "errors": 373, "ler": 0.0373, "s": 0.2}, "pm2": {"shots": 10000, "errors": 373, "ler": 0.0373, "conflicted_edges": 0, "s": 0.7}}

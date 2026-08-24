@@ -8,8 +8,8 @@ way down to a **runnable stim circuit** — detectors and observables
 annotated, verified at the circuit level — so a compiled program's
 logical error rate is something you measure, not estimate.
 
-This repository is the artifact of the paper *CircLS: From PPM
-Sequences to Real Circuits, with Lifetime-Aware Compilation*; the
+This repository is the artifact of the paper *CircLS: Compiling
+Lattice Surgery to Physical Circuits with Dynamic Allocation*; the
 runs behind every number in the paper are reproducible from
 `experiments/REPRODUCE.md`.
 
@@ -77,6 +77,14 @@ Python 3.10–3.12 (the NWQEC front-end ships wheels up to
 cp312; 3.13 is rejected at install time).
 
 ```bash
+pip install circls
+```
+
+To reproduce the paper's experiments or to develop, clone the
+repository instead — the `experiments/` harnesses and archived
+measurement records ship with the repo, not the package:
+
+```bash
 git clone https://github.com/John-YuehanZhang/CircLS.git
 cd CircLS
 
@@ -84,12 +92,6 @@ python3.12 -m venv venv
 source venv/bin/activate
 
 pip install -e .
-```
-
-Or install straight from GitHub without cloning:
-
-```bash
-pip install "circls @ git+https://github.com/John-YuehanZhang/CircLS.git"
 ```
 
 ```python

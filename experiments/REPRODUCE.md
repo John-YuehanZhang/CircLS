@@ -40,7 +40,8 @@ the coverage study:
   sibling checkout).
 - **tqec**: a separate conda env named `tqec` with `tqec==0.2.0`
   (used via `conda run -n tqec`); TopoLS layouts are turned into
-  stim circuits with it.
+  stim circuits with it.  The export step also imports this package,
+  so `pip install -e .` into that env as well.
 - **QASMBench**: clone <https://github.com/pnnl/QASMBench> and set
   `QASMBENCH_ROOT` (defaults to a sibling checkout).
 
@@ -55,7 +56,7 @@ noise (`circls.tools.evaluate.inject_uniform_noise`).
    layouts' ports:
 
    ```bash
-   conda run -n tqec python experiments/coverage45_export.py   # exports + coverage
+   conda run -n tqec python experiments/coverage45_export.py   # exports the 45-program QASM
    GEN_K=1 conda run -n tqec python experiments/generate_topols_circuits.py \
        c45_<name> --manual-fills --max-keep 1                  # per full-comparison row
    ```
@@ -104,28 +105,96 @@ noise (`circls.tools.evaluate.inject_uniform_noise`).
    (10^4 failures, sharded) and `b1_tside_mwpf.py` (the baseline
    side under MWPF, so both sides share one decoder).
 
-Static columns (volumes, qubit-rounds, compile times) are recorded
-by the same runs; `static_stats.py` spot-checks three rows standalone.
+Static columns (volumes, qubit-rounds) are recorded by the same
+runs; `static_stats.py` spot-checks three rows standalone.  The CircLS
+compile-time column is NOT recorded by the comparison harness: it comes
+from the dedicated `experiments/compile_time.py` run
+(`results/best5/topols_compare/compile_time.jsonl`), and
+`results/best5/compile_times_serial/` re-measures the column serially —
+its README discloses that the two largest published cells (53.3 s,
+792.3 s) re-measure faster (31.9 s, 589.2 s), so the published column
+is conservative.
 
-## Table 3 / 8 / 9 (ablations)
+Two honest notes for this section.  (1) Output paths: pass `--out`
+under `experiments/results/best5/...` explicitly — the defaults of
+`compare_topols.py`, `ladder_ours.py` and `compare_tqec.py` predate the
+`best5/` layout, and `dj16c_ours.py` now defaults to
+`dj16c_ours_d3.jsonl` while the committed d = 3 file is
+`dj16c_ours.jsonl`.  (2) The per-program coverage ledger
+`results/best5/topols_compare/coverage45.jsonl` (the lay./circ. columns
+and the 40/16/29 coverage claims) was recorded by a session driver that
+was not kept; the committed `perprogram_table.py` consumes it, and its
+counts have been re-verified against the export roster.
+
+## Table 3 (tab:tclass, the nine non-Clifford programs)
+
+The four LER columns (PyMatching / MWPF at d = 3 and d = 5) come from
+the per-point samples archived under
+`experiments/results/tclass/ler_points/` — see its README for the
+cell-by-cell mapping, the simon_n6 d = 5 MWPF re-sample that supersedes
+a lost-seed point, and the multiply_n13 cells sampled on the archived
+normative circuits.  The cost columns (allocated volume, qubit-cycles,
+execution time) for EIGHT of the nine programs are the `full`-config
+d = 3 metrics in
+`experiments/results/best5/ablation54/fullmetrics/<prog>__full.json`
+(V1_volume_blocks / V2_qubit_rounds / T1_rounds).  multiply_n13 is the
+exception: that campaign runs without auto_rotate and its fullmetrics
+record is a BentLayoutError, so its cost row (2704.3 / 115195 / 542) is
+not archived — recompile it with `auto_rotate=True` (the determinism
+exception stated in the introduction) to reproduce those metrics
+exactly.  The compile-time column is wall-clock and load-dependent; the
+archived compile stage (`ler_points/compile_stage.jsonl`) records
+comparable but not identical times for the eight programs, and its
+multiply_n13 rows are compile errors for the same auto_rotate reason
+(the published 1171 s came from the auto_rotate compile).  The original
+LER runner was `experiments/tclass_ler.py` (its `points_core.jsonl`
+output was never committed); the archived per-point samples in
+`ler_points/` are the shipped record.
+
+## Tables 4 / 15 / 7 (ablations)
+
+The shipped campaign lives in
+`experiments/results/best5/ablation54/` (54 programs attempted, 45
+Clifford + 9 non-Clifford; 44 compile in every table configuration).
+Its `scripts/build_ablation_table.py`, run inside that directory,
+reproduces the main table exactly; `scripts/rebuild_appendix_ablation.py`
+emits the appendix variant.  Sums cover the 44 common-compiling
+programs; Table 7 restricts them to the consumable-patch programs.
+
+To re-run the campaign from scratch, the drivers are the archived
+`ablation54/scripts/compile.py` (54 programs, nine configs),
+`compile_fullmetrics.py` and `sample.py` — each carries a `<workdir>`
+placeholder session path at the top; point it at this repository first.
+The older trio below re-runs only the CLIFFORD tier and reproduces the
+earlier `results/best5/ablation/` round, NOT the shipped campaign
+(`ablation.py` covers the 45 Clifford programs; `ablation_ler.py`
+samples six hardcoded cases, not the 70-point panel;
+`ablation_table.py` omits the reselect_only row):
 
 ```bash
 python experiments/ablation.py --outdir experiments/results/best5/ablation
-python experiments/ablation_ler.py            # the twelve-point LER panel
-python experiments/ablation_table.py --outdir experiments/results/best5/ablation
+python experiments/ablation_ler.py
+python experiments/ablation_table.py --outdir experiments/results/best5/ablation \
+    --allow-mixed     # committed data spans several commits
 ```
 
-Sums cover the 35 programs that compile in every configuration;
-Table 9 restricts them to the consumable-patch programs.
+The earlier `results/best5/ablation/` round's cross-config sums do not
+match Table 4 — but its `full.jsonl` run is the input Table 11 renders
+from, so it is shipped data, not dead history.
 
-## Table 4 / 6 (formula validation)
+## Tables 5 / 9 (formula validation)
 
 ```bash
 python experiments/formula_deviation.py \
-    --outdir experiments/results/best5/formula_dev \
+    --outdir experiments/results/best5/formula_dev_uniform \
     --d 3 --p 0.001 0.0005 0.0002          # then --d 5 --p 0.001 0.0005
 python experiments/o3ls_composition.py     # per-layer O3LS scoring
 ```
+
+Note: `o3ls_composition.py` reads its measured LERs from a `DEV`
+constant that points at `.../best5/formula_dev/deviation.jsonl`; when
+re-running against fresh uniform data, point that constant at the
+`formula_dev_uniform` file.
 
 `deviation.jsonl` carries the measured LERs and both block-budget
 scores (calibrated and published constants); `o3ls_composition.jsonl`
@@ -136,7 +205,59 @@ columns re-derive from these files.  The shipped records live under
 exactly as published; its README states the per-table qualifying-set
 filters.
 
-## Shape-coverage audit (distance evidence)
+## Figure 9 and Table 16 (distance scaling)
+
+Panel (a), DJ-16, and the appendix distance-scaling table (per-program
+LER at d = 3..11; the per-segment R intervals quoted in the appendix
+prose come from `dscaling_segments.py`) cover the six
+Clifford programs where joint measurements remain
+(`dscaling_segments.PROGRAMS`).  Their points live under
+`experiments/results/best5/dscaling/` (`points*.jsonl`; deep rows
+supersede), every file with a provenance row and per-point seeds:
+
+```bash
+python experiments/dscaling_static.py        # static arm, d = 3..7
+python experiments/dscaling_d9.py            # d = 9 points, both configs
+python experiments/dscaling_d11.py           # d = 11 points
+python experiments/dscaling_ext911.py        # d = 9, 11 extension programs
+python experiments/dscaling_deepen.py        # re-sample under-target points
+python experiments/dscaling_segments.py      # per-segment R intervals
+python experiments/dscaling_table.py         # appendix table body
+python experiments/plot_dscaling.py          # the two-panel figure
+```
+
+Two honest notes.  (1) The six earliest dynamic-arm files
+(`points.jsonl`, `points_ext.jsonl`, `points_ext2.jsonl` and their
+`_deep` companions) predate the committed runners: their session
+drivers were not kept.  Each file carries a provenance row, and the
+committed readers reproduce the shipped table byte-for-byte from them.
+(2) `dscaling_deepen.py` reads its circuits from the
+`DSCALING_CIRC_DIR` environment variable (the original session export
+directory no longer exists) — point it at your own exported circuits
+before re-running.
+
+Panel (b), adder_n4 under the Y-state approximation, reads
+`experiments/results/tclass/points_adder_panel.jsonl`.  That file was
+assembled from development-session shard runs predating the
+parameterized sampler, so its rows carry no seeds or commit (its
+leading note row states this; the d = 11 rows aggregate 24 x 3M-shot
+shards).  Regenerate it with fresh seeds via
+
+```bash
+python experiments/tclass_dscaling.py --program adder_n4
+```
+
+which is statistically compatible rather than byte-identical (d = 3
+spot-check: full 0.0251 vs 0.0238, static 0.0406 vs 0.038, both
+within sampling error).  The built-in shot caps give full statistical
+strength at d <= 9; the shipped d = 11 points aggregate 72M shots, so
+pass ``--cap 11=80000000`` (hours of sampling) to match their
+precision — the default 4M cap stops there at only ~10-15 failures.  The same entry point reproduces the
+toffoli_n3 companion file; the qec_en_n5 companion was produced by its
+own script (`tclass_dscaling_qec.py`, a slightly different protocol).
+Both companion files carry full provenance.
+
+## Table 10 (shape coverage) and the distance evidence
 
 The construction-shape inventory and its distance probes:
 
@@ -152,7 +273,30 @@ Each script refuses a dirty working tree (pass `--allow-dirty` for
 throwaway runs) and appends to its jsonl under
 `experiments/results/best5/` with a provenance row.
 
-## lsqecc baseline replay (appendix comparison)
+The d = 3 half of the graphlike-distance claim (the 14-program sweep)
+is evidenced by `results/best5/roadtest.jsonl`, written by
+`experiments/roadtest.py`.  Honest note: that file predates the
+provenance convention (no provenance row) and was recorded with
+liveness off under both placement modes — a broader smoke
+configuration than the full pipeline; the d = 5 evidence
+(`shape_probes.jsonl`) uses the full pipeline.
+
+Table 11 (per-program) renders with `experiments/perprogram_table.py`
+from the ablation `full` run and `coverage45.jsonl`.  Verification
+gate 4 (the re-selection rewrite preserves the measured operators) is
+evidenced by `results/best5/reduction/record.jsonl`, written by
+`experiments/verify_reduction.py`.
+
+## Table 6 (tab:tclass-scale, the ten larger non-Clifford programs)
+
+Data: `results/tclass/scale_metrics.jsonl` (the 4-hour round) and
+`scale_metrics_12h.jsonl` (the 12-hour round, including the qram_n20
+compile).  Honest note: the 12-hour driver was a session variant of
+`experiments/tclass_scale.py` (which ships with a 4-hour timeout) and
+was not kept; the archived rows carry provenance and the table values
+have been re-verified against them.
+
+## Table 13 (lsqecc baseline replay)
 
 The [liblsqecc](https://github.com/latticesurgery-com/liblsqecc)
 slicer's plan, replayed on the CircLS backend so its qubit-rounds and
@@ -189,7 +333,7 @@ observable count == the plan's deterministic dimension, output-bit
 affine equality against the logical reference) and exits non-zero if
 any fails.
 
-## DASCOT baseline (layout sweep + replay)
+## Table 14 (DASCOT baseline: layout sweep + replay)
 
 DASCOT ships as the `wisq` package (`pip install wisq`); it exposes no
 seed, but its SA routing draws from the global python+numpy RNGs, so
@@ -227,7 +371,7 @@ the full config and `measure_reduction=False`.  Solutions land in
 `experiments/results/best5/lassynth/*.lasre.json`; rows in
 `lassynth_anchor.jsonl`.
 
-## Optimality-gap audits (appendix, Optimality of the Heuristics)
+## Table 8 (optimality-gap audits)
 
 Three exhaustive audits measure the heuristics against their optima
 on inputs small enough to enumerate.  Committed results live under
@@ -248,7 +392,8 @@ committed file aside — each script skips any output that exists.
 
 E1 replays every ordered placement of each program's patches onto
 the mapper's own slot set through the full pipeline (96 workers;
-the teleport_4 sweep is the largest at 362880 placements).  E2
+bv_8, dj_8 and teleport_4 each enumerate 9! = 362880 orderings, of
+which teleport_4 evaluates 359280 after exclusions).  E2
 enumerates every schedule permutation satisfying the
 `verify_schedule` contract and injects each through `scheduler=`
 (teleport_4 is excluded: production pins `step_scheduling=False`
@@ -261,9 +406,17 @@ carry the commit the committed data was produced at.
 
 ## Notes
 
-- Result files are append-only; analysis takes the last row per key.
+- Most result files are append-only, and analysis takes the last row
+  per key; the dscaling, tclass-scale and optgap runners instead write
+  their output file whole (each refuses to overwrite an existing one).
 - Every run records provenance (commit, package versions) and
-  refuses to start from a dirty working tree.
+  refuses to start from a dirty working tree unless `--allow-dirty`
+  is passed.  Honest exception: a few shipped files did run with
+  `--allow-dirty` from the development tree and their provenance rows
+  say `dirty: true` — notably `lsqecc_replay.jsonl` and
+  `dascot_replay.jsonl` (Tables 13 and 14), `lassynth_anchor.jsonl`,
+  `ablation/ler.jsonl`, `ler/panel2.jsonl`, and the ablation54
+  campaign.  Their rows carry per-point seeds and re-run cleanly.
 - Provenance rows record the authors' Python 3.13 environment; the
   pip bound (`<3.13`) tracks nwqec's wheel coverage for fresh
   installs.

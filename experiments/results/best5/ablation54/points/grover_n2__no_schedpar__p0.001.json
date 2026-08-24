@@ -1,0 +1,1 @@
+{"tag": "grover_n2__no_schedpar", "p": 0.001, "decoder": "mwpm", "shots": 80000, "errors": 107, "ler": 0.0013375}

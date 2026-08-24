@@ -1,0 +1,1 @@
+{"tag": "steane_encode__no_parallel", "p": 0.001, "decoder": "mwpf", "seed": 2905792216, "shots": 20000, "errors": 681, "ler": 0.03405}
