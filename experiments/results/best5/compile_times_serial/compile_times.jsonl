@@ -1,0 +1,8 @@
+{"label": "qrng_n4", "name": "c45_qrng_n4", "pair": "c45_qrng_n4_k1_f0", "d": 3, "compile_seconds": [0.237, 0.017, 0.017], "compile_median": 0.017, "published": 0.02}
+{"label": "cat_state_n4", "name": "c45_cat_state_n4", "pair": "c45_cat_state_n4_k1_f0", "d": 3, "compile_seconds": [0.017, 0.018, 0.018], "compile_median": 0.018, "published": 0.02}
+{"label": "cat_state_n22", "name": "c45_cat_state_n22", "pair": "c45_cat_state_n22_k1_f0", "d": 3, "compile_seconds": [0.914, 0.92, 0.904], "compile_median": 0.914, "published": 0.9}
+{"label": "cat_n35", "name": "c45_cat_n35", "pair": "c45_cat_n35_k1_mXX", "d": 3, "compile_seconds": [2.66, 2.695, 2.672], "compile_median": 2.672, "published": 2.8}
+{"label": "cat_n130", "name": "c45_cat_n130", "pair": "c45_cat_n130_k1_f0", "d": 3, "compile_seconds": [31.477, 32.29, 31.901], "compile_median": 31.901, "published": 53.3}
+{"label": "ghz_n40", "name": "c45_ghz_n40", "pair": "c45_ghz_n40_k1_f0", "d": 3, "compile_seconds": [0.961, 0.975, 0.956], "compile_median": 0.961, "published": 1.1}
+{"label": "ghz_n78", "name": "c45_ghz_n78", "pair": "c45_ghz_n78_k1_f0", "d": 3, "compile_seconds": [586.119, 589.315, 589.237], "compile_median": 589.237, "published": 792.3}
+{"label": "Steane", "name": "c45_steane_encode", "pair": "c45_steane_encode_k2_f0", "d": 5, "compile_seconds": [1.001, 0.995, 1.003], "compile_median": 1.001, "published": 1.0}

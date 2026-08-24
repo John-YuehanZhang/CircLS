@@ -1,0 +1,19 @@
+{"record": "provenance", "circls_sha": "67d7432ec09dde41cd9b71a6c61329c3cc8efeb9", "dirty": false, "versions": {"python": "3.13.13", "stim": "1.16.0", "numpy": "2.2.6", "pymatching": "2.4.0", "networkx": "3.6.1"}, "cpu": "AMD EPYC 9534 64-Core Processor", "argv": ["experiments/shape_probes.py", "--workers", "8", "--timeout", "3600"], "timestamp_utc": "2026-08-14T23:11:55+00:00"}
+{"record": "probe", "name": "deutsch_n2", "d": 5, "num_observables": 1, "graphlike_distance": 5, "status": "OK", "seconds": 0.7}
+{"record": "probe", "name": "grover_n2", "d": 5, "num_observables": 4, "graphlike_distance": 5, "status": "OK", "seconds": 0.1}
+{"record": "probe", "name": "iswap_n2", "d": 5, "num_observables": 4, "graphlike_distance": 5, "status": "OK", "seconds": 0.1}
+{"record": "probe", "name": "cat_state_n4", "d": 5, "num_observables": 6, "graphlike_distance": 5, "status": "OK", "seconds": 0.3}
+{"record": "probe", "name": "hs4_n4", "d": 5, "num_observables": 8, "graphlike_distance": 5, "status": "OK", "seconds": 0.3}
+{"record": "probe", "name": "lpn_n5", "d": 5, "num_observables": 8, "graphlike_distance": 5, "status": "OK", "seconds": 0.4}
+{"record": "probe", "name": "ghz_8", "d": 5, "num_observables": 14, "graphlike_distance": 5, "status": "OK", "seconds": 0.6}
+{"record": "probe", "name": "bbpssw_4", "d": 5, "num_observables": 10, "graphlike_distance": 5, "status": "OK", "seconds": 0.7}
+{"record": "probe", "name": "steane_encode", "d": 5, "num_observables": 6, "graphlike_distance": 5, "status": "OK", "seconds": 2.7}
+{"record": "probe", "name": "bv_8", "d": 5, "num_observables": 13, "graphlike_distance": 5, "status": "OK", "seconds": 5.5}
+{"record": "probe", "name": "bv_n14", "d": 3, "num_observables": 25, "graphlike_distance": 3, "status": "OK", "seconds": 4.5}
+{"record": "probe", "name": "ghz_16_mixed", "d": 3, "num_observables": 16, "graphlike_distance": 3, "status": "OK", "seconds": 2.4}
+{"record": "probe", "name": "twistedghz_4", "d": 5, "num_observables": 2, "graphlike_distance": 5, "status": "OK", "seconds": 8.6}
+{"record": "probe", "name": "teleport_4", "d": 5, "num_observables": 2, "graphlike_distance": 5, "status": "OK", "seconds": 11.6}
+{"record": "probe", "name": "dj_8", "d": 5, "num_observables": 13, "graphlike_distance": 5, "status": "OK", "seconds": 12.5}
+{"record": "probe", "name": "ghz_16_mixed", "d": 5, "num_observables": 16, "graphlike_distance": 5, "status": "OK", "seconds": 12.1}
+{"record": "probe", "name": "bv_n14", "d": 5, "num_observables": 25, "graphlike_distance": 5, "status": "OK", "seconds": 34.5}
+{"record": "probe", "name": "twistedghz_8", "d": 5, "num_observables": 6, "graphlike_distance": 5, "status": "OK", "seconds": 74.4}

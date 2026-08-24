@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circls"
+dynamic = ["version"]
+description = "CircLS: Circuit-level Lattice Surgery - PPM sequences to circuit-level logical error rates"
+readme = "README.md"
+# <3.13: nwqec ships wheels up to cp312 and its sdist does not
+# build with scikit-build-core >= 0.8; lift when upstream fixes it
+requires-python = ">=3.10,<3.13"
+license = "Apache-2.0"
+license-files = ["LICENSE", "VENDORED.md", "lightstim/LICENSE"]
+authors = [{name = "Yuehan Zhang"}]
+classifiers = [
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "stim>=1.13",
+    "nwqec>=0.1.2",
+    "numpy",
+    "scipy",
+    "pymatching>=2",
+    "networkx",
+    "sinter",
+    "pandas",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+decoders = ["stimbposd", "ldpc", "mwpf"]
+test = ["pytest"]
+
+[project.urls]
+Repository = "https://github.com/John-YuehanZhang/CircLS"
+Upstream-LightStim = "https://github.com/QuTone/LightStim"
+
+[tool.setuptools.packages.find]
+include = ["circls*", "lightstim*"]
+exclude = ["lightstim.tests*", "lightstim.benchmarks*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "circls.__version__"}

@@ -1,0 +1,143 @@
+"""Configuration dataclasses for the decoder backend pipeline."""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Literal, Optional, Sequence
+
+
+@dataclass
+class DecoderConfig:
+    """Configuration for a decoder (algorithm + backend)."""
+
+    name: str  # e.g. 'pymatching', 'bposd', 'nv-qldpc-decoder'
+    backend: Literal["cpu", "gpu", "fpga"] = "cpu"
+    params: Dict[str, Any] = field(default_factory=dict)
+    # Policy for shots an ExternalDecoder flags as failed (flag=False):
+    #   "error"   -- count the shot as a logical error (default; pessimistic)
+    #   "discard" -- herald the failure: drop the shot from the denominator
+    #   "ignore"  -- trust whatever prediction was returned anyway
+    # Has no effect on decoders that never emit failure flags.
+    on_decode_failure: Literal["error", "discard", "ignore"] = "error"
+
+    def __post_init__(self):
+        self.backend = self.backend.lower()
+        if self.backend not in ("cpu", "gpu", "fpga"):
+            raise ValueError(f"backend must be 'cpu', 'gpu', or 'fpga', got {self.backend}")
+        if self.on_decode_failure not in ("error", "discard", "ignore"):
+            raise ValueError(
+                "on_decode_failure must be 'error', 'discard', or 'ignore', "
+                f"got {self.on_decode_failure!r}"
+            )
+
+    @classmethod
+    def chain(cls, configs: Sequence[Any]) -> "DecoderConfig":
+        """Fold several decoder configs into one multi-level "chain" config.
+
+        Stage k+1 re-decodes only the shots stage k flagged as failed (see
+        ``decoders/chain.py``); a stage's own ``on_decode_failure`` is
+        superseded by that escalation, and the *last* config's policy becomes
+        the chain's policy for shots no stage can resolve. Entries may be
+        DecoderConfigs, ``{"name", "backend", "params"}`` dicts, or names.
+        """
+        configs = list(configs)
+        if not configs:
+            raise ValueError("DecoderConfig.chain needs at least one decoder config")
+        if len(configs) == 1 and isinstance(configs[0], DecoderConfig):
+            return configs[0]
+        last = configs[-1]
+        if isinstance(last, DecoderConfig):
+            policy = last.on_decode_failure
+        elif isinstance(last, dict):
+            policy = last.get("on_decode_failure", "error")
+        else:
+            policy = "error"
+        return cls("chain", params={"stages": configs}, on_decode_failure=policy)
+
+
+@dataclass
+class PipelineConfig:
+    """Configuration for the simulation pipeline."""
+
+    max_shots: int = 1_000_000
+    max_errors: int = 100
+    batch_size: int = 10_000
+    num_workers: int = 4
+    decoder: Optional[DecoderConfig] = None
+    post_select_detector_indices: Optional[List[int]] = None
+    post_select_observable_indices: Optional[List[int]] = None
+    post_select_corrected_observable_indices: Optional[List[int]] = None
+    target_observable_indices: Optional[List[int]] = None  # None = all observables
+    # Deterministic sampling: worker w uses seed base_seed + w (None = legacy
+    # per-process seeds).  Aggregate counts are still subject to worker-race
+    # shot splits; bit-exact totals need num_workers=1.
+    base_seed: Optional[int] = None
+    allow_gauge_detectors: bool = False
+    output_dir: Optional[str] = None
+    output_filename: Optional[str] = None
+    output_format: Literal["csv", "json", "parquet"] = "csv"
+    save_resume_filepath: Optional[str] = None
+    progress_enabled: bool = True
+    progress_interval_sec: float = 10.0
+    progress_min_delta_shots: Optional[int] = None
+    progress_poll_interval_sec: float = 0.5
+    progress_output: Literal["print", "logging", "both"] = "print"
+    progress_logger_name: str = "lightstim.simulation.progress"
+    progress_file_path: Optional[str] = None
+    progress_file_max_bytes: int = 10_000_000
+    progress_file_backup_count: int = 5
+    print_progress: bool = True
+
+    def __post_init__(self):
+        if self.decoder is None:
+            self.decoder = DecoderConfig("pymatching", backend="cpu")
+        if self.output_filename is None and self.output_dir is not None:
+            self.output_filename = "sim_{timestamp}.csv"
+        if not self.print_progress:
+            # Backward compatibility: existing callers use print_progress as master switch.
+            self.progress_enabled = False
+        if self.progress_min_delta_shots is None:
+            self.progress_min_delta_shots = max(self.batch_size, 10_000)
+        if self.progress_output not in ("print", "logging", "both"):
+            raise ValueError(
+                "progress_output must be 'print', 'logging', or 'both', "
+                f"got {self.progress_output!r}"
+            )
+        if self.progress_interval_sec <= 0:
+            raise ValueError("progress_interval_sec must be > 0")
+        if self.progress_poll_interval_sec <= 0:
+            raise ValueError("progress_poll_interval_sec must be > 0")
+
+
+@dataclass
+class SimulationStats:
+    """Statistics from a single simulation run."""
+
+    shots: int
+    post_selected_shots: int
+    errors: int
+    seconds: float
+    decoder: str
+    json_metadata: Dict[str, Any]
+
+    @property
+    def post_selection_rate(self) -> float:
+        if self.shots == 0:
+            return 0.0
+        return self.post_selected_shots / self.shots
+
+    @property
+    def logical_error_rate(self) -> float:
+        if self.post_selected_shots == 0:
+            return 0.0
+        return self.errors / self.post_selected_shots
+
+    def ler_error_bar(self, z: float = 1.96) -> float:
+        """Half-width of a z-sigma Wilson confidence interval on the LER.
+
+        For small error counts (< ~5), prefer a Poisson-based interval instead;
+        this formula undercovers in that regime.
+        """
+        n = self.post_selected_shots
+        if n == 0:
+            return 0.0
+        p = self.logical_error_rate
+        return z * (p * (1 - p) / n) ** 0.5

@@ -1,0 +1,6 @@
+{
+ "topols_sha": "4c12ea2dbf8856d373ff8d2ed9edd54ee8d78cd5",
+ "bv_rows": "paper flags (-b 20 -s 2 -t 2 -i 1000), run 2026-08-11; measurement-free QASM (their front-end rejects measure)",
+ "dj_rows": "repo defaults (-b 10 -s 5 -t 3 -i 10000), run 2026-08-06; paper flags (-b 20) crash in their MCTS embedding (UnboundLocalError: block_state) for all three sizes",
+ "note": "same unitaries as our ladder QASM (diff-verified: c-variants = these files + creg/measure lines)"
+}

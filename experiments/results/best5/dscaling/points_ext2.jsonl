@@ -1,0 +1,37 @@
+{"record": "provenance", "experiment": "dscaling-ext2", "what": "medium-size BV/DJ members; probe-gate then matrix", "circls_sha": "4ec403db0cfa57245ce0fb276c36a1b5d97c2694", "versions": {"stim": "1.16.0", "pymatching": "2.4.0"}, "protocol": {"target_errors": 100, "max_shots": 1000000, "decoder": "mwpm", "seed0": 371, "gate": "all 6 circuits must decompose for PyMatching, else program skipped"}, "matrix": {"programs": ["bv_16", "dj_16"], "configs": ["full", "no_live"], "d": [3, 5, 7], "p": [0.0005, 0.001]}}
+{"record": "precheck", "name": "bv_16", "config": "full", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.5}
+{"record": "precheck", "name": "bv_16", "config": "full", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 41.9}
+{"record": "precheck", "name": "bv_16", "config": "full", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 141.1}
+{"record": "precheck", "name": "bv_16", "config": "no_live", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.2}
+{"record": "precheck", "name": "bv_16", "config": "no_live", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 31.8}
+{"record": "precheck", "name": "bv_16", "config": "no_live", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 189.9}
+{"record": "point", "name": "bv_16", "config": "full", "d": 3, "p": 0.0005, "seed": 372, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.5, "shots": 10000, "errors": 2028, "ler": 0.2028, "sample_s": 1.1}
+{"record": "point", "name": "bv_16", "config": "full", "d": 3, "p": 0.001, "seed": 373, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.5, "shots": 10000, "errors": 5901, "ler": 0.5901, "sample_s": 1.3}
+{"record": "point", "name": "bv_16", "config": "full", "d": 5, "p": 0.0005, "seed": 374, "decoder": "mwpm", "silent_p0": true, "compile_s": 41.9, "shots": 10000, "errors": 318, "ler": 0.0318, "sample_s": 6.1}
+{"record": "point", "name": "bv_16", "config": "full", "d": 5, "p": 0.001, "seed": 375, "decoder": "mwpm", "silent_p0": true, "compile_s": 41.9, "shots": 10000, "errors": 2316, "ler": 0.2316, "sample_s": 8.1}
+{"record": "point", "name": "bv_16", "config": "full", "d": 7, "p": 0.0005, "seed": 376, "decoder": "mwpm", "silent_p0": true, "compile_s": 141.1, "shots": 30000, "errors": 110, "ler": 0.0036666666666666666, "sample_s": 33.9}
+{"record": "point", "name": "bv_16", "config": "full", "d": 7, "p": 0.001, "seed": 377, "decoder": "mwpm", "silent_p0": true, "compile_s": 141.1, "shots": 10000, "errors": 616, "ler": 0.0616, "sample_s": 26.1}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 3, "p": 0.0005, "seed": 378, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.2, "shots": 10000, "errors": 2290, "ler": 0.229, "sample_s": 1.4}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 3, "p": 0.001, "seed": 379, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.2, "shots": 10000, "errors": 6307, "ler": 0.6307, "sample_s": 1.6}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 5, "p": 0.0005, "seed": 380, "decoder": "mwpm", "silent_p0": true, "compile_s": 31.8, "shots": 10000, "errors": 384, "ler": 0.0384, "sample_s": 7.1}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 5, "p": 0.001, "seed": 381, "decoder": "mwpm", "silent_p0": true, "compile_s": 31.8, "shots": 10000, "errors": 2616, "ler": 0.2616, "sample_s": 9.3}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 7, "p": 0.0005, "seed": 382, "decoder": "mwpm", "silent_p0": true, "compile_s": 189.9, "shots": 20000, "errors": 102, "ler": 0.0051, "sample_s": 33.9}
+{"record": "point", "name": "bv_16", "config": "no_live", "d": 7, "p": 0.001, "seed": 383, "decoder": "mwpm", "silent_p0": true, "compile_s": 189.9, "shots": 10000, "errors": 754, "ler": 0.0754, "sample_s": 34.1}
+{"record": "precheck", "name": "dj_16", "config": "full", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 8.2}
+{"record": "precheck", "name": "dj_16", "config": "full", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 74.1}
+{"record": "precheck", "name": "dj_16", "config": "full", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 416.8}
+{"record": "precheck", "name": "dj_16", "config": "no_live", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.2}
+{"record": "precheck", "name": "dj_16", "config": "no_live", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 105.2}
+{"record": "precheck", "name": "dj_16", "config": "no_live", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 598.3}
+{"record": "point", "name": "dj_16", "config": "full", "d": 3, "p": 0.0005, "seed": 384, "decoder": "mwpm", "silent_p0": true, "compile_s": 8.2, "shots": 10000, "errors": 2586, "ler": 0.2586, "sample_s": 1.9}
+{"record": "point", "name": "dj_16", "config": "full", "d": 3, "p": 0.001, "seed": 385, "decoder": "mwpm", "silent_p0": true, "compile_s": 8.2, "shots": 10000, "errors": 6819, "ler": 0.6819, "sample_s": 2.2}
+{"record": "point", "name": "dj_16", "config": "full", "d": 5, "p": 0.0005, "seed": 386, "decoder": "mwpm", "silent_p0": true, "compile_s": 74.1, "shots": 10000, "errors": 379, "ler": 0.0379, "sample_s": 9.2}
+{"record": "point", "name": "dj_16", "config": "full", "d": 5, "p": 0.001, "seed": 387, "decoder": "mwpm", "silent_p0": true, "compile_s": 74.1, "shots": 10000, "errors": 2645, "ler": 0.2645, "sample_s": 11.9}
+{"record": "point", "name": "dj_16", "config": "full", "d": 7, "p": 0.0005, "seed": 388, "decoder": "mwpm", "silent_p0": true, "compile_s": 416.8, "shots": 30000, "errors": 130, "ler": 0.004333333333333333, "sample_s": 58.6}
+{"record": "point", "name": "dj_16", "config": "full", "d": 7, "p": 0.001, "seed": 389, "decoder": "mwpm", "silent_p0": true, "compile_s": 416.8, "shots": 10000, "errors": 714, "ler": 0.0714, "sample_s": 44.1}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 3, "p": 0.0005, "seed": 390, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.2, "shots": 10000, "errors": 3534, "ler": 0.3534, "sample_s": 2.7}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 3, "p": 0.001, "seed": 391, "decoder": "mwpm", "silent_p0": true, "compile_s": 9.2, "shots": 10000, "errors": 8060, "ler": 0.806, "sample_s": 3.1}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 5, "p": 0.0005, "seed": 392, "decoder": "mwpm", "silent_p0": true, "compile_s": 105.2, "shots": 10000, "errors": 603, "ler": 0.0603, "sample_s": 14.4}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 5, "p": 0.001, "seed": 393, "decoder": "mwpm", "silent_p0": true, "compile_s": 105.2, "shots": 10000, "errors": 3833, "ler": 0.3833, "sample_s": 18.4}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 7, "p": 0.0005, "seed": 394, "decoder": "mwpm", "silent_p0": true, "compile_s": 598.3, "shots": 20000, "errors": 176, "ler": 0.0088, "sample_s": 62.2}
+{"record": "point", "name": "dj_16", "config": "no_live", "d": 7, "p": 0.001, "seed": 395, "decoder": "mwpm", "silent_p0": true, "compile_s": 598.3, "shots": 10000, "errors": 1121, "ler": 0.1121, "sample_s": 61.9}

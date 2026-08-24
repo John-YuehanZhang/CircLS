@@ -1,0 +1,5 @@
+file_name,volume,space,time,    ,compilation_time,block_size,spread_num,zx_opt,dir_opt,length,seed_init,seed_step,time_bound,iter_num
+ghz_16,243,81,3,    ,12.104,20,0,1,1,4,0,2,2,1000
+bv_16,486,81,6,    ,25.497,20,0,1,1,4,1,2,2,1000
+dj_16,891,81,11,    ,54.594,20,0,1,1,4,0,2,2,1000
+CNOT,30,15,2,    ,0.193,20,0,1,1,2,0,2,2,1000

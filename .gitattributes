@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.stim binary
+*.zst binary
+*.png binary
+*.pdf binary

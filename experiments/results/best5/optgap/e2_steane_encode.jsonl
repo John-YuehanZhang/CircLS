@@ -1,0 +1,27 @@
+{"record": "provenance", "experiment": "optgap-E2", "circls_sha": "4ec403db0cfa57245ce0fb276c36a1b5d97c2694", "name": "steane_encode", "n_ops": 7, "n_steps": 4, "n_legal_orders": 24, "truncated": false, "workers": 28, "baseline": "built-in scheduler injected via scheduler= (self-check: reproduces normal volume)"}
+{"record": "baseline", "volume": 54.0, "rounds": 21}
+{"i": 4, "v": 54.0, "r": 21}
+{"i": 5, "v": 54.0, "r": 21}
+{"i": 6, "v": 55.666666666666664, "r": 21}
+{"i": 7, "v": 56.0, "r": 22}
+{"i": 16, "v": 54.0, "r": 21}
+{"i": 17, "v": 54.0, "r": 21}
+{"i": 18, "v": 55.666666666666664, "r": 21}
+{"i": 19, "v": 55.666666666666664, "r": 21}
+{"i": 8, "v": 55.666666666666664, "r": 21}
+{"i": 9, "v": 56.0, "r": 22}
+{"i": 10, "v": 54.0, "r": 21}
+{"i": 11, "v": 54.0, "r": 21}
+{"i": 20, "v": 55.666666666666664, "r": 21}
+{"i": 21, "v": 55.666666666666664, "r": 21}
+{"i": 22, "err": "Measurement 78 commutes with all rows in the current full tableau (stabilizers + logicals) but is linearly independent.\n"}
+{"i": 23, "err": "Measurement 77 commutes with all rows in the current full tableau (stabilizers + logicals) but is linearly independent.\n"}
+{"i": 0, "v": 55.666666666666664, "r": 21}
+{"i": 1, "v": 56.0, "r": 22}
+{"i": 2, "v": 55.666666666666664, "r": 21}
+{"i": 3, "v": 56.0, "r": 22}
+{"i": 12, "v": 55.666666666666664, "r": 21}
+{"i": 13, "v": 56.0, "r": 22}
+{"i": 14, "v": 55.666666666666664, "r": 21}
+{"i": 15, "v": 56.0, "r": 22}
+{"record": "summary", "name": "steane_encode", "n_evals": 22, "n_failed": 2, "min_volume": 54.0, "circls_volume": 54.0, "gap_pct": 0.0, "n_strictly_better": 0, "seconds": 3.0}

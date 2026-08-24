@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+build/
+dist/
+experiments/logs/
+
+# compiled circuit caches: regenerable (REPRODUCE.md step 1); the prebuilt
+# baseline (TopoLS/tqec) circuits ship as experiments/results/baseline_stim_circuits.tar.zst
+experiments/results/**/*.stim
+.env
+.env.*
+.venv/
+.DS_Store
+.pytest_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/

@@ -1,0 +1,10 @@
+{"config": "full", "d": 3, "ler": 0.0238, "shots": 10000, "errors": 238}
+{"config": "static", "d": 3, "ler": 0.038, "shots": 10000, "errors": 380}
+{"config": "full", "d": 5, "ler": 0.0029857142857142856, "shots": 70000, "errors": 209}
+{"config": "static", "d": 5, "ler": 0.00488, "shots": 50000, "errors": 244}
+{"config": "full", "d": 7, "ler": 0.0003456896551724138, "shots": 1160000, "errors": 401}
+{"config": "static", "d": 7, "ler": 0.0006215384615384616, "shots": 650000, "errors": 404}
+{"config": "full", "d": 9, "ler": 3.05e-05, "shots": 6000000, "errors": 183}
+{"config": "static", "d": 9, "ler": 5.683333333333333e-05, "shots": 6000000, "errors": 341}
+{"config": "full", "d": 11, "ler": 3.0555555555555556e-06, "shots": 72000000, "errors": 220, "source": "d11shards_aggregate_24x3M"}
+{"config": "static", "d": 11, "ler": 6.597222222222222e-06, "shots": 72000000, "errors": 475, "source": "d11shards_aggregate_24x3M"}

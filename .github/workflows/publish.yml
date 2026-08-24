@@ -1,0 +1,22 @@
+# PyPI release via Trusted Publishing (no API tokens).
+# One-time setup on pypi.org: project "circls" -> Publishing ->
+# add GitHub publisher (owner John-YuehanZhang, repo CircLS,
+# workflow publish.yml, environment pypi).  Then publishing a
+# GitHub Release triggers the upload.
+name: publish
+on:
+  release:
+    types: [published]
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1

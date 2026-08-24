@@ -1,0 +1,5 @@
+{"record": "provenance", "circls_sha": "951874fdf9345ce98aa810fc5c4e66c168fd1407", "dirty": false, "versions": {"python": "3.13.13", "stim": "1.16.0", "numpy": "2.2.6", "pymatching": "2.4.0", "networkx": "3.6.1"}, "cpu": "AMD EPYC 9534 64-Core Processor", "argv": ["experiments/seam_case_probes.py"], "timestamp_utc": "2026-08-14T23:29:03+00:00"}
+{"record": "seam_case", "case": "stretched seam (same bases, different parities)", "expect_row": 2, "d": 3, "rule_row": 2, "wall": true, "graphlike_distance": 3, "status": "OK", "seconds": 0.0}
+{"record": "seam_case", "case": "stretched seam (same bases, different parities)", "expect_row": 2, "d": 5, "rule_row": 2, "wall": true, "graphlike_distance": 5, "status": "OK", "seconds": 0.1}
+{"record": "seam_case", "case": "domain-wall seam (different bases, same parities)", "expect_row": 4, "d": 3, "rule_row": 4, "wall": false, "graphlike_distance": 3, "status": "OK", "seconds": 0.0}
+{"record": "seam_case", "case": "domain-wall seam (different bases, same parities)", "expect_row": 4, "d": 5, "rule_row": 4, "wall": false, "graphlike_distance": 5, "status": "OK", "seconds": 0.1}

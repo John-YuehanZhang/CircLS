@@ -1,0 +1,348 @@
+[
+ {
+  "name": "deutsch_n2",
+  "n": 2,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "grover_n2",
+  "n": 2,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "hs4_n4",
+  "n": 4,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "iswap_n2",
+  "n": 2,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "lpn_n5",
+  "n": 5,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "qrng_n4",
+  "n": 4,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "cat_state_n4",
+  "n": 4,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "bv_n14",
+  "n": 14,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_n19",
+  "n": 19,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "cat_state_n22",
+  "n": 22,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_state_n23",
+  "n": 23,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_n30",
+  "n": 30,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_n70",
+  "n": 70,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "cat_n35",
+  "n": 35,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "cat_n65",
+  "n": 65,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "cat_n130",
+  "n": 130,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "cat_n260",
+  "n": 260,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_n40",
+  "n": 40,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_n78",
+  "n": 78,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_n127",
+  "n": 127,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_state_n255",
+  "n": 255,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_8",
+  "n": 8,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_8",
+  "n": 8,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "dj_8",
+  "n": 8,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "graphstate_8",
+  "n": 8,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_16",
+  "n": 16,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_16",
+  "n": 16,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "dj_16",
+  "n": 16,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "graphstate_16",
+  "n": 16,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_32",
+  "n": 32,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_32",
+  "n": 32,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "dj_32",
+  "n": 32,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "graphstate_32",
+  "n": 32,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "ghz_64",
+  "n": 64,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "bv_64",
+  "n": 64,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "dj_64",
+  "n": 64,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "graphstate_64",
+  "n": 64,
+  "tags": [
+   "named",
+   "scale"
+  ]
+ },
+ {
+  "name": "steane_encode",
+  "n": 7,
+  "tags": [
+   "named"
+  ]
+ },
+ {
+  "name": "ghz_16_mixed",
+  "n": 16,
+  "tags": [
+   "mixed",
+   "named"
+  ]
+ },
+ {
+  "name": "twistedghz_4",
+  "n": 4,
+  "tags": [
+   "consumable"
+  ]
+ },
+ {
+  "name": "teleport_4",
+  "n": 9,
+  "tags": [
+   "consumable"
+  ]
+ },
+ {
+  "name": "bbpssw_4",
+  "n": 10,
+  "tags": [
+   "consumable"
+  ]
+ },
+ {
+  "name": "twistedghz_8",
+  "n": 8,
+  "tags": [
+   "consumable"
+  ]
+ },
+ {
+  "name": "teleport_8",
+  "n": 17,
+  "tags": [
+   "consumable"
+  ]
+ },
+ {
+  "name": "bbpssw_8",
+  "n": 18,
+  "tags": [
+   "consumable"
+  ]
+ }
+]

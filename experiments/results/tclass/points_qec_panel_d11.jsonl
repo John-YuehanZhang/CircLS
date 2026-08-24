@@ -1,0 +1,10 @@
+{"config": "full", "d": 3, "ler": 0.01, "shots": 10000, "errors": 100}
+{"config": "static", "d": 3, "ler": 0.012, "shots": 10000, "errors": 120}
+{"config": "full", "d": 5, "ler": 0.001379310344827586, "shots": 290000, "errors": 400}
+{"config": "static", "d": 5, "ler": 0.0017166666666666667, "shots": 60000, "errors": 103}
+{"config": "full", "d": 7, "ler": 0.00019, "shots": 1000000, "errors": 190}
+{"config": "static", "d": 7, "ler": 0.00020408163265306123, "shots": 490000, "errors": 100}
+{"config": "full", "d": 9, "ler": 2.05e-05, "shots": 4000000, "errors": 82}
+{"config": "static", "d": 9, "ler": 1.875e-05, "shots": 4000000, "errors": 75}
+{"config": "full", "d": 11, "ler": 2.526041666666667e-06, "shots": 38400000, "errors": 97}
+{"config": "static", "d": 11, "ler": 2.8125e-06, "shots": 38400000, "errors": 108}

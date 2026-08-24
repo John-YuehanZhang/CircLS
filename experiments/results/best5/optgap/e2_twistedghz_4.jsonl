@@ -1,0 +1,4 @@
+{"record": "provenance", "experiment": "optgap-E2", "circls_sha": "4ec403db0cfa57245ce0fb276c36a1b5d97c2694", "name": "twistedghz_4", "n_ops": 6, "n_steps": 2, "n_legal_orders": 1, "truncated": false, "workers": 28, "baseline": "built-in scheduler injected via scheduler= (self-check: reproduces normal volume)"}
+{"record": "baseline", "volume": 35.666666666666664, "rounds": 18}
+{"i": 0, "v": 35.666666666666664, "r": 18}
+{"record": "summary", "name": "twistedghz_4", "n_evals": 1, "n_failed": 0, "min_volume": 35.666666666666664, "circls_volume": 35.666666666666664, "gap_pct": 0.0, "n_strictly_better": 0, "seconds": 1.6}

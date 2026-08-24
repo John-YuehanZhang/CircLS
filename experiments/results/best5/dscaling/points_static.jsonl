@@ -1,0 +1,55 @@
+{"record": "provenance", "experiment": "dscaling-static", "what": "fully static allocation (no fui, no freeing) for the dynamic-vs-static d-scaling figure", "circls_sha": "ae494ad834bffae0594af9a0c29e4ed1c042b455", "versions": {"python": "3.13.13", "stim": "1.16.0", "pymatching": "2.4.0", "numpy": "2.2.6"}, "protocol": {"target_errors": 100, "max_shots": 1000000, "decoder": "mwpm", "seed0": 771, "gate": "all 3 circuits must decompose for PyMatching, else program flagged"}, "matrix": {"programs": ["teleport_4", "teleport_8", "bv_8", "bv_16", "dj_8", "dj_16"], "configs": ["static"], "d": [3, 5, 7], "p": [0.0005, 0.001]}}
+{"record": "precheck", "name": "teleport_4", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 2.0}
+{"record": "precheck", "name": "teleport_4", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 18.4}
+{"record": "precheck", "name": "teleport_4", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 120.3}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 3, "p": 0.0005, "seed": 772, "decoder": "mwpm", "silent_p0": true, "compile_s": 2.0, "shots": 10000, "errors": 1203, "ler": 0.1203, "sample_s": 0.5}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 3, "p": 0.001, "seed": 773, "decoder": "mwpm", "silent_p0": true, "compile_s": 2.0, "shots": 10000, "errors": 3646, "ler": 0.3646, "sample_s": 0.7}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 5, "p": 0.0005, "seed": 774, "decoder": "mwpm", "silent_p0": true, "compile_s": 18.4, "shots": 10000, "errors": 188, "ler": 0.0188, "sample_s": 3.0}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 5, "p": 0.001, "seed": 775, "decoder": "mwpm", "silent_p0": true, "compile_s": 18.4, "shots": 10000, "errors": 1276, "ler": 0.1276, "sample_s": 3.8}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 7, "p": 0.0005, "seed": 776, "decoder": "mwpm", "silent_p0": true, "compile_s": 120.3, "shots": 50000, "errors": 115, "ler": 0.0023, "sample_s": 21.8}
+{"record": "point", "name": "teleport_4", "config": "static", "d": 7, "p": 0.001, "seed": 777, "decoder": "mwpm", "silent_p0": true, "compile_s": 120.3, "shots": 10000, "errors": 358, "ler": 0.0358, "sample_s": 12.1}
+{"record": "precheck", "name": "teleport_8", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.4}
+{"record": "precheck", "name": "teleport_8", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 83.5}
+{"record": "precheck", "name": "teleport_8", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 540.1}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 3, "p": 0.0005, "seed": 778, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.4, "shots": 10000, "errors": 2484, "ler": 0.2484, "sample_s": 1.6}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 3, "p": 0.001, "seed": 779, "decoder": "mwpm", "silent_p0": true, "compile_s": 6.4, "shots": 10000, "errors": 5825, "ler": 0.5825, "sample_s": 1.8}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 5, "p": 0.0005, "seed": 780, "decoder": "mwpm", "silent_p0": true, "compile_s": 83.5, "shots": 10000, "errors": 429, "ler": 0.0429, "sample_s": 8.5}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 5, "p": 0.001, "seed": 781, "decoder": "mwpm", "silent_p0": true, "compile_s": 83.5, "shots": 10000, "errors": 2784, "ler": 0.2784, "sample_s": 10.8}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 7, "p": 0.0005, "seed": 782, "decoder": "mwpm", "silent_p0": true, "compile_s": 540.1, "shots": 20000, "errors": 111, "ler": 0.00555, "sample_s": 38.1}
+{"record": "point", "name": "teleport_8", "config": "static", "d": 7, "p": 0.001, "seed": 783, "decoder": "mwpm", "silent_p0": true, "compile_s": 540.1, "shots": 10000, "errors": 815, "ler": 0.0815, "sample_s": 37.1}
+{"record": "precheck", "name": "bv_8", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 0.6}
+{"record": "precheck", "name": "bv_8", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.0}
+{"record": "precheck", "name": "bv_8", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 19.6}
+{"record": "point", "name": "bv_8", "config": "static", "d": 3, "p": 0.0005, "seed": 784, "decoder": "mwpm", "silent_p0": true, "compile_s": 0.6, "shots": 10000, "errors": 781, "ler": 0.0781, "sample_s": 0.4}
+{"record": "point", "name": "bv_8", "config": "static", "d": 3, "p": 0.001, "seed": 785, "decoder": "mwpm", "silent_p0": true, "compile_s": 0.6, "shots": 10000, "errors": 2664, "ler": 0.2664, "sample_s": 0.3}
+{"record": "point", "name": "bv_8", "config": "static", "d": 5, "p": 0.0005, "seed": 786, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.0, "shots": 10000, "errors": 124, "ler": 0.0124, "sample_s": 1.4}
+{"record": "point", "name": "bv_8", "config": "static", "d": 5, "p": 0.001, "seed": 787, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.0, "shots": 10000, "errors": 880, "ler": 0.088, "sample_s": 1.8}
+{"record": "point", "name": "bv_8", "config": "static", "d": 7, "p": 0.0005, "seed": 788, "decoder": "mwpm", "silent_p0": true, "compile_s": 19.6, "shots": 70000, "errors": 109, "ler": 0.0015571428571428572, "sample_s": 12.9}
+{"record": "point", "name": "bv_8", "config": "static", "d": 7, "p": 0.001, "seed": 789, "decoder": "mwpm", "silent_p0": true, "compile_s": 19.6, "shots": 10000, "errors": 222, "ler": 0.0222, "sample_s": 5.5}
+{"record": "precheck", "name": "bv_16", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.6}
+{"record": "precheck", "name": "bv_16", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 26.8}
+{"record": "precheck", "name": "bv_16", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 172.9}
+{"record": "point", "name": "bv_16", "config": "static", "d": 3, "p": 0.0005, "seed": 790, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.6, "shots": 10000, "errors": 2396, "ler": 0.2396, "sample_s": 0.9}
+{"record": "point", "name": "bv_16", "config": "static", "d": 3, "p": 0.001, "seed": 791, "decoder": "mwpm", "silent_p0": true, "compile_s": 4.6, "shots": 10000, "errors": 6647, "ler": 0.6647, "sample_s": 1.0}
+{"record": "point", "name": "bv_16", "config": "static", "d": 5, "p": 0.0005, "seed": 792, "decoder": "mwpm", "silent_p0": true, "compile_s": 26.8, "shots": 10000, "errors": 457, "ler": 0.0457, "sample_s": 4.9}
+{"record": "point", "name": "bv_16", "config": "static", "d": 5, "p": 0.001, "seed": 793, "decoder": "mwpm", "silent_p0": true, "compile_s": 26.8, "shots": 10000, "errors": 2859, "ler": 0.2859, "sample_s": 6.3}
+{"record": "point", "name": "bv_16", "config": "static", "d": 7, "p": 0.0005, "seed": 794, "decoder": "mwpm", "silent_p0": true, "compile_s": 172.9, "shots": 20000, "errors": 116, "ler": 0.0058, "sample_s": 21.5}
+{"record": "point", "name": "bv_16", "config": "static", "d": 7, "p": 0.001, "seed": 795, "decoder": "mwpm", "silent_p0": true, "compile_s": 172.9, "shots": 10000, "errors": 837, "ler": 0.0837, "sample_s": 21.3}
+{"record": "precheck", "name": "dj_8", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 1.6}
+{"record": "precheck", "name": "dj_8", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 10.0}
+{"record": "precheck", "name": "dj_8", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 53.9}
+{"record": "point", "name": "dj_8", "config": "static", "d": 3, "p": 0.0005, "seed": 796, "decoder": "mwpm", "silent_p0": true, "compile_s": 1.6, "shots": 10000, "errors": 1364, "ler": 0.1364, "sample_s": 0.6}
+{"record": "point", "name": "dj_8", "config": "static", "d": 3, "p": 0.001, "seed": 797, "decoder": "mwpm", "silent_p0": true, "compile_s": 1.6, "shots": 10000, "errors": 4157, "ler": 0.4157, "sample_s": 0.6}
+{"record": "point", "name": "dj_8", "config": "static", "d": 5, "p": 0.0005, "seed": 798, "decoder": "mwpm", "silent_p0": true, "compile_s": 10.0, "shots": 10000, "errors": 210, "ler": 0.021, "sample_s": 2.6}
+{"record": "point", "name": "dj_8", "config": "static", "d": 5, "p": 0.001, "seed": 799, "decoder": "mwpm", "silent_p0": true, "compile_s": 10.0, "shots": 10000, "errors": 1442, "ler": 0.1442, "sample_s": 3.2}
+{"record": "point", "name": "dj_8", "config": "static", "d": 7, "p": 0.0005, "seed": 800, "decoder": "mwpm", "silent_p0": true, "compile_s": 53.9, "shots": 40000, "errors": 103, "ler": 0.002575, "sample_s": 15.7}
+{"record": "point", "name": "dj_8", "config": "static", "d": 7, "p": 0.001, "seed": 801, "decoder": "mwpm", "silent_p0": true, "compile_s": 53.9, "shots": 10000, "errors": 406, "ler": 0.0406, "sample_s": 10.2}
+{"record": "precheck", "name": "dj_16", "config": "static", "d": 3, "decoder": "mwpm", "silent_p0": true, "compile_s": 7.4}
+{"record": "precheck", "name": "dj_16", "config": "static", "d": 5, "decoder": "mwpm", "silent_p0": true, "compile_s": 89.8}
+{"record": "precheck", "name": "dj_16", "config": "static", "d": 7, "decoder": "mwpm", "silent_p0": true, "compile_s": 595.7}
+{"record": "point", "name": "dj_16", "config": "static", "d": 3, "p": 0.0005, "seed": 802, "decoder": "mwpm", "silent_p0": true, "compile_s": 7.4, "shots": 10000, "errors": 4215, "ler": 0.4215, "sample_s": 1.9}
+{"record": "point", "name": "dj_16", "config": "static", "d": 3, "p": 0.001, "seed": 803, "decoder": "mwpm", "silent_p0": true, "compile_s": 7.4, "shots": 10000, "errors": 8844, "ler": 0.8844, "sample_s": 2.3}
+{"record": "point", "name": "dj_16", "config": "static", "d": 5, "p": 0.0005, "seed": 804, "decoder": "mwpm", "silent_p0": true, "compile_s": 89.8, "shots": 10000, "errors": 799, "ler": 0.0799, "sample_s": 10.7}
+{"record": "point", "name": "dj_16", "config": "static", "d": 5, "p": 0.001, "seed": 805, "decoder": "mwpm", "silent_p0": true, "compile_s": 89.8, "shots": 10000, "errors": 4779, "ler": 0.4779, "sample_s": 13.8}
+{"record": "point", "name": "dj_16", "config": "static", "d": 7, "p": 0.0005, "seed": 806, "decoder": "mwpm", "silent_p0": true, "compile_s": 595.7, "shots": 20000, "errors": 203, "ler": 0.01015, "sample_s": 50.5}
+{"record": "point", "name": "dj_16", "config": "static", "d": 7, "p": 0.001, "seed": 807, "decoder": "mwpm", "silent_p0": true, "compile_s": 595.7, "shots": 10000, "errors": 1566, "ler": 0.1566, "sample_s": 48.5}

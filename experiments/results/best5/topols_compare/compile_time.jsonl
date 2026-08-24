@@ -1,0 +1,6 @@
+{"record": "provenance", "circls_sha": "a7396b7d2606669eb477ab2a9c664f27a88f00a3", "dirty": false, "versions": {"python": "3.13.13", "stim": "1.16.0", "numpy": "2.2.6", "pymatching": "2.4.0", "networkx": "3.6.1"}, "cpu": "AMD EPYC 9534 64-Core Processor", "argv": ["compile_time.py"], "timestamp_utc": "2026-08-11T06:52:12+00:00", "reps": 3}
+{"record": "point", "pair": "ghz_16_k1_f1", "name": "ghz_16", "d": 3, "seconds": [1.433, 1.266, 1.247], "median": 1.266}
+{"record": "point", "pair": "ghz_16_k2_f1", "name": "ghz_16", "d": 5, "seconds": [10.063, 10.721, 9.962], "median": 10.063}
+{"record": "point", "pair": "bv_16_k2_f0", "name": "bv_16", "d": 5, "seconds": [1.205, 1.219, 1.296], "median": 1.219}
+{"record": "point", "pair": "CNOT_k1_f0", "name": "CNOT", "d": 3, "seconds": [0.01, 0.009, 0.009], "median": 0.009}
+{"record": "point", "pair": "CNOT_k2_f0", "name": "CNOT", "d": 5, "seconds": [0.028, 0.028, 0.029], "median": 0.028}
