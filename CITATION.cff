@@ -3,15 +3,26 @@ message: "If you use CircLS in your research, please cite it as below."
 title: "CircLS"
 authors:
   - family-names: "Zhang"
-    given-names: "Yuehan"
+    given-names: "John Yuehan"
 license: Apache-2.0
 repository-code: "https://github.com/John-YuehanZhang/CircLS"
 abstract: >-
   CircLS compiles lattice-surgery programs from Clifford QASM or PPM
   sequences to verified physical (stim) circuits, with lifetime-aware
   compilation and a rule-based stabilizer construction.
-# preferred-citation (the CircLS paper): to be added when the arXiv
-# preprint is up.
+preferred-citation:
+  type: article
+  title: "CircLS: Compiling Lattice Surgery to Physical Circuits with Dynamic Allocation"
+  authors:
+    - family-names: "Zhang"
+      given-names: "John Yuehan"
+  year: 2026
+  url: "https://arxiv.org/abs/2608.23819"
+  identifiers:
+    - type: doi
+      value: "10.48550/arXiv.2608.23819"
+    - type: other
+      value: "arXiv:2608.23819"
 references:
   - type: article
     title: "LightStim"

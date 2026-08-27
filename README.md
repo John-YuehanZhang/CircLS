@@ -8,8 +8,9 @@ way down to a **runnable stim circuit** — detectors and observables
 annotated, verified at the circuit level — so a compiled program's
 logical error rate is something you measure, not estimate.
 
-This repository is the artifact of the paper *CircLS: Compiling
-Lattice Surgery to Physical Circuits with Dynamic Allocation*; the
+This repository is the artifact of the paper [*CircLS: Compiling
+Lattice Surgery to Physical Circuits with Dynamic Allocation*
+(arXiv:2608.23819)](https://arxiv.org/abs/2608.23819); the
 runs behind every number in the paper are reproducible from
 `experiments/REPRODUCE.md`.
 
@@ -193,9 +194,21 @@ python -m pytest lightstim/tests -q     # vendored LightStim suite
 
 ## Citing CircLS
 
-See `CITATION.cff`.  A BibTeX entry and the arXiv link will appear
-here with the preprint.  If you build on the vendored backend, please
-also cite [LightStim](https://github.com/QuTone/LightStim).
+See `CITATION.cff`, or use the BibTeX entry below.  If you build on
+the vendored backend, please also cite
+[LightStim](https://github.com/QuTone/LightStim).
+
+```bibtex
+@misc{zhang2026circls,
+  title         = {{CircLS}: Compiling Lattice Surgery to Physical Circuits with Dynamic Allocation},
+  author        = {John Yuehan Zhang},
+  year          = {2026},
+  eprint        = {2608.23819},
+  archivePrefix = {arXiv},
+  primaryClass  = {quant-ph},
+  url           = {https://arxiv.org/abs/2608.23819}
+}
+```
 
 ## License
 
