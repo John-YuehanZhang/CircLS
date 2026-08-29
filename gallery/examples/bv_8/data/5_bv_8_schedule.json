@@ -1,0 +1,164 @@
+{
+ "program": "bv_8",
+ "distance": 3,
+ "grid": {
+  "x": [
+   1,
+   5
+  ],
+  "y": [
+   1,
+   5
+  ]
+ },
+ "code_cycles": 28,
+ "allocated_volume_blocks": 73.66666666666667,
+ "patches": [
+  {
+   "name": "q0",
+   "tile": [
+    5,
+    5
+   ],
+   "birth_cycle": 1,
+   "retire_cycle": 16
+  },
+  {
+   "name": "q1",
+   "tile": [
+    1,
+    1
+   ],
+   "birth_cycle": 1,
+   "retire_cycle": 27
+  },
+  {
+   "name": "q2",
+   "tile": [
+    1,
+    5
+   ],
+   "birth_cycle": 6,
+   "retire_cycle": 17
+  },
+  {
+   "name": "q3",
+   "tile": [
+    3,
+    1
+   ],
+   "birth_cycle": 1,
+   "retire_cycle": 27
+  },
+  {
+   "name": "q4",
+   "tile": [
+    3,
+    3
+   ],
+   "birth_cycle": 11,
+   "retire_cycle": 22
+  },
+  {
+   "name": "q5",
+   "tile": [
+    5,
+    1
+   ],
+   "birth_cycle": 1,
+   "retire_cycle": 27
+  },
+  {
+   "name": "q6",
+   "tile": [
+    5,
+    3
+   ],
+   "birth_cycle": 11,
+   "retire_cycle": 27
+  },
+  {
+   "name": "q7",
+   "tile": [
+    3,
+    5
+   ],
+   "birth_cycle": 1,
+   "retire_cycle": 27
+  }
+ ],
+ "corridor_occupancy": {
+  "4,5": [
+   [
+    2,
+    5
+   ],
+   [
+    23,
+    26
+   ]
+  ],
+  "2,5": [
+   [
+    7,
+    10
+   ],
+   [
+    18,
+    21
+   ]
+  ],
+  "1,4": [
+   [
+    12,
+    15
+   ]
+  ],
+  "2,4": [
+   [
+    12,
+    15
+   ],
+   [
+    18,
+    21
+   ]
+  ],
+  "3,4": [
+   [
+    12,
+    15
+   ],
+   [
+    18,
+    21
+   ]
+  ],
+  "4,3": [
+   [
+    12,
+    15
+   ]
+  ],
+  "4,4": [
+   [
+    12,
+    15
+   ],
+   [
+    23,
+    26
+   ]
+  ],
+  "5,4": [
+   [
+    12,
+    15
+   ],
+   [
+    23,
+    26
+   ]
+  ]
+ }
+}

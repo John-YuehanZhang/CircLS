@@ -1,0 +1,127 @@
+--- contact variant 0
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 1
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 2
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 3
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 4
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 5
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 6
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 7
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 8
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 9
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 10
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 11
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 12
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 13
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 14
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 15
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 16
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 17
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 18
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 19
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 20
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 21
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 22
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 23
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 24
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 25
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 26
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 27
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 28
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 29
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 30
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 31
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.

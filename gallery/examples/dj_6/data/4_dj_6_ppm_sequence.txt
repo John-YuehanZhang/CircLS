@@ -1,0 +1,15 @@
+# raw terminal measurements (NWQEC keep_cx=False; signs via stim):
+(-ZIIIIZ) measurement
+(-IZIIIZ) measurement
+(-IIZIIZ) measurement
+(-IIIZIZ) measurement
+(-IIIIZZ) measurement
+(+XXXXXX) measurement
+
+# executed PPM sequence after re-selection / reordering:
+PPM 0: q0.Z  q5.Z
+PPM 1: q1.Z  q5.Z
+PPM 2: q0.X  q1.X  q2.X  q3.X  q4.X  q5.X
+PPM 3: q2.Z  q5.Z
+PPM 4: q3.Z  q5.Z
+PPM 5: q4.Z  q5.Z

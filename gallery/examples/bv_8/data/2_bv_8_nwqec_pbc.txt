@@ -1,0 +1,12 @@
+(-XIIIIIIZ)_pi/4 rotation
+(-IIXIIIIZ)_pi/4 rotation
+(-IIIIXIIZ)_pi/4 rotation
+(-IIIIIIXZ)_pi/4 rotation
+(+YIIIIIII) measurement
+(+IZIIIIII) measurement
+(+IIYIIIII) measurement
+(+IIIZIIII) measurement
+(+IIIIYIII) measurement
+(+IIIIIZII) measurement
+(+IIIIIIYI) measurement
+(+IIIIIIIX) measurement

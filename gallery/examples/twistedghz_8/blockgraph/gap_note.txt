@@ -1,0 +1,12 @@
+twistedghz_8 reaches TQEC's wall rules (valid ZXCube assignments exist)
+but no assignment carries a deterministic correlation surface: the
+protocol consumes |Y>-initialized ancilla patches (born as tqec's
+temporal Y half-cube, Z-joined, then read out in X), and the plain
+temporal-Y endpoint cannot carry the consumption protocol's
+deterministic parities.  This is robust to the embedding: the exporter
+searched all 8 distinct seam-side contact variants (216 wall-valid
+assignments in total) -- every one wall-valid, every one with zero
+deterministic surfaces.  tqec's own tracker marks this corner open
+("Y cube is not implemented" in the fixed-boundary builder; issue
+#967, rotated Y half-cube .dae import).  Geometry in
+twistedghz_8_blockstructure.json, per-variant log in export_log.txt.

@@ -1,5 +1,7 @@
 # Customization hooks (design, 2026-08-13)
 
+> Runnable companion: [`notebooks/custom_compilation_api.ipynb`](../notebooks/custom_compilation_api.ipynb) walks every hook with executed examples.
+
 CircLS separates decisions (Section 3 of the paper) from the
 stabilizer construction and circuit emission (Section 4).  The six
 decision points below are open for customization; the construction,

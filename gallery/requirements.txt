@@ -1,0 +1,24 @@
+# pip install -r requirements.txt
+#
+# Python 3.9-3.12 ONLY.  nwqec 0.1.2 publishes wheels for cp38-cp312;
+# on 3.13+ pip falls back to its sdist, whose pyproject declares
+# scikit-build-core>=0.10 yet uses the cmake.minimum-version key that
+# scikit-build-core removed in 0.8 -- no allowed backend version can
+# build it, and the failure happens during dependency resolution, so
+# NOTHING gets installed.  (Tested 2026-08-29: full install + compile +
+# LER + tqec validation pass on 3.12; zero-install failure on 3.13.)
+# 3.13 workaround if you must: pip install "scikit-build-core<0.8" \
+#   pyproject_metadata pybind11 ninja && pip install --no-build-isolation nwqec==0.1.2
+stim>=1.16
+pymatching>=2.4
+mwpf>=0.2.12
+numpy>=2.0
+matplotlib>=3.8
+jupyter
+# prebuilt wheels for cp38-cp312; no C++ toolchain needed there
+nwqec>=0.1.2
+# only for the block-graph export/validation (a separate venv is fine)
+tqec>=0.2
+# NOT pip-installable: the Y-free stage reads the lsqecc sources --
+# clone https://github.com/latticesurgery-com/lattice-surgery-compiler
+# next to this repository, or point LSQECC_SRC at it

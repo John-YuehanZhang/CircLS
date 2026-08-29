@@ -1,0 +1,13 @@
+--- contact variant 0
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 1
+legal kind assignments (cap 500): 0
+NOT EXPORTED: no ZXCube assignment satisfies the wall rules with the protocol's pinned faces -- expressibility gap.
+
+--- contact variant 2
+legal kind assignments (cap 500): 32
+correlation-surface counts among valid assignments: {6: 32}
+(CircLS circuit has 9 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+exported bv_6_blockgraph.dae/.html  (42 cubes, 42 pipes, 6 surfaces)

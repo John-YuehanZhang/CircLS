@@ -1,0 +1,55 @@
+--- contact variant 0
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 8
+correlation-surface counts among valid assignments: {0: 8}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 1
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 16
+correlation-surface counts among valid assignments: {0: 16}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 2
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 16
+correlation-surface counts among valid assignments: {0: 16}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 3
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 32
+correlation-surface counts among valid assignments: {0: 32}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 4
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 16
+correlation-surface counts among valid assignments: {0: 16}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 5
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 32
+correlation-surface counts among valid assignments: {0: 32}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 6
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 32
+correlation-surface counts among valid assignments: {0: 32}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
+
+--- contact variant 7
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(7, 1)]
+legal kind assignments (cap 500): 64
+correlation-surface counts among valid assignments: {0: 64}
+(CircLS circuit has 6 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+NOT EXPORTED: every valid assignment has zero deterministic parities -- the searched geometry does not express this protocol.
