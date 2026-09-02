@@ -17,6 +17,7 @@ preferred-citation:
     - family-names: "Zhang"
       given-names: "John Yuehan"
   year: 2026
+  journal: "arXiv preprint arXiv:2608.23819"
   url: "https://arxiv.org/abs/2608.23819"
   identifiers:
     - type: doi

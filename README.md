@@ -199,14 +199,11 @@ the vendored backend, please also cite
 [LightStim](https://github.com/QuTone/LightStim).
 
 ```bibtex
-@misc{zhang2026circls,
-  title         = {{CircLS}: Compiling Lattice Surgery to Physical Circuits with Dynamic Allocation},
-  author        = {John Yuehan Zhang},
-  year          = {2026},
-  eprint        = {2608.23819},
-  archivePrefix = {arXiv},
-  primaryClass  = {quant-ph},
-  url           = {https://arxiv.org/abs/2608.23819}
+@article{zhang2026circls,
+  title={CircLS: Compiling Lattice Surgery to Physical Circuits with Dynamic Allocation},
+  author={Zhang, John Yuehan},
+  journal={arXiv preprint arXiv:2608.23819},
+  year={2026}
 }
 ```
 
