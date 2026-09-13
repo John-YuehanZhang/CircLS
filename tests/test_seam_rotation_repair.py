@@ -196,3 +196,75 @@ def test_snake_gateway_declines_a_parallel_law_illegal_attach_seam():
     assert _run(exp) == (True, True)
     assert exp._snake_plans == {}
     assert [nm for _, nm, _ in exp.rotation_log] == ['q0', 'q0']
+
+def test_routed_repair_replays_the_bus_selected_by_its_probe():
+    """sat_n7 Static's reduced eight-patch failure: X is the majority
+    bus, but after the repair rotation only Z admits the corridor.
+    Reusing X after a successful Z probe used to reject the same step.
+    """
+    cells = {'q1': (1, 1), 'q2': (1, 3), 'q3': (7, 3), 'q4': (7, 1),
+             'a1': (3, 3), 'a8': (5, 1), 'a56': (5, 3), 'a57': (3, 1)}
+    specs = [PatchSpec(nm, origin_of(*xy, D, seam=True), D, 'X_vertical')
+             for nm, xy in cells.items()]
+    step = PPMStep([('q1', 'X'), ('q2', 'X'), ('q4', 'X'), ('a8', 'Z')])
+    bases = {nm: ('Z' if nm == 'a8' else 'X') for nm in cells}
+    exp = SequentialPPMExperiment(
+        specs, [step], initial_states=bases, final_measure_states=bases,
+        rounds=D, rounds_init=1, parallel_steps=False,
+        first_use_init=False, liveness=False, auto_rotate=False)
+    circuit = exp.build()
+    det, obs = circuit.compile_detector_sampler(seed=1).sample(
+        256, separate_observables=True)
+    assert not det.any()
+    assert (obs == obs[0]).all()
+    circuit.detector_error_model()
+    assert exp._derived_bus[0] == 'Z'
+    # 2026-09-11: with every wall geometry constructible (stretched-seam end
+    # record takes the concave-corner foot), the probe's first admissible bus
+    # needs the q1 rotation rather than q4's; p=0 silence, observable
+    # determinism and the derived bus are asserted above.
+    assert exp.rotation_log == [(0, 'q1', 'litinski')]
+    # build() must select the same repair afresh, not retain the old bus
+    # and use it against the reset, pre-rotation geometry.
+    assert exp.build() == circuit
+    assert exp.rotation_log == [(0, 'q1', 'litinski')]
+
+
+def test_routed_repair_preserves_a_successful_legacy_retry():
+    """A probe chooses X first, but the legacy majority-Z retry succeeds.
+    Pinning X unconditionally changed this already-valid circuit. The
+    conditional repair must preserve the original circuit byte for byte.
+    """
+    import hashlib
+    cells = {'q1': (1, 1), 'q2': (1, 3), 'q3': (7, 3), 'q4': (7, 1),
+             'y1': (3, 3), 'y8': (5, 1), 'y56': (5, 3), 'y57': (3, 1)}
+    specs = [PatchSpec(nm, origin_of(*xy, D, seam=True), D,
+                       'X_horizontal' if nm in {'q2', 'y8'} else 'X_vertical')
+             for nm, xy in cells.items()]
+    target = [('q1', 'Z'), ('q2', 'X'), ('q4', 'Z'), ('y8', 'Z')]
+    bases = {nm: 'X' for nm in cells}
+    bases.update(dict(target))
+    exp = SequentialPPMExperiment(
+        specs, [PPMStep(target)], initial_states=bases,
+        final_measure_states=bases, rounds=D, rounds_init=1,
+        parallel_steps=False, first_use_init=False, liveness=False,
+        auto_rotate=False)
+    circuit = exp.build()
+    # Captured from the unmodified 3d9aaa9 compiler on this real eight-patch
+    # circuit; the unconditional replay instead gave 1417bf71af941f76....
+    assert hashlib.sha256(str(circuit).encode()).hexdigest() == (
+        # 2026-09-11: re-pinned after the stretched-seam end record gained the
+        # concave-corner foot (verify all true, p=0 silent, observables
+        # deterministic, graphlike distance 3 on this circuit)
+        '28060f0fbd71933e51ee45dacc1cfce28e24ad4d3e7976b0960d1d996999f866')
+    # 2026-09-11: the geometry now builds without any rotation (the probe's
+    # first bus is constructible once the stretched-seam end record takes the
+    # concave-corner foot), so the repair is never entered.
+    assert exp.rotation_log == []
+    assert exp._derived_bus == {}
+    assert len(exp._routes[0].tree) == 8   # 2026-09-11: 11 before the end-record fix; the shorter corridor now builds
+    det, obs = circuit.compile_detector_sampler(seed=1).sample(
+        256, separate_observables=True)
+    assert not det.any()
+    assert (obs == obs[0]).all()
+    circuit.detector_error_model()

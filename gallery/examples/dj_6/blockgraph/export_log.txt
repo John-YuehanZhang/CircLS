@@ -1,5 +1,0 @@
---- contact variant 0
-legal kind assignments (cap 500): 16
-correlation-surface counts among valid assignments: {10: 16}
-(CircLS circuit has 9 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
-exported dj_6_blockgraph.dae/.html  (50 cubes, 54 pipes, 10 surfaces)

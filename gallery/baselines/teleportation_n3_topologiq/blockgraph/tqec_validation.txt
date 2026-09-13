@@ -1,0 +1,3 @@
+teleportation_n3_closed_port.dae: 26 cubes, 25 pipes (round-trip via BlockGraph.from_dae_file)
+tqec compile (k=1, d=3, fixed_boundary): 362 qubits, 733 detectors, 1 observables
+p=0 sample (256 shots, seed 0): silent=True, all observables deterministic=True

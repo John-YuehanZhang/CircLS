@@ -1,0 +1,10 @@
+(-IZX)_pi/4 rotation
+(+ZZX)_pi/4 rotation
+(-ZIX)_pi/4 rotation
+(-IZI)_pi/4 rotation
+(+IIX)_pi/4 rotation
+(+ZZI)_pi/4 rotation
+(-ZII)_pi/4 rotation
+(-ZII) measurement
+(-IZI) measurement
+(+IIZ) measurement

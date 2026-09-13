@@ -1,3 +1,0 @@
-dj_6_blockgraph.dae: 50 cubes, 54 pipes (round-trip via BlockGraph.from_dae_file)
-tqec compile (k=1, d=3): 438 qubits, 1412 detectors, 10 observables
-p=0 sample (256 shots, seed 0): silent=True, all observables deterministic=True

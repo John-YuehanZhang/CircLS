@@ -1,0 +1,20 @@
+{
+ "mode": "bfs-cross",
+ "seed": 1,
+ "seconds": 0.033,
+ "zx_vertices": 22,
+ "zx_edges": 21,
+ "zx_inputs": 5,
+ "zx_outputs": 5,
+ "cubes": 12,
+ "ports": 10,
+ "pipes": 21,
+ "h_pipes": 4,
+ "cube_kinds": {
+  "OOO": 10,
+  "ZXX": 5,
+  "ZXZ": 4,
+  "XXZ": 3
+ },
+ "same_as_recorded": true
+}

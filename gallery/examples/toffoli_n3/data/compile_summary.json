@@ -1,0 +1,31 @@
+{
+ "config": "paper: optimized mapping, first-use initialization, last-use freeing; no re-selection, no step scheduler, no parallel windows; S gates kept; X-state proxy",
+ "stages": {
+  "nwqec_pbc": 10,
+  "rotations": 7,
+  "terminal_m": 3,
+  "after_yfree": 10,
+  "ppm_program_ops": 24,
+  "executed_ppms": 7,
+  "gadgets": 7
+ },
+ "3": {
+  "volume_blocks": 83.0,
+  "qubit_cycles": 4386,
+  "qubits": 655,
+  "detectors": 1680,
+  "observables": 5
+ },
+ "5": {
+  "qubit_cycles": 17174,
+  "qubits": 1666,
+  "detectors": 7400,
+  "observables": 5
+ },
+ "7": {
+  "qubit_cycles": 43322,
+  "qubits": 3125,
+  "detectors": 19520,
+  "observables": 5
+ }
+}

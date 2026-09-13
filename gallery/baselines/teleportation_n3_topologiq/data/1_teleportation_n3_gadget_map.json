@@ -1,0 +1,23 @@
+{
+ "n_data": 3,
+ "n_magic": 2,
+ "n_total": 5,
+ "magic": [
+  {
+   "wire": 3,
+   "target": 0,
+   "gate": "t"
+  },
+  {
+   "wire": 4,
+   "target": 0,
+   "gate": "s"
+  }
+ ],
+ "gates": 8,
+ "s_proxy": true,
+ "proxy_gadget_flows": {
+  "X0 -> X0": true,
+  "Z0 -> Z0": true
+ }
+}

@@ -1167,6 +1167,24 @@ class QECSystem:
         become orphans (never measured again) but stay allocated to avoid
         re-indexing. The coordinate maps are cleared so new couplers can
         register at the same positions.
+
+        A coupler's ``local_to_global_map`` is NOT an ownership record: a
+        DORMANT cell is handed to whoever registers the same coordinate next
+        (``add_patch`` / ``_apply_patch_geometry`` dormant-index reuse) — a
+        later up-front coupler on the same corridor cell, or a data patch
+        whose runtime litinski rotation grows a boundary lobe onto it.  Only
+        the indices no other registered patch or coupler still maps
+        (``exclusive``) are freed; a shared cell keeps its coordinate, index
+        and category entries and its ownership passes to a surviving holder.
+        Freeing a shared index used to delete ``qubit_coords`` out from under
+        the survivor's live check and the next SE round raised ``KeyError``
+        on its syndrome qubit (fredkin_n3 static d=3..11 KeyError 449/1219/
+        2357/3863/5737, multiply_n13 reselect_only d=3 KeyError 1093,
+        2026-09-07).  The freed exclusive cells also lose their QUBIT_COORDS
+        declaration when a builder is registered (the mirror of add_patch's
+        ``append_coordinates_for_new_qubits``): a coupler registered before
+        ``write_coordinates`` had them written, and left in place they are
+        declared-but-never-touched qubits (the S4==S5 self-check).
         """
         if coupler_name not in self.coupler_patches:
             raise ValueError(f"Coupler '{coupler_name}' not found.")
@@ -1175,18 +1193,36 @@ class QECSystem:
 
         coupler_patch = self.coupler_patches[coupler_name]
 
-        # 1. Collect global indices owned by this coupler
+        # 1. Collect global indices mapped by this coupler
         coupler_global_indices = set()
         if coupler_name in self.local_to_global_map:
             coupler_global_indices = set(self.local_to_global_map[coupler_name].values())
 
-        # 2. Clear coordinate maps (allows re-registration at same coords)
+        # 1b. Split them into SHARED (some other registered patch/coupler still
+        # maps the index — dormant reuse handed it on) and EXCLUSIVE (ours to
+        # free).  A shared index passes to its first surviving holder in
+        # registration order.
+        held_by_others: Dict[int, str] = {}
+        for other, l2g in self.local_to_global_map.items():
+            if other == coupler_name:
+                continue
+            for idx in l2g.values():
+                if idx in coupler_global_indices:
+                    held_by_others.setdefault(idx, other)
+        exclusive = coupler_global_indices - set(held_by_others)
+
+        # 2. Clear coordinate maps (allows re-registration at same coords) —
+        # a shared cell keeps them and is handed to the surviving holder
         coords_to_remove = []
         for coord, owner in list(self.coord_to_owner_map.items()):
             if owner == coupler_name:
                 coords_to_remove.append(coord)
 
         for coord in coords_to_remove:
+            idx = self.index_map.get(coord)
+            if idx is not None and idx in held_by_others:
+                self.coord_to_owner_map[coord] = held_by_others[idx]
+                continue
             del self.coord_to_owner_map[coord]
             if coord in self.index_map:
                 del self.index_map[coord]
@@ -1195,10 +1231,10 @@ class QECSystem:
                 del self.grid_map[grid_key]
 
         # 3. Remove from qubit category sets (data, syndrome)
-        self.data_indices.difference_update(coupler_global_indices)
-        self.syndrome_indices.difference_update(coupler_global_indices)
-        self.syndrome_indices_x.difference_update(coupler_global_indices)
-        self.syndrome_indices_z.difference_update(coupler_global_indices)
+        self.data_indices.difference_update(exclusive)
+        self.syndrome_indices.difference_update(exclusive)
+        self.syndrome_indices_x.difference_update(exclusive)
+        self.syndrome_indices_z.difference_update(exclusive)
 
         # 4. Remove coupler stabilizers from active set
         coupler_stab_uids = {
@@ -1207,25 +1243,42 @@ class QECSystem:
         }
         self.active_stabilizer_indices.difference_update(coupler_stab_uids)
 
-        # 5. Mark stabilizers as removed (set patch_name to None so they're skipped)
+        # 5. Mark stabilizers as removed (set patch_name to None so they're
+        # skipped) — unless another registered patch/coupler still holds the
+        # uid (a signature-deduplicated record, overwritten by this coupler as
+        # the last registrant): the record goes back to that holder, and (6)
+        # keeps its signature entry, so the survivor's patch_name-keyed scans
+        # and a later re-registration at the same cells still find it
+        held_uids: Dict[int, str] = {}
+        for other, (other_patch, _off) in self.patches.items():
+            if other == coupler_name:
+                continue
+            for uid in getattr(other_patch, '_registered_stabilizer_uids', ()):
+                if uid in coupler_stab_uids:
+                    held_uids.setdefault(uid, other)
         for uid in coupler_stab_uids:
-            self.stabilizers[uid]['patch_name'] = None
+            self.stabilizers[uid]['patch_name'] = held_uids.get(uid)
 
         # 6. Clean up signature cache for removed stabilizers
         sigs_to_remove = [sig for sig, uid in self._stabilizer_signatures.items()
-                          if uid in coupler_stab_uids]
+                          if uid in coupler_stab_uids and uid not in held_uids]
         for sig in sigs_to_remove:
             del self._stabilizer_signatures[sig]
 
-        # 7. Remove from index_to_owner_map
+        # 7. Remove from index_to_owner_map (a shared index goes to the survivor)
         for idx in coupler_global_indices:
-            if idx in self.index_to_owner_map:
-                del self.index_to_owner_map[idx]
+            if idx in exclusive:
+                self.index_to_owner_map.pop(idx, None)
+            elif self.index_to_owner_map.get(idx) == coupler_name:
+                self.index_to_owner_map[idx] = held_by_others[idx]
 
-        # 8. Remove qubit_coords for coupler qubits (prevents ghost qubits in diagrams)
-        for idx in coupler_global_indices:
+        # 8. Remove qubit_coords for the freed qubits (prevents ghost qubits in
+        # diagrams) and retract their QUBIT_COORDS from the circuit under build
+        for idx in exclusive:
             if idx in self.qubit_coords:
                 del self.qubit_coords[idx]
+        if self._builder is not None and exclusive:
+            self._builder.retract_coordinates(exclusive)
 
         # 9. Remove from patch/coupler registries
         del self.local_to_global_map[coupler_name]

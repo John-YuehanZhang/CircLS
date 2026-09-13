@@ -68,6 +68,10 @@ class CircuitBuilder:
         self.system = system_config
         self.circuit = stim.Circuit()
         self.if_detector = if_detector
+        # QUBIT_COORDS lines dropped from the front block by retract_coordinates
+        # (a revoked registration's freed qubits); keeps the insertion point of
+        # append_coordinates_for_new_qubits at the end of the front block
+        self._n_retracted_coords = 0
         # State set by apply_syndrome_extraction(z_only=True) for use by apply_data_readout
         self._z_only_syn_qubit_indices = None
         self._z_only_no_detector_mask  = None
@@ -115,8 +119,44 @@ class CircuitBuilder:
             for q_index, coords in coords_iterable:
                 if q_index >= start_index:
                     new_coords_circuit.append("QUBIT_COORDS", [q_index], list(coords))
-        # Insert at position start_index (first n_old instructions are existing coords)
-        self.circuit = self.circuit[:start_index] + new_coords_circuit + self.circuit[start_index:]
+        # Insert at the end of the front block: its first start_index
+        # instructions are the existing coords, less the ones retracted since
+        pos = start_index - getattr(self, '_n_retracted_coords', 0)
+        self.circuit = self.circuit[:pos] + new_coords_circuit + self.circuit[pos:]
+
+    def retract_coordinates(self, indices) -> int:
+        """Drop the QUBIT_COORDS declarations of ``indices`` from the front
+        block of the circuit — the mirror of
+        :meth:`append_coordinates_for_new_qubits` for
+        ``QECSystem.remove_coupler``: a coupler registered before
+        :meth:`write_coordinates` (up front) had its cells declared, and once
+        the registration is revoked the cells nobody else references would
+        stay declared but never touched by any instruction (the S4==S5
+        self-check).  Only the leading run of QUBIT_COORDS is scanned, so the
+        cost is the front block, and later insertions keep landing at its end.
+        Returns the number of declarations dropped (0 = circuit untouched)."""
+        drop = {int(q) for q in indices}
+        if not drop:
+            return 0
+        front = stim.Circuit()
+        n_front = 0
+        n_drop = 0
+        for inst in self.circuit:
+            if not (isinstance(inst, stim.CircuitInstruction)
+                    and inst.name == 'QUBIT_COORDS'):
+                break
+            n_front += 1
+            if all(t.value in drop for t in inst.targets_copy()):
+                n_drop += 1
+                continue
+            front.append(inst)
+        if n_drop:
+            self.circuit = front + self.circuit[n_front:]
+            self._n_retracted_coords = getattr(self, '_n_retracted_coords', 0) + n_drop
+            written = getattr(self, '_written_coord_indices', None)
+            if written:
+                written.difference_update(drop)
+        return n_drop
 
     def initialize(self, init_dict: Dict[int, str], n: int, noiseless: bool = False):
         """
@@ -209,6 +249,9 @@ class CircuitBuilder:
         # Analyze Ideal Basis for the Tracker
         back_propagated_paulis, syn_qubit_indices = self._get_back_propagated_pauli(circuit_chunk, self.tracker.num_qubits)
         syn_coords = [self.system.qubit_coords[i] for i in syn_qubit_indices] # extract from circuit_chunk, more robust
+        # K&F relay walls: flag records folded into a neighbour check's
+        # detector (None for every chunk without a mixed kf wall)
+        fold = self._kf_flag_fold_plan(syn_qubit_indices)
 
         # Build Z-only mask: True for X-ancilla (suppress their DETECTORs)
         no_detector_mask = None
@@ -246,6 +289,7 @@ class CircuitBuilder:
                 back_propagated_paulis=back_propagated_paulis,
                 syn_coords=syn_coords,
                 no_detector_mask=no_detector_mask,
+                fold_records=fold[1] if fold is not None else None,
             )
 
         # ======================================================================
@@ -281,9 +325,23 @@ class CircuitBuilder:
                     rec_prev = -num_syn + i - num_syn
 
                     coord = list(syn_coords[i]) + [0]
+                    targets = [stim.target_rec(rec_current), stim.target_rec(rec_prev)]
+                    if fold is not None:
+                        if i in fold[0]:
+                            # K&F flag / relay: deterministic every round,
+                            # one absolute detector per record
+                            targets = [stim.target_rec(rec_current)]
+                        else:
+                            # neighbour check: fold in the flag records of
+                            # this round ('+' rows) / the previous round
+                            # ('-' rows)
+                            targets += [stim.target_rec(-num_syn + j)
+                                        for j in fold[1].get(i, ())]
+                            targets += [stim.target_rec(-2 * num_syn + j)
+                                        for j in fold[2].get(i, ())]
                     _append_detector(
                         loop_body,
-                        [stim.target_rec(rec_current), stim.target_rec(rec_prev)],
+                        targets,
                         coord,
                         post_select=tuple(coord) in self.tracker.post_select_detector_coords,
                     ) 
@@ -302,6 +360,107 @@ class CircuitBuilder:
                 records = self.tracker.stabilizers.records[i]
                 shift_records = [rec + meas_record_offset for rec in records]
                 self.tracker.stabilizers.records[i] = shift_records
+
+        if fold is not None:
+            # The flag / relay measurements back-propagate to identity, so
+            # the WriteBack left identity rows carrying only their record in
+            # the tableau (rows 0..num_syn-1 are this block's measurement
+            # rows).  Every round's flag parity is already an absolute
+            # detector above; keeping the rows would let the next data
+            # readout emit the last round's record a second time.
+            for i in sorted(fold[0]):
+                if self.tracker.stabilizers.matrix[i].any():
+                    raise RuntimeError(
+                        f"K&F flag fold: measurement {i} (qubit "
+                        f"{syn_qubit_indices[i]} at {tuple(syn_coords[i])}) "
+                        "did not back-propagate to identity, it is not a "
+                        "flag / relay readout")
+            self.tracker.drop_stabilizer_rows(sorted(fold[0]))
+            # A '-' row's last-round hook lands after its neighbour n coupled
+            # the shared feet: nothing in this block sees it.  Hand the flag
+            # records to whichever detector next consumes B_n's last record
+            # (the readout closure of n when the feet are read out in n's
+            # basis, or n's next measurement if the wall continues); a
+            # residual that stays invisible (it is the split patch's old
+            # lobe, a stabilizer again) leaves the entry unused.
+            last = self.tracker.total_measurements - len(syn_qubit_indices)
+            for i_n, js in fold[2].items():
+                self.tracker.pending_record_folds.setdefault(
+                    last + i_n, []).extend(last + j for j in js)
+
+    def _kf_flag_fold_plan(self, syn_qubit_indices):
+        """K&F relay walls (diagonal_se): per wall row a flag aux A, a relay S
+        and a syndrome aux B measure one stretched check; MZ(A) and MZ(S) are
+        deterministic flags.  One X fault on A, S or B before its feet leaves
+        the check's whole ONE-SIDE residual on the data (the patch's old
+        boundary lobe, e.g. X(45,15)X(45,17)): it commutes with every bulk
+        check and is seen only by the two NEIGHBOURING wall checks plus the
+        flag.  Booked as their own detectors (absolute at the block ends,
+        differential in between) the flags never enter the decoder graph:
+        stim splits the three-symptom hook through a corner boundary edge and
+        a matching decoder miscorrects it as a single fault (mixed-observable
+        LER 0.06 at d=5 and 0.005 at d=7 on toffoli/fredkin, decoder-graph
+        distance 2-3).  Fold instead: XOR rec(A_c), rec(S_c) into the detector
+        of ONE neighbour n (the one with the smaller syn coordinate) in the
+        round n first sees c's hook -- the same round for '+' rows (offset 0),
+        the next round for '-' rows (offset 2; K&F Fig 4c alternation) -- and
+        give every flag record its own absolute detector.  Every single fault
+        then flips at most two detectors, a hook chain has to erase a flag per
+        hook, and the decoder-graph distance is d again (toffoli d5 obs2 PM
+        LER 0.063 -> 0.007).  One-sided by construction: folding into both
+        neighbours would re-create a three-detector hook.  The circuit is
+        untouched.
+
+        Returns None when no measured kf check has a mixed neighbour (then the
+        emitted instructions are exactly the flag-free ones), else
+        (absolute positions, {pos(B_n): same-round positions to fold},
+        {pos(B_n): previous-round positions to fold}), positions indexing
+        ``syn_qubit_indices``.  A '-' row's last-round flags are handed to
+        the tracker's pending_record_folds (see apply_syndrome_extraction)."""
+        system = self.system
+        pos = {q: i for i, q in enumerate(syn_qubit_indices)}
+        rows = []
+        for uid in sorted(system.active_stabilizer_indices):
+            st = system.stabilizers[uid]
+            kf = st.get('kf')
+            if not kf:
+                continue
+            B = system.index_map[tuple(st['syn_coord'])]
+            A = system.index_map[tuple(kf['flag'])]
+            S = system.index_map[tuple(kf['shared'])]
+            if A not in pos or S not in pos or B not in pos:
+                continue
+            rows.append({
+                'syn': tuple(st['syn_coord']), 'orient': kf['orient'],
+                'A': pos[A], 'S': pos[S], 'B': pos[B],
+                'feet': {tuple(system.qubit_coords[di]): st['pauli'][di]
+                         for di in st['data_indices']}})
+        absolute, same, prev = set(), {}, {}
+        for c in rows:
+            mixed = []
+            for n in rows:
+                if n is c:
+                    continue
+                shared = set(c['feet']) & set(n['feet'])
+                # a wall neighbour shares one foot per side; the hook (c's
+                # own Pauli on one side) is visible to n only where the
+                # Paulis differ
+                if len(shared) == 2 and all(
+                        c['feet'][f] != n['feet'][f] for f in shared):
+                    mixed.append(n)
+            if not mixed:
+                continue
+            n = min(mixed, key=lambda r: r['syn'])
+            if c['orient'] not in ('+', '-'):
+                raise ValueError(
+                    f"kf check at {c['syn']}: orient {c['orient']!r} is not "
+                    "'+' or '-'")
+            absolute.update((c['A'], c['S']))
+            (same if c['orient'] == '+' else prev).setdefault(
+                n['B'], []).extend((c['A'], c['S']))
+        if not absolute:
+            return None
+        return absolute, same, prev
 
     def _apply_syndrome_extraction_blocks(self,
                                   circuit_chunk: stim.Circuit,
@@ -1234,7 +1393,8 @@ class CircuitBuilder:
             for coord, recs in sorted(labelled):
                 _append_detector(
                     self.circuit,
-                    [stim.target_rec(r - total) for r in recs],
+                    self.tracker._consume_pending_folds(
+                        [stim.target_rec(r - total) for r in recs]),
                     list(coord),
                     post_select=tuple(coord)
                     in self.tracker.post_select_detector_coords,

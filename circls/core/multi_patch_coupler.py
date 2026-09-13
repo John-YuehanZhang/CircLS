@@ -1876,8 +1876,13 @@ def _table_wall_dispatch(patch_at, target, orient, tree, conj_names, bus,
             deg += 1
             if deg > 1:
                 return False        # interior bus cell: splice unverified
-            if sx * ey_ - sy * ex_ == bad:
-                return False        # scan-hostile turn out of the walled cell
+            # 2026-09-11: the former handedness veto (cross(s, e) == bad)
+            # is gone.  The geometry it declined is the corridor leaving the
+            # walled cell past the band end on the near line; that case is
+            # now constructed by the wall's rule-4 corner end record (see
+            # wall_fn in route_and_build), so the veto only cost corridor
+            # length.  ``bad``, ``sx``, ``sy`` are kept for the docstring's
+            # bookkeeping of which family the transposed case belongs to.
         return True
 
     for nm in wall_nms:
@@ -2365,8 +2370,10 @@ def route_and_build(patches, target, pad=1, per_z=6, max_std=48, cut_budget=4, m
             from .joint_merge import _wall_checks as _wc
             from lightstim.qec_code.surface_code.rotated.litinski_layouts import ptype as _pt
             _retype = frozenset(retype)
+            _data_set = frozenset(tuple(q) for q in data)
 
-            def wall_fn(phase, _wc=_wc, d=d, walls=walls, _retype=_retype):
+            def wall_fn(phase, _wc=_wc, d=d, walls=walls, _retype=_retype,
+                        _data_set=_data_set):
                 out = []
                 for w in walls:
                     P = w['P']
@@ -2409,6 +2416,31 @@ def route_and_build(patches, target, pad=1, per_z=6, max_std=48, cut_budget=4, m
                         Lr_e = _FLIP[adj['pauli'][P(e, fl)]]
                         erow = e - 1 if e == w['a0'] else e + 1
                         feet = {P(e, nl): Ll_e, P(e, fl): Lr_e}
+                        # paper rule 4 (concave inward corner) at the band
+                        # end: when the corridor CONTINUES past this end on
+                        # the near line (the next near-line data qubit beyond
+                        # the band belongs to the merged region), the band end
+                        # is a concave corner of the ancilla path, two gaps
+                        # from its neighbouring boundary stabilizers, and the
+                        # end record is the weight-3 corner stabilizer that
+                        # takes that qubit in with the near-side letter.  The
+                        # bare weight-2 lobe (the straight two-patch stretched
+                        # seam of Fig. d) anticommutes with the corridor's own
+                        # plaquette across the band end and leaves the joint
+                        # product short by one Z (toffoli_n3 PPM 1, audited
+                        # 2026-09-11: paper-derived layout differs from the
+                        # code's by exactly this record; with it the west
+                        # corridor verifies, p=0 silent, distance 3).
+                        # The patch may sit on either line of the band, so
+                        # look on both: the corridor side is whichever line
+                        # still carries a data qubit past the band end (the
+                        # patch side never does: the patch ends with the band
+                        # and an unstitched neighbour has no seam qubits).
+                        e_beyond = e - 2 if e == w['a0'] else e + 2
+                        for line_m, letter in ((nl, Ll_e), (fl, Lr_e)):
+                            beyond = P(e_beyond, line_m)
+                            if beyond in _data_set:
+                                feet[beyond] = letter
                         A, B = ((P(erow, w['hi']), P(erow, w['lo']))
                                 if Lr_e == 'Z'
                                 else (P(erow, w['lo']), P(erow, w['hi'])))

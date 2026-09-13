@@ -1,5 +1,47 @@
 # Known issues
 
+## assignment='optimized': the qap_faq start can still differ between BLAS kernels
+
+**Symptom.** The same program compiles to a different layout (and circuit)
+on CPUs whose OpenBLAS kernel differs in FMA support.  Observed 2026-09-12:
+`simon_n6` (paper configuration, d=3) is byte-identical under the SkylakeX,
+Haswell and Zen kernels but different under Prescott/Nehalem/Sandybridge
+(`OPENBLAS_CORETYPE=Prescott` reproduces it on any x86 machine).
+
+**What is established.** The spectral start is deterministic across kernels
+since 2026-09-12 (`_TIE_DECIMALS` / `_EIG_GAP_MIN` in
+`circls/compiler/assignment.py`: interchangeable patches are ordered by
+name, degenerate eigenspaces are skipped).  The remaining dependence is in
+`_start_qap_faq`, which calls `scipy.optimize.quadratic_assignment(method='faq')`:
+its gradient steps are `dgemm` products, and programs with interchangeable
+patches have exactly tied gradient rows that the kernel's last-bit rounding
+breaks.  On the Table 2 programs the FMA kernels (SkylakeX, Haswell, Zen)
+agree with each other; random PPM programs can differ even between SkylakeX
+and Haswell.  A first attempt to round the FAQ iterates to 6 decimals was
+rejected: rounded step sizes put gradient entries exactly on rounding
+boundaries (seca_n11), so it only moves the tie.  A version of FAQ in exact
+rational arithmetic (the flow weights 1/(k-1), the distances and the
+barycentre are small-denominator rationals) would remove it; not implemented.
+
+**Reproducer**: compile with `assignment="optimized"` under two kernels and
+compare the placement / the circuit hash (the kernel is chosen when numpy is
+imported, so one process per kernel):
+
+```bash
+for k in Haswell Prescott; do OPENBLAS_CORETYPE=$k python - <<'EOF'
+import hashlib, sys
+sys.path[:0] = [".", "experiments"]
+from benchsuite import tclass_suite
+from ablation import compile_kwargs
+import circls.pipeline as P
+case = {c.name: c for c in tclass_suite()}["simon_n6"]
+kw = compile_kwargs("full", case); kw.update(measure_reduction=False, step_scheduling=False, parallel_steps=False)
+cp = P.compile_qasm(case.qasm, distance=3, t_as_s=True, **kw)
+print(sorted(cp.placement.items()), hashlib.md5(str(cp.circuit).encode()).hexdigest()[:12])
+EOF
+done
+```
+
 ## auto_rotate x t_as_s: logical-ledger desync after repeated rotations
 
 **Symptom.** `RuntimeError: [Error] Logical Count Mismatch! Expected: 5,

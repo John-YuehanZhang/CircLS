@@ -19,18 +19,30 @@ bridges; the voxel count is the paper's allocated-volume metric.
 
 ## The examples
 
+The gallery keeps the programs of the paper's Table 2 that have a walkthrough
+here, compiled in the paper's configuration: optimized mapping, first-use
+initialization and last-use freeing.  The compiler's optional passes
+(terminal-measurement re-selection, the lifetime-aware step scheduler and
+parallel merge windows) are switched off, as in the paper.
+
 | example | circuit | number of joint PPMs | TQEC block graph |
 |---|---|---|---|
-| `steane/` | Steane encoding, 24 gates (the paper's Table 2 form) | 2 | **Yes** |
-| `bv_8/` | Bernstein–Vazirani, 20 gates | 5 | **Yes** |
-| `dj_6/` | Deutsch–Jozsa, 17 gates | 6 | **Yes** |
-| `bv_6/` | Bernstein–Vazirani, 15 gates | 4 | **Yes** — needs a non-default seam-side choice, found by the exporter's variant search |
-| `twistedghz_8/` | GHZ with S twists, 16 gates | 4 | **No** — no deterministic correlation surface (\|Y⟩-state consumption) |
-| `toffoli/` | Toffoli, 7 T gates (\|Y⟩ proxy, the paper's Table 3 form) | 7 | **No** — outside the ZXCube wall rules (seven \|Y⟩ ancillas) |
+| `toffoli_n3/` | Toffoli, 7 T gates (QASMBench `toffoli_n3`, the paper's Table 2 form; \|+⟩ stands in for every \|T⟩, the paper's X-state proxy) | 7 | **Yes** |
 
 Every exported block graph is validated with tqec's own toolchain —
 loaded back from the `.dae`, compiled, and sampled silent at p=0 (logs
 in each `blockgraph/tqec_validation.txt`).
+
+## Baseline toolchains
+
+`baselines/` holds the same kind of walkthrough for a toolchain the paper
+compares against, on a Table 2 program, so the two sides can be read next
+to each other.  These entries do not use CircLS; each has its own `tools/`
+and its own environment (see the entry's README).
+
+| entry | toolchain | circuit | TQEC block graph |
+|---|---|---|---|
+| `baselines/teleportation_n3_topologiq/` | topologiq + tqec (the paper's TQEC$_2$ column) | QASMBench `teleportation_n3`; its T and S become injection gadgets on two magic wires, the form topologiq receives | **Yes** — two tqec exports: `open_port` (topologiq's graph, wire ends as ports) and `closed_port` (ports filled the way the QASM prepares and measures; 26 cubes, the Table 2 volume); the d = 3 and d = 5 circuits are byte-identical to the ones behind the table |
 
 ## Fine print
 

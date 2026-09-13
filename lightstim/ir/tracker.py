@@ -87,6 +87,18 @@ def _append_detector(
         circuit.append("DETECTOR", args, coords)
 
 
+def _xor_record_targets(args: list, extra: list) -> list:
+    """GF(2)-add measurement-record targets to a detector's argument list
+    (a record already present is toggled out); sorted by record offset."""
+    out = set(args)
+    for t in extra:
+        if t in out:
+            out.remove(t)
+        else:
+            out.add(t)
+    return sorted(out, key=lambda target: target.value)
+
+
 class SyndromeTracker:
     def __init__(
         self,
@@ -122,6 +134,13 @@ class SyndromeTracker:
         self.post_select_detector_coords = post_select_detector_coords or set()
         self.post_select_row_indices = set()  # Stabilizer row indices to post-select in process_data_measurement
         self.retired_qubits = set()
+        # K&F flag fold, block-end case: {absolute record R: [flag records]}.
+        # A '-' wall row's last-round hook is seen only after its SE block,
+        # by whatever detector next consumes the neighbour check's last
+        # record R (the readout closure, or the check's next measurement);
+        # that detector takes the flag records (CircuitBuilder
+        # _kf_flag_fold_plan).  Entries never consumed are inert.
+        self.pending_record_folds: Dict[int, List[int]] = {}
 
     def set_expected_logicals(self, k: int):
         """
@@ -213,6 +232,39 @@ class SyndromeTracker:
                 A.matrix = A.matrix[keep] if keep else np.zeros((0, 2 * n), dtype=np.uint8)
                 A.records = [A.records[r] for r in keep] if A.records else []
         self.retired_qubits |= S
+
+    def _consume_pending_folds(self, args: list) -> list:
+        """Fold pending flag records (see pending_record_folds) into a
+        detector whose argument list contains their key record; the first
+        consumer takes them."""
+        if not self.pending_record_folds:
+            return args
+        total = self.total_measurements
+        extra = []
+        for t in args:
+            recs = self.pending_record_folds.pop(t.value + total, None)
+            if recs:
+                extra.extend(stim.target_rec(r - total) for r in recs)
+        return _xor_record_targets(args, extra) if extra else args
+
+    def drop_stabilizer_rows(self, row_indices):
+        """Remove stabilizer rows by index, shifting every row-indexed set
+        (post_select_row_indices, stabilizer_with_logical_components) past
+        the gap.  Used for the identity rows a K&F flag/relay measurement
+        leaves behind in the legacy SE path (records only, no Pauli): their
+        parity is already booked as an absolute detector every round, so a
+        later data readout must not re-emit the last round's record."""
+        removed = sorted(set(int(r) for r in row_indices))
+        if not removed:
+            return
+        self.stabilizers.remove_rows(removed)
+        self._remap_rows_after_removal(removed)
+
+        def shift(idx):
+            return idx - sum(1 for r in removed if r < idx)
+        self.stabilizer_with_logical_components = {
+            shift(i) for i in self.stabilizer_with_logical_components
+            if i not in removed}
 
     def _remap_rows_after_removal(self, removed_sorted):
         """Shift post_select_row_indices down past removed stabilizer rows."""
@@ -1540,7 +1592,8 @@ class SyndromeTracker:
                                 circuit: stim.Circuit,
                                 back_propagated_paulis: np.ndarray,
                                 syn_coords: list,
-                                no_detector_mask: Optional[np.ndarray] = None):
+                                no_detector_mask: Optional[np.ndarray] = None,
+                                fold_records: Optional[Dict[int, List[int]]] = None):
         """
         Handles Mid-circuit measurements (assumed to be on syndrome qubits).
 
@@ -1550,9 +1603,19 @@ class SyndromeTracker:
                 stabilizer tableau (Step 3) but no DETECTOR instruction is
                 emitted for it (Step 2). Useful for Z-only / X-only memory
                 experiments where one ancilla type is measured without detectors.
+            fold_records: Optional {i: [j, ...]} of measurement positions of
+                THIS block whose records are GF(2)-added to the detector emitted
+                for measurement i (K&F flag fold, see
+                CircuitBuilder._kf_flag_fold_plan).  Positions without a
+                detector this round (Case A / logical component) fold nothing.
         """
         num_meas = back_propagated_paulis.shape[0]
         current_base_idx = self.total_measurements
+        # this block's record j sits at rec[j - num_meas] once total_measurements
+        # has been advanced past the block (the offset every emission below uses)
+        fold_targets = {
+            i: [stim.target_rec(j - num_meas) for j in js]
+            for i, js in (fold_records or {}).items() if js}
         self.total_measurements += num_meas
 
         # Reset per-round tracking (these are only meaningful within a single PMM call)
@@ -1733,6 +1796,9 @@ class SyndromeTracker:
                         if (no_detector_mask is None
                                 or not no_detector_mask[i]):
                             coords = list(syn_coords[i]) + [0]
+                            if i in fold_targets:
+                                args = _xor_record_targets(args, fold_targets[i])
+                            args = self._consume_pending_folds(args)
                             _append_detector(
                                 circuit, args, coords,
                                 post_select=tuple(coords) in self.post_select_detector_coords,
@@ -1821,6 +1887,10 @@ class SyndromeTracker:
                                     and (no_detector_mask is None
                                          or not no_detector_mask[i])):
                                 coords = list(syn_coords[i]) + [0]
+                                if i in fold_targets:
+                                    args = _xor_record_targets(
+                                        args, fold_targets[i])
+                                args = self._consume_pending_folds(args)
                                 _append_detector(
                                     circuit, args, coords,
                                     post_select=tuple(coords) in self.post_select_detector_coords,
@@ -2597,6 +2667,7 @@ class SyndromeTracker:
                     continue
                 _used_final_coords.add(det_coord)
                 coords = list(det_coord) + [1]
+                args = self._consume_pending_folds(args)
                 _append_detector(
                     circuit, args, coords,
                     post_select=(tuple(coords) in self.post_select_detector_coords
@@ -2632,6 +2703,7 @@ class SyndromeTracker:
             pivot_col = int(nonzero_cols[0])
             meas_pivot_map[pivot_col] = (i, meas)
 
+        touched_rows = set()      # rows this readout half-read (Step 4b's candidates)
         for k in range(num_rows):
             if k in rows_to_remove:
                 continue
@@ -2640,11 +2712,96 @@ class SyndromeTracker:
                 if row[pivot_col]:
                     # XOR measurement Pauli out of this row
                     full_matrix[k] = row = row ^ meas
+                    touched_rows.add(k)
                     # Update records: symmetric difference with measurement index
                     meas_abs_idx = base_meas_idx + i
                     rec_set = set(full_records[k])
                     rec_set.symmetric_difference_update({meas_abs_idx})
                     full_records[k] = sorted(rec_set)
+
+        # ======================================================================
+        # Step 4b: retire standing logical rows the readout made DEPENDENT
+        # ======================================================================
+        # (half-read standing rows, 2026-09-06; on by default, opt-out via
+        # LIGHTSTIM_RESOLVE_DEPENDENT_LOGICALS=0.)  A PATCH readout that
+        # commutes with two standing rows can determine their PRODUCT without
+        # determining either: rows Z3 (rec a) and Z3*X_y (rec b) with X_y read
+        # out -- Step 3 sees neither row as dependent (each keeps an
+        # unmeasured factor), Step 4 reduces the second to Z3 (rec b ^
+        # readout), and the two rows now span ONE direction.  Left alone the
+        # census carries two standing DOFs for one (standing + absorbed >
+        # true rank); the next WriteBack / add_patch raises Logical Count
+        # Mismatch (measured: simon_n6 t_as_s + liveness -- |+> ancillas on
+        # the default schedule, |Y> ancillas with parallel_steps=False).
+        # The product is a determined logical parity: emit it exactly like a
+        # determined logical row (Step 3's observable branch) and drop the
+        # dependent row, so the `resolved` delta below retires the DOF.
+        # Rows are canonicalised in index order against the surviving
+        # stabilizer rows plus the already-kept logical rows.
+        import os as _os
+        import sys as _sys
+        # Default ON (2026-09-07).  LIGHTSTIM_RESOLVE_DEPENDENT_LOGICALS=0
+        # restores the pre-fix behaviour (the Logical Count Mismatch).
+        _resolve_flag = _os.environ.get('LIGHTSTIM_RESOLVE_DEPENDENT_LOGICALS', '1') not in ('0', '')
+        # Narrowed 2026-09-06 after adversarial review: the retirement is
+        # bound to THIS readout.  Only a PATCH readout (resolve_absorbed) can
+        # half-read a standing row, and only a row Step 4 actually reduced
+        # (touched_rows) is a candidate; every other standing row is left
+        # alone, so a corridor/bus readout never moves a program observable
+        # and a pre-existing rank deficit is never absorbed silently.  A
+        # dependent half-read row whose parity cannot be emitted (tainted or
+        # empty record set) is an error, not a silent drop.
+        if _resolve_flag and resolve_absorbed and touched_rows:
+            _emit = True
+            _surv_stab = [k for k in range(num_stabs) if k not in rows_to_remove]
+            _kept_log = []
+            for k in range(num_stabs, num_rows):
+                if k in rows_to_remove:
+                    continue
+                if k not in touched_rows:
+                    _kept_log.append(k)
+                    continue
+                _basis_rows = _surv_stab + _kept_log
+                _target = full_matrix[k].reshape(1, -1)
+                if not _target.any():
+                    _dep, _used = True, []
+                elif _basis_rows:
+                    _cf, _dp, _ = solve_linear_decomposition(
+                        basis=full_matrix[_basis_rows], targets=_target,
+                        reduce_weight=False)
+                    _dep = bool(_dp[0])
+                    _used = ([_basis_rows[j] for j in np.flatnonzero(_cf[0])]
+                             if _dep else [])
+                else:
+                    _dep, _used = False, []
+                if not _dep:
+                    _kept_log.append(k)
+                    continue
+                _recs = set()
+                _tainted = False
+                for _r_idx in [k] + _used:
+                    for _r in full_records[_r_idx]:
+                        if _r < 0:
+                            _tainted = True      # unwatched-gauge sentinel
+                            continue
+                        _recs ^= {_r}
+                if _tainted or not _recs:
+                    raise RuntimeError(
+                        "[Error] half-read standing logical row became dependent "
+                        "but its parity cannot be emitted "
+                        f"(tainted={_tainted}, records={len(_recs)})")
+                circuit.append(
+                    "OBSERVABLE_INCLUDE",
+                    [stim.target_rec(_r - self.total_measurements)
+                     for _r in sorted(_recs)],
+                    [self.allocate_observable()])
+                rows_to_remove.add(k)
+                if _os.environ.get('LIGHTSTIM_DEBUG_RESOLVE'):
+                    print(f"[resolve-debug] dependent standing row "
+                          f"{k - num_stabs} retired by readout (via rows "
+                          f"{[r - num_stabs if r >= num_stabs else f's{r}' for r in _used]}); "
+                          f"{'observable' if (_emit and _recs and not _tainted) else 'no emission'} "
+                          f"over {len(_recs)} records", file=_sys.stderr)
 
         # ======================================================================
         # Step 5: Persist updated tableau state

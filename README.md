@@ -63,7 +63,8 @@ CircLS/
 │   └── benchmarks/             # Its benchmark scripts
 ├── experiments/                # Paper harnesses and the benchmark suite
 ├── tests/                      # Compiler test suite
-├── notebooks/                  # Worked examples
+├── notebooks/                  # Runnable API guide
+├── gallery/                    # Compiler-generated 3D spacetime structures
 ├── docs/
 │   ├── ARCHITECTURE.md         # Paper-section <-> package map; how to extend
 │   └── API_HOOKS.md            # Customization hooks + PPM-sequence entry
@@ -179,7 +180,8 @@ defects) and per-patch distances are natural next steps on top of the
   paper's tables; `experiments/METRICS.md` — metric definitions
 - `VENDORED.md` — what changed in the vendored LightStim and how it
   relates to [upstream](https://github.com/QuTone/LightStim)
-- `notebooks/` — worked examples
+- `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`)
+- `gallery/` — six worked examples with TQEC block-graph exports (see `gallery/README.md`)
 - `experiments/` — the paper's measurement harnesses; they expect the
   baseline checkouts described in their headers (`TOPOLS_DIR` etc.)
   and are not needed to use the compiler

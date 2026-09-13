@@ -1,0 +1,36 @@
+{
+ "bridge": {
+  "none_rows": 0,
+  "shim_rounds": 2,
+  "padding_blocks": 4,
+  "cubes_open_raw": 12,
+  "cubes_open": 16,
+  "ports": 10,
+  "pipes": 25,
+  "h_pipes": 4,
+  "layers_open": 5,
+  "bridge_s": 0.0
+ },
+ "equivalence": "EQUIV",
+ "absorbed_h": {
+  "in": [],
+  "out": []
+ },
+ "fill": {
+  "input_0": "XZZ",
+  "input_1": "ZXZ",
+  "input_2": "XZZ",
+  "magic0_in": "XXZ",
+  "magic1_in": "ZXX",
+  "output_0": "ZXZ",
+  "output_1": "ZXZ",
+  "output_2": "ZZX",
+  "magic0_out": "ZXZ",
+  "magic1_out": "ZXZ"
+ },
+ "cubes_open": 16,
+ "ports": 10,
+ "cubes_closed": 26,
+ "pipes": 25,
+ "observables": 1
+}

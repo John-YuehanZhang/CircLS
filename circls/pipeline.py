@@ -7,6 +7,7 @@ experiments import it instead of redefining it.  Placement comes from
 from __future__ import annotations
 
 import contextlib
+import warnings
 import dataclasses
 import io
 from typing import Dict, Optional
@@ -35,7 +36,7 @@ class CompiledProgram:
     m_load_trace: Optional[list] = None      # out-bit i -> LOAD-order m index (full perm chain)
     source_qasm: Optional[str] = None        # the input program (verify's logical oracle)
     t_as_s: bool = False                     # Y-state approximation compile
-    graphlike_closures: bool = False         # cross-window closures stripped
+    graphlike_detectors: bool = False        # True once graphlike_detectors_pass ran on `circuit` (compile_qasm)
 
     # read-only views of the compiler's decisions (docs/API_HOOKS.md)
     @property
@@ -156,68 +157,131 @@ def compile_ppm_sequence(program, distance: int = 3,
                            m_load_trace=list(range(n_bits)))
 
 
-_STRIP_M_KINDS = {"M", "MX", "MY", "MZ", "MR", "MRX", "MRY", "MRZ"}
-
-
-def strip_cross_window_closures(circuit: stim.Circuit,
-                                span_rounds: int = 3,
-                                verbose: bool = True) -> stim.Circuit:
-    """The ``graphlike_closures`` post-pass: drop DETECTORs whose records
-    span more than ``span_rounds`` syndrome windows.
-
-    A k-body PPM whose split leaves m >= 2 target patches alive conserves
-    m - 1 relations (products of the survivors' logicals) that no
-    per-round check can measure; the tracker banks each one and emits it
-    at the readout that finally determines it, as a detector whose
-    records span from the split to that readout.  Those long-range
-    parities are real syndrome (LER is ~2x better with them on the
-    mixed-basis GHZ probe): a fault on the conserved surface picks
-    up their symptom on top of its local pair, and stim cannot decompose
-    the triple.  Stripping them trades the LER margin for a graphlike
-    DEM on circuits where they are the only non-graphlike content
-    (measured true for the mixed-basis GHZ; NOT true for the Y-state
-    gadget circuits, whose hyperedges live within a window and survive
-    this pass untouched).  Ordinary closures (a
-    consumption readout against its own merge window) span at most ~2
-    windows and are kept; the window length is estimated from the
-    circuit's own measurement cadence.  Returns a flattened circuit;
-    observables are untouched, so p = 0 determinism and the logical
-    check are preserved by construction.  Dropped spans are printed --
-    never strip silently.
-    """
+def _index_detectors(circuit: stim.Circuit):
+    """(flattened circuit, tick of every measurement record, [(position, records)] per DETECTOR).
+    Records are counted with stim's own per-instruction count, so every measuring instruction
+    (M/MX/MY/MZ, MR*, MPP, MXX/MYY/MZZ, MPAD) is covered."""
     flat = circuit.flattened()
-    meas_tick, tick = [], 0
-    for inst in flat:
+    n, tick, rec_tick, dets = 0, 0, [], []       # dets: (position, records)
+    for i, inst in enumerate(flat):
         if inst.name == "TICK":
             tick += 1
-        elif inst.name == "MPP":
-            raise ValueError("strip_cross_window_closures: MPP unsupported")
-        elif inst.name in _STRIP_M_KINDS:
-            meas_tick.extend([tick] * len(inst.targets_copy()))
-    m_ticks = sorted(set(meas_tick))
-    gaps = [b - a for a, b in zip(m_ticks, m_ticks[1:])]
-    window = max(sorted(gaps)[len(gaps) // 2] if gaps else 1, 1)
-    limit = span_rounds * window
-    out = stim.Circuit()
-    n, dropped = 0, []
-    for inst in flat:
-        if inst.name in _STRIP_M_KINDS:
-            n += len(inst.targets_copy())
-            out.append(inst)
+        elif inst.num_measurements:
+            k = inst.num_measurements
+            rec_tick.extend([tick] * k)
+            n += k
         elif inst.name == "DETECTOR":
-            ts = [meas_tick[n + t.value] for t in inst.targets_copy()]
-            if max(ts) - min(ts) > limit:
-                dropped.append(max(ts) - min(ts))
-                continue
-            out.append(inst)
-        else:
-            out.append(inst)
-    if verbose and dropped:
-        print(f"graphlike_closures: dropped {len(dropped)} cross-window "
-              f"closure detector(s), record spans {sorted(dropped)} ticks "
-              f"(window ~{window} ticks, limit {limit})")
-    return out
+            dets.append((i, [n + t.value for t in inst.targets_copy()
+                             if t.is_measurement_record_target]))
+    return flat, rec_tick, dets
 
+
+def _undecomposable(dem: stim.DetectorErrorModel):
+    """Detector-id tuples of the error mechanisms stim could not split into pieces of <= 2 symptoms."""
+    bad = set()
+    for inst in dem.flattened():
+        if inst.type != "error":
+            continue
+        piece, pieces = [], []
+        pieces.append(piece)
+        for t in inst.targets_copy():
+            if t.is_separator():
+                piece = []
+                pieces.append(piece)
+            elif t.is_relative_detector_id():
+                piece.append(t.val)
+        bad.update(tuple(sorted(pc)) for pc in pieces if len(pc) > 2)
+    return sorted(bad)
+
+
+def graphlike_detectors_pass(circuit: stim.Circuit,
+                             verbose: bool = True,
+                             probe_p: float = 1e-3) -> stim.Circuit:
+    """Keep the detector error model graph-decodable: while stim reports an
+    error mechanism it cannot decompose into pieces of at most two
+    symptoms, re-emit the least local DETECTOR of that mechanism (the one
+    whose records span the most ticks) as an OBSERVABLE_INCLUDE.
+
+    A graph decoder (PyMatching) needs every fault to flip at most two
+    detectors, after stim has split larger symptom sets by subtracting
+    known two-symptom mechanisms.  Local checks satisfy this by
+    construction.  A banked conservation relation -- a k-body PPM whose
+    split leaves m >= 2 target patches alive conserves m - 1 products of
+    the survivors' logicals, which the tracker emits at the readout that
+    finally determines it -- puts whole logical strings into one row, so a
+    fault on a shared record flips the relation together with the local
+    checks and nothing in the model splits it off.  Such a relation is
+    real logical information, so it is not dropped: it becomes an
+    observable (a checked logical relation, as tqec records its cross-time
+    correlation surfaces), which counts a flip as a logical failure but is
+    not offered to the decoder as syndrome.
+
+    Decision rule.  The pass first scans record ownership (linear in the
+    number of detector records): a circuit in which no measurement record
+    belongs to three or more detectors cannot contain such a relation and
+    is returned untouched, without building an error model.  Otherwise
+    the circuit is analysed under nominal uniform circuit-level noise
+    (``probe_p``; the set of mechanisms and their symptoms does not depend
+    on the rate) with stim's own decomposition, and for every mechanism
+    that stays undecomposed the row with the widest tick span (then the
+    most records, then the latest position) is converted; this repeats
+    until stim decomposes everything.  Sharing a record three ways is thus
+    only a trigger for the check, not a verdict: a relation stim can split
+    off (because some two-symptom mechanism inside it exists) is kept, and
+    a row is converted only when the decoder really cannot use it.  The
+    rule reads only records, detectors and the error model, so it is
+    protocol-agnostic; it is the identity on graph-decodable circuits, it
+    never deletes a row, and conversions are printed -- never silently.
+    (On qec_en_n5 under the paper configuration it converts exactly the two
+    cross-window closures, 127 and 69 ticks wide, and keeps the split's
+    own 2-tick closure; the paper's single-error audit then finds no
+    miscorrected mechanism.)
+    """
+    flat, rec_tick, dets = _index_detectors(circuit)
+    degree: Dict[int, int] = {}
+    for _, recs in dets:
+        for r in recs:
+            degree[r] = degree.get(r, 0) + 1
+    if not degree or max(degree.values()) <= 2:
+        return circuit
+    from circls.tools.evaluate import inject_uniform_noise     # evaluate imports this module
+    span = {j: (max(rec_tick[r] for r in recs) - min(rec_tick[r] for r in recs)) if recs else 0
+            for j, (_, recs) in enumerate(dets)}
+    convert: set = set()                        # detector ordinals re-emitted as observables
+
+    def rebuild() -> stim.Circuit:
+        out = stim.Circuit()
+        nobs = circuit.num_observables
+        positions = {dets[j][0] for j in convert}
+        for i, inst in enumerate(flat):
+            if inst.name == "DETECTOR" and i in positions:
+                out.append("OBSERVABLE_INCLUDE", inst.targets_copy(), [nobs])
+                nobs += 1
+            else:
+                out.append(inst)
+        return out
+
+    out = circuit
+    for _ in range(len(dets) + 1):
+        dem = inject_uniform_noise(out, probe_p).detector_error_model(
+            decompose_errors=True, ignore_decomposition_failures=True)
+        bad = _undecomposable(dem)
+        if not bad:
+            break
+        kept = [j for j in range(len(dets)) if j not in convert]   # DEM id -> ordinal
+        for comp in bad:
+            convert.add(max((kept[d] for d in comp),
+                            key=lambda j: (span[j], len(dets[j][1]), j)))
+        out = rebuild()
+    else:                                        # every row converted and still not graphlike
+        raise RuntimeError("graphlike_detectors_pass did not converge")
+    if not convert:
+        return circuit
+    if verbose:
+        converted = sorted((len(dets[j][1]), span[j]) for j in convert)
+        print(f"graphlike_detectors: {len(converted)} detector(s) re-emitted "
+              f"as observables (records, tick span): {converted}")
+    return out
 
 def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
                  noise=None, assignment: str = "row_major",
@@ -229,7 +293,8 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
                  reselector=None, scheduler=None, placement=None,
                  orientation=None, lifetime=None, router=None,
                  t_as_s: bool = False,
-                 graphlike_closures: bool = False,
+                 graphlike_detectors: bool = True,
+                 graphlike_closures: Optional[bool] = None,
                  **experiment_kwargs) -> CompiledProgram:
     """Clifford QASM -> compiled program (stim circuit + program observables).
 
@@ -261,6 +326,17 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     parallel-vs-serial distribution equality on both placements, decoder
     faithfulness, full graphlike distance.  Batches demote to the serial
     path whenever the planner or router cannot prove window disjointness.
+    ``graphlike_detectors`` (default ON): the graph-decodability post-pass
+    (graphlike_detectors_pass): a banked cross-window logical relation
+    that stim cannot split off the local checks' error mechanisms is
+    emitted as an observable instead, so such relations never leave the
+    DEM undecomposable; the identity on every graph-decodable circuit.
+    The check is skipped (no error model built) whenever no measurement
+    record belongs to three or more detectors, which is a filter for the
+    shared-record mechanisms above, not a proof of decomposability: a
+    hyperedge made of data-qubit faults alone would pass through, and the
+    LER tooling then reports it.  ``graphlike_closures`` is the deprecated
+    name of this switch.
     """
     # customization hooks (docs/API_HOOKS.md): a hook and its shorthand
     # flag together are an error — the flag IS the built-in hook.
@@ -382,12 +458,16 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     with contextlib.redirect_stdout(io.StringIO()):
         circuit = exp.build()
     obs = append_program_observables(circuit, exp, prog)
-    if graphlike_closures:
-        circuit = strip_cross_window_closures(circuit)
+    if graphlike_closures is not None:          # pre-2026-09-12 name of the switch
+        warnings.warn("graphlike_closures= is now graphlike_detectors=",
+                      DeprecationWarning, stacklevel=2)
+        graphlike_detectors = graphlike_closures
+    if graphlike_detectors:
+        circuit = graphlike_detectors_pass(circuit)
     return CompiledProgram(circuit=circuit, observables=obs,
                            experiment=exp, program=prog,
                            reconstruction=recon, reorder_perm=perm,
                            m_load_trace=m_load_trace,
                            source_qasm=proxy_qasm if t_as_s else qasm,
                            t_as_s=t_as_s,
-                           graphlike_closures=graphlike_closures)
+                           graphlike_detectors=graphlike_detectors)

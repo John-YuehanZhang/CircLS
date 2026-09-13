@@ -7,7 +7,14 @@ the repo's own group-Steiner router -> lowest exact cost wins.
 
 Everything is deterministic: fixed scan orders, sign-fixed eigenvectors,
 no wall-clock cutoffs, no unseeded randomness — same input, same layout,
-byte-identical circuits (unlike DASCOT's 20-trial averages).
+byte-identical circuits (unlike DASCOT's 20-trial averages).  Also across
+CPUs for the spectral start: the LAPACK eigenvectors are rounded to
+``_TIE_DECIMALS`` before they are compared, so the ties between
+interchangeable patches are broken by the fixed rules below and not by the
+BLAS kernel's last-bit rounding (2026-09-12: OpenBLAS SkylakeX vs Haswell
+vs Prescott gave three different fredkin_n3 circuits from eigenvector
+differences of 4e-15).  The qap_faq start still calls scipy's FAQ, whose
+dgemm-based gradient ties are kernel-dependent (FMA vs non-FMA kernels).
 
 Provenance: the pair metric was verified 4950/4950 against the real router;
 the hyperedge blend calibrates to ~2.5-4.1% mean error (k=4..6); portfolio
@@ -39,6 +46,20 @@ Cell = Tuple[int, int]
 
 # blend weights for the k>=4 hyperedge proxy (calibrated on the real router)
 _ALPHA = {4: 0.8, 5: 0.6, 6: 0.5}
+
+# Cross-CPU determinism.  eigh results differ between OpenBLAS kernels
+# in the last bits (measured <= 1.4e-14 on the Table 2 programs) while
+# interchangeable patches give exactly tied rows, so the Hungarian matching
+# was breaking those ties by kernel noise.  The spectral coordinates are
+# rounded to _TIE_DECIMALS before they are compared: 1e-6 is far below any
+# layout-relevant coordinate difference and ~1e8 above the noise.  The
+# eigenvector rounding error is ~1e-16*||L||/gap, so the spectral start
+# is only trusted when every eigenvalue gap around the two coordinate
+# eigenvectors is >= _EIG_GAP_MIN (keeps that error ~1e-9, three orders
+# under the quantum); a smaller gap means a degenerate eigenspace whose
+# basis is arbitrary (disconnected flow graph, symmetric program).
+_TIE_DECIMALS = 6
+_EIG_GAP_MIN = 1e-6
 
 
 # ── metric ────────────────────────────────────────────────────────────────────
@@ -154,31 +175,66 @@ def _start_row_major(prog, n, slots):
     return list(slots[:n])
 
 
+def _name_order_within_groups(groups, pos, slots):
+    """Interchangeable patches (each group a list of patch indices) take the
+    slots their group holds in name order: lowest index -> lowest slot
+    (slot order = position in ``slots``, i.e. row-major)."""
+    pos = list(pos)
+    rank = {cell: k for k, cell in enumerate(slots)}
+    for grp in groups:
+        if len(grp) < 2:
+            continue
+        cells = sorted((pos[i] for i in grp), key=rank.__getitem__)
+        for i, cell in zip(sorted(grp), cells):
+            pos[i] = cell
+    return pos
+
+
 def _start_spectral(prog, n, slots):
     """Hall's quadratic placement: 2nd/3rd Laplacian eigenvectors give the
-    natural 2D coordinates; Hungarian matching legalises onto the slots."""
+    natural 2D coordinates; Hungarian matching legalises onto the slots.
+
+    Deterministic across BLAS kernels (2026-09-12):
+    * the start is skipped when a gap among lambda_0..lambda_3 is below
+      ``_EIG_GAP_MIN`` — the coordinate eigenspace is then not unique and
+      the computed basis is an arbitrary rotation within it (0-based:
+      toffoli_n3 has lambda_1 = lambda_2; simon_n6 is disconnected, so
+      lambda_1 = 0);
+    * the coordinates and the cost matrix are rounded to ``_TIE_DECIMALS``
+      so the sign fix and the matching see exact ties, which ``np.argmax``
+      resolves by lowest index and ``linear_sum_assignment`` by its fixed
+      scan order;
+    * patches with identical (rounded) coordinates — the matching cannot
+      tell them apart — then take their group's slots in name order.
+    """
     try:
         from scipy.optimize import linear_sum_assignment
     except ImportError:                        # pragma: no cover
         return None
     W = _flow(prog, n)
     L = np.diag(W.sum(1)) - W
-    _, V = np.linalg.eigh(L)
+    vals, V = np.linalg.eigh(L)
+    if float(np.diff(vals[:min(n, 4)]).min()) < _EIG_GAP_MIN:
+        return None                            # degenerate eigenspace
     xy = V[:, 1:3].copy() if V.shape[1] >= 3 else np.column_stack(
         [V[:, 1], np.zeros(n)])
+    xy = np.round(xy, _TIE_DECIMALS)
     for c in range(xy.shape[1]):              # sign fixing: determinism
         v = xy[:, c]
         if v[int(np.argmax(np.abs(v)))] < 0:
             xy[:, c] = -v
     P = np.array(slots[:n], float)
-    xy = (xy - xy.mean(0)) / (xy.std(0) + 1e-12)
+    xyn = (xy - xy.mean(0)) / (xy.std(0) + 1e-12)
     Pn = (P - P.mean(0)) / (P.std(0) + 1e-12)
-    C = ((xy[:, None, :] - Pn[None, :, :]) ** 2).sum(-1)
-    r, c = linear_sum_assignment(C)
+    C = ((xyn[:, None, :] - Pn[None, :, :]) ** 2).sum(-1)
+    r, c = linear_sum_assignment(np.round(C, _TIE_DECIMALS))
     out = [None] * n
     for i, j in zip(r, c):
         out[int(i)] = slots[:n][int(j)]
-    return out
+    groups = {}
+    for i, row in enumerate(xy):
+        groups.setdefault(tuple(row.tolist()), []).append(i)
+    return _name_order_within_groups(groups.values(), out, slots)
 
 
 def _rcm_order(prog, n) -> List[int]:

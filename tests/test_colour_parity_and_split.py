@@ -440,7 +440,9 @@ def test_strict_birth_mixed_pair_threshold_law():
 
     e10 = _go(10)
     assert e10.rotation_log == []
-    assert sorted(e10._routes[0].tree) == [(1, 0), (1, 1), (2, 1)]
+    # 2026-09-11: the same-length corridor on the other side is admissible
+    # now that its wall end record is constructible (checks above hold)
+    assert sorted(e10._routes[0].tree) == [(1, -1), (1, 0), (2, -1)]
     assert sum(1 for ch in e10._routes[0].layout.checks if ch.get('kf')) == D
     e1 = _go(1)
     assert e1.rotation_log == [(0, "q2", "rotate_90")]

@@ -1,0 +1,6 @@
+seam-side space: 1 embedding(s), 1 distinct geometries, 1 pass the wall-letter pre-filter
+--- contact variant 0 [pre-filter pass]
+legal kind assignments (cap 500): 2
+correlation-surface counts among valid assignments: {3: 2}
+(CircLS circuit has 5 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+exported toffoli_n3_blockgraph.dae/.html  (69 cubes, 71 pipes, 3 surfaces)

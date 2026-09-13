@@ -97,3 +97,30 @@ def test_teleport_pinned_off_in_benchmark_config():
     case = next(c for c in suite(include_qasmbench=False)
                 if c.name == "teleport_4")
     assert compile_kwargs("full", case)["step_scheduling"] is False
+
+
+def test_parallel_interleaves_registers_written_one_after_another():
+    # the same 4-gate routine (cx 0->1, 1->2, 2->1, 1->0 as |+>-ancilla
+    # gadgets: M(Z_c Z_a), M(X_a X_t)) on three registers, listed register
+    # by register.  Inside a register every step anticommutes with the next
+    # (a chain); across registers everything commutes.  Program order gives
+    # 24 singleton batches; the precedence-aware layering must recover the
+    # 8-layer interleave (the plain first-fit colouring is invalid here: a
+    # later register's first step would be coloured before an earlier
+    # register's chain is done, breaking the chain's precedence).
+    from circls.compiler.scheduling import contiguous_batches
+    routine = [(0, 1), (1, 2), (2, 1), (1, 0)]
+    ops = []
+    for r in range(3):
+        for k, (c, t) in enumerate(routine):
+            a = 9 + 4 * r + k
+            ops += [_m({3 * r + c: "Z", a: "Z"}), _m({a: "X", 3 * r + t: "X"})]
+    circ = PauliCircuit(21, ops)
+    assert len(contiguous_batches([frozenset(op.paulis) for op in ops])) == 22
+    new, perm = schedule_ops(circ, parallel=True)
+    batches = contiguous_batches([frozenset(op.paulis) for op in new.ops])
+    assert len(batches) == 8 and all(len(b) == 3 for b in batches), batches
+    # chain precedence inside each register survives
+    for r in range(3):
+        pos = [perm.index(8 * r + j) for j in range(8)]
+        assert pos == sorted(pos), pos

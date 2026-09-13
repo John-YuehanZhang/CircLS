@@ -1,0 +1,7 @@
+PPM 0: q1.Z  q2.X  y0.Z
+PPM 1: q0.Z  q1.Z  q2.X  y1.Z
+PPM 2: q0.Z  q2.X  y2.Z
+PPM 3: q1.Z  y3.Z
+PPM 4: q2.X  y4.Z
+PPM 5: q0.Z  q1.Z  y5.Z
+PPM 6: q0.Z  y6.Z

@@ -33,6 +33,49 @@ import sys
 HERE = pathlib.Path.cwd()          # outputs land in the caller's folder
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
+# Filled by extract_from_cp on every call: the mixed-radix digit sizes of
+# the seam-side choice points (product = number of embeddings) and the
+# patches whose merges need both wall letters on one axis.  A ZXCube has
+# one letter per axis (opposite walls match) and temporal pipes carry the
+# transverse letters through a column's whole lifetime, so a patch asked
+# to open an X wall (Z-type merge) and a Z wall (X-type merge) on the
+# same axis admits no assignment -- those embeddings are searched last.
+LAST_SCAN = {"radix": [], "conflicts": []}
+
+
+def _seam_legal(orient, P, t, p):
+    """The compiler's parallel-law rule for a seam between patch cell ``p``
+    (orientation ``orient``, measured Pauli ``P``) and corridor cell ``t``:
+    with X_horizontal a Z measurement attaches east/west and an X
+    measurement north/south, with X_vertical the reverse (mirrors
+    ``multi_patch_coupler._legal_attach_groups``).  Unknown orientation or
+    letter: no restriction."""
+    if orient not in ("X_horizontal", "X_vertical") or P not in ("X", "Z"):
+        return True
+    seam_ew = (t[0] != p[0])
+    want = "X_horizontal" if (P == "Z") == seam_ew else "X_vertical"
+    return orient == want
+
+
+def _orient_for_step(exp, i):
+    """Per-patch orientation in effect for PPM ``i`` (rotation-aware when
+    the experiment exposes it, else the declared orientations)."""
+    eff = getattr(exp, "_eff_orient", None)
+    if callable(eff):
+        try:
+            v = eff(i)
+            if isinstance(v, dict):
+                return dict(v)
+        except TypeError:
+            pass
+    elif isinstance(eff, dict):
+        v = eff.get(i)
+        if isinstance(v, dict):
+            return dict(v)
+        if eff and all(isinstance(k, str) for k in eff):
+            return dict(eff)
+    return dict(getattr(exp, "_orient", {}) or {})
+
 
 def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
     """Build the block structure for a compiled program (.experiment /
@@ -42,6 +85,7 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
     tile (mixed-radix; variant 0 = the greedy default)."""
     out_base = pathlib.Path(out_dir) if out_dir else HERE
     _cv = [contact_variant]
+    scan_radix, scan_need = [], {}      # -> LAST_SCAN at the end
     exp = cp.experiment
     steps = exp.ppm_sequence
     batches = getattr(exp, "_step_batches", None) or [[i] for i in range(len(steps))]
@@ -55,6 +99,30 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
     lifetimes = getattr(exp, "lifetimes", {})   # step-index (first, last)
 
     cubes, pipes, pins, y_bottoms = set(), set(), {}, set()
+    contact_fallbacks = []          # (step, patch) where no legal face was adjacent
+
+    # corridor occupancy per merge layer (z = 1 + batch): a late-born
+    # patch's init cube is placed one layer below its first merge, a
+    # retired patch's readout cube one layer above its last merge; when a
+    # corridor of the neighbouring batch runs through that cell (measured
+    # 2026-09-06: cnot_network_subroutine after the register-wise
+    # reordering, ancilla (1, 3) at layer 24) the two would pin opposite
+    # wall letters on one cube.  In that case the patch is born INTO its
+    # first merge layer / retired INTO its last one instead (the init
+    # rounds ride the merge window's cube, the way a zero-standalone-round
+    # patch is already drawn).
+    corridor_pins = {}
+    for i, st in enumerate(steps):
+        r = exp._routes[i]
+        letters = {P for _, P in st.interaction_type}
+        wall = {"Z": "X", "X": "Z"}[next(iter(letters))] if len(letters) == 1 else None
+        for c in ([tuple(c) for c in r.tree] if (r is not None and r.tree) else []):
+            corridor_pins[(c[0], c[1], 1 + batch_of[i])] = wall
+
+    def _clashes(v, letter):
+        # only a genuinely contradictory letter moves the cube (an equal or
+        # unpinned corridor wall keeps the previous drawing unchanged)
+        return v in corridor_pins and corridor_pins[v] is not None and corridor_pins[v] != letter
 
     def pin(v, letter):
         if pins.setdefault(v, letter) != letter:
@@ -84,8 +152,13 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
             # (zero standalone rounds -- absent from patch_live)
             born = batch_of[first]
             died = min(top, 2 + batch_of[last])
-        col_range[nm] = (born, died)
         x, y = tile
+        init = exp.initial_states.get(nm)
+        if first is not None and born == batch_of[first] and init != "Y" and _clashes((x, y, born), init):
+            born = 1 + batch_of[first]
+        if last is not None and died == 2 + batch_of[last] and _clashes((x, y, died), exp.final_measure_states.get(nm)):
+            died = 1 + batch_of[last]
+        col_range[nm] = (born, died)
         for z in range(born, died + 1):
             cubes.add((x, y, z))
             if z > born:
@@ -120,12 +193,34 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
         # and touch it on two sides, but a second pipe would impose
         # contradictory wall letters on the column (the physical seam is one
         # side); assign scarcest-candidates first, prefer unused tiles
+        # candidate contact tiles: the tree tiles adjacent to the patch
+        # THROUGH A PARALLEL-LAW-LEGAL FACE -- the same rule the compiler's
+        # router uses to build its attach groups
+        # (multi_patch_coupler._legal_attach_groups), so the pipe lands on
+        # the side the compiled circuit really seams.  Before 2026-09-11 any
+        # adjacent tree tile was a candidate and the wall-rule search could
+        # pick a face the circuit never uses (toffoli_n3 step 1: q1/q2
+        # piped from (3, 2) while the seams sit at (4, 3)/(4, 1)), leaving
+        # the true contact tiles as dead-end cubes.
         cand = {}
+        orient_now = _orient_for_step(exp, i)
         for nm, _P in st.interaction_type:
             px, py = cp.placement[nm]
-            cand[nm] = [t for t in tree
+            adjacent = [t for t in tree
                         if abs(t[0] - px) + abs(t[1] - py) == 1]
+            legal = [t for t in adjacent
+                     if _seam_legal(orient_now.get(nm), _P, t, (px, py))]
+            if legal:
+                cand[nm] = legal
+            else:
+                cand[nm] = adjacent
+                if adjacent:
+                    contact_fallbacks.append((i, nm))
+                    print(f"warning: step {i} target {nm}: no parallel-law-"
+                          f"legal contact tile among {adjacent}; falling "
+                          f"back to any adjacent tile")
         contacts = {t: 0 for t in tree}
+        pmap = dict(st.interaction_type)
         for nm in sorted(cand, key=lambda n: len(cand[n])):
             if not cand[nm]:
                 print(f"warning: step {i} target {nm} not adjacent to its "
@@ -134,8 +229,16 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
             ordered = sorted(cand[nm], key=lambda t: (contacts[t], t))
             t = ordered[_cv[0] % len(ordered)]
             _cv[0] //= len(ordered)
+            scan_radix.append(len(ordered))
             contacts[t] += 1
             px, py = cp.placement[nm]
+            # a P-type merge opens the patch wall whose axis letter is the
+            # dual of P; two different letters demanded on one axis = no
+            # ZXCube assignment can exist (recorded for the search order)
+            need = {"Z": "X", "X": "Z"}.get(pmap[nm])
+            if need:
+                axis = "x" if t[0] != px else "y"
+                scan_need.setdefault((nm, axis), set()).add(need)
             a, b = sorted([(t[0], t[1], z), (px, py, z)])
             pipes.add((a, b))
 
@@ -151,7 +254,13 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
         "y_bottoms": sorted([list(v) for v in y_bottoms]),
         "deterministic_observables": n_det_obs,
         "num_observables": int(obs.shape[1]),
+        "contact_policy": "parallel-law faces (compiler seam sides)",
+        "contact_fallbacks": [[int(i), nm] for i, nm in contact_fallbacks],
     }
+    global LAST_SCAN
+    LAST_SCAN = {"radix": scan_radix,
+                 "conflicts": sorted({nm for (nm, ax), ls in scan_need.items()
+                                      if len(ls) > 1})}
     out = out_base / f"{name}_blockstructure.json"
     out.write_text(json.dumps(data, indent=1))
     print(f"wrote {out.name}: {len(data['cubes'])} cubes, "
@@ -161,21 +270,28 @@ def extract_from_cp(cp, name, distance, out_dir=None, contact_variant=0):
 
 
 def auto_export(cp, name, blockgraph_dir, distance=3, tqec_python=None,
-                max_variants=32, time_budget_s=900):
+                max_variants=256, time_budget_s=900, enum_cap=4096):
     """Phase A + phase B with a search over seam-side embedding variants.
 
     Where a patch is adjacent to more than one corridor tile, the seam
     can sit on either side; the choice changes which wall letters the
     merge pins, so some schedules embed only under a non-default choice
     (expressibility depends on the embedding geometry, not the circuit).
-    This extracts the structure for successive contact variants and asks
-    a tqec-equipped python to export each, stopping at the first that
-    embeds; variants with identical geometry are skipped.  Compact
-    summary on stdout, full per-variant log in blockgraph/export_log.txt.
-    Returns the winning variant number, or None."""
+
+    The search first enumerates the WHOLE embedding space cheaply (no
+    tqec): every mixed-radix contact variant up to ``enum_cap``,
+    deduplicated by geometry.  Variants where some patch would have to
+    open both an X and a Z wall on the same axis (see LAST_SCAN) cannot
+    satisfy the wall rules, so conflict-free variants are checked first;
+    the conflicted ones are kept as a fallback, not discarded.  Then a
+    tqec-equipped python checks up to ``max_variants`` candidates in
+    that order, stopping at the first that embeds.  Compact summary on
+    stdout, full per-variant log in blockgraph/export_log.txt.  Returns
+    the winning variant number, or None."""
     import contextlib
     import hashlib
     import io
+    import math
     import os
     import subprocess
     import time
@@ -183,42 +299,65 @@ def auto_export(cp, name, blockgraph_dir, distance=3, tqec_python=None,
     bg.mkdir(exist_ok=True)
     tq = tqec_python or os.environ.get("TQEC_PYTHON")
     t0 = time.time()
-    seen, logs, last, tried = set(), [], "", 0
-    for v in range(max_variants):
+
+    # phase 0: enumerate distinct geometries and their conflict flags
+    seen, variants, space = set(), [], None
+    v = 0
+    while space is None or v < min(space, enum_cap):
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             data = extract_from_cp(cp, name, distance, out_dir=bg,
                                    contact_variant=v)
-        h = hashlib.md5(json.dumps(data, sort_keys=True).encode()).hexdigest()
-        if h in seen:
-            continue
-        seen.add(h)
-        tried += 1
         if v == 0:
             print(buf.getvalue().strip())
-        if tq is None:
-            print(f"phase B needs tqec: run  <python-with-tqec> "
-                  f"tools/export_blockgraph_auto.py export --name {name}  "
-                  f"(from blockgraph/; committed output shown below)")
-            return None
+            space = math.prod(LAST_SCAN["radix"]) if LAST_SCAN["radix"] else 1
+        h = hashlib.md5(json.dumps(data, sort_keys=True).encode()).hexdigest()
+        if h not in seen:
+            seen.add(h)
+            variants.append((v, bool(LAST_SCAN["conflicts"])))
+        v += 1
+        if time.time() - t0 > time_budget_s / 3:
+            break                       # keep budget for the tqec checks
+    clean = [w for w, c in variants if not c]
+    order = clean + [w for w, c in variants if c]
+    enum_note = (f"seam-side space: {space} embedding(s), {len(variants)} "
+                 f"distinct geometries, {len(clean)} pass the wall-letter "
+                 f"pre-filter")
+    if v < space:
+        enum_note += f" (enumeration stopped at variant {v})"
+    print(enum_note)
+    if tq is None:
+        print(f"phase B needs tqec: run  <python-with-tqec> "
+              f"tools/export_blockgraph_auto.py export --name {name}  "
+              f"(from blockgraph/; committed output shown below)")
+        return None
+
+    logs, last, checked = [enum_note], "", 0
+    for w in order:
+        if checked >= max_variants or time.time() - t0 > time_budget_s:
+            break
+        with contextlib.redirect_stdout(io.StringIO()):
+            extract_from_cp(cp, name, distance, out_dir=bg, contact_variant=w)
         r = subprocess.run([tq, str(pathlib.Path(__file__).resolve()),
                             "export", "--name", name],
                            cwd=bg, capture_output=True, text=True, timeout=900)
-        logs.append(f"--- contact variant {v}\n{r.stdout}{r.stderr}")
+        checked += 1
+        tag = " [pre-filter pass]" if w in clean else " [conflicted]"
+        logs.append(f"--- contact variant {w}{tag}\n{r.stdout}{r.stderr}")
         last = (r.stdout.strip().splitlines() or ["(no output)"])[-1]
         if "exported" in r.stdout:
             (bg / "export_log.txt").write_text("\n".join(logs))
-            note = "" if v == 0 else f"  (seam-side variant {v})"
+            note = "" if w == 0 else f"  (seam-side variant {w})"
             print(f"{last}{note}")
             print("(full search log: blockgraph/export_log.txt)")
-            return v
-        if time.time() - t0 > time_budget_s:
-            break
+            return w
+        if "Y cube is not implemented" in r.stdout:
+            break    # the Y half-cubes are the same in every embedding
     (bg / "export_log.txt").write_text("\n".join(logs))
     with contextlib.redirect_stdout(io.StringIO()):
         extract_from_cp(cp, name, distance, out_dir=bg)   # canonical geometry
-    print(f"NOT EXPORTED -- {tried} distinct seam-side variant(s) tried; "
-          f"last: {last}")
+    print(f"NOT EXPORTED -- {checked} of {len(variants)} distinct "
+          f"embedding(s) checked (space {space}); last: {last}")
     print("(full search log: blockgraph/export_log.txt)")
     return None
 
@@ -379,6 +518,16 @@ def export(name):
               "parities -- the searched geometry does not express this protocol.")
         return
     assign, g, n = chosen
+    # a structurally valid graph can still be beyond tqec's circuit
+    # compiler (e.g. it has no Y cube yet) -- gate the export on an
+    # actual compile so "exported" always means tqec can consume it
+    try:
+        from tqec import compile_block_graph
+        compile_block_graph(g, observables="auto")
+    except Exception as e:
+        print(f"NOT EXPORTED: tqec cannot compile this graph -- "
+              f"{type(e).__name__}: {e}")
+        return
     g.to_dae_file(str(HERE / f"{name}_blockgraph.dae"))
     g.view_as_html(write_html_filepath=str(HERE / f"{name}_blockgraph.html"))
     print(f"exported {name}_blockgraph.dae/.html  "

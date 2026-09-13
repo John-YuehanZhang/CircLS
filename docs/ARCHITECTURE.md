@@ -53,7 +53,7 @@ out = compile_qasm(qasm, distance=3,
 
 Contracts, validation rules, and one worked example per hook:
 `docs/API_HOOKS.md`; runnable walkthrough:
-`notebooks/custom_hooks.ipynb`.
+`notebooks/custom_compilation_api.ipynb`.
 
 **Route two — contribute a built-in pass.**  Reach for this only when
 the hook contracts cannot express your idea (for example, reordering

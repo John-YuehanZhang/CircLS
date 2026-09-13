@@ -17,7 +17,7 @@ import io
 
 import pytest
 
-from circls.core.multi_patch_coupler import route_and_build, BentLayoutError
+from circls.core.multi_patch_coupler import route_and_build
 from circls.core.routed_multi_patch_ls import PatchSpec, origin_of
 from circls.core.sequential_ppm_ls import PPMStep, SequentialPPMExperiment
 from lightstim.noise.config import NoiseConfig
@@ -28,16 +28,10 @@ D = 3
 NP = NoiseConfig(p_1q=1e-3, p_2q=1e-3, p_meas=1e-3, p_reset=1e-3, p_idle=1e-3)
 FLIP = {'X': 'Z', 'Z': 'X'}
 DIRS = {'N': (0, -1), 'S': (0, 1), 'E': (1, 0), 'W': (-1, 0)}
-BAD_CROSS = {'X_vertical': -1, 'X_horizontal': 1}
 
 
 def _want(P, seam_ew):
     return 'X_horizontal' if (P == 'Z') == seam_ew else 'X_vertical'
-
-
-def _cross(side, ex):
-    (sx, sy), (ex_, ey_) = DIRS[side], DIRS[ex]
-    return sx * ey_ - sy * ex_
 
 
 def _scenario(d, fam, side, ex):
@@ -68,16 +62,13 @@ MATRIX = [(fam, side, ex)
 @pytest.mark.parametrize("fam,side,ex", MATRIX,
                          ids=[f"{f[2]}-{s}-{e}" for f, s, e in MATRIX])
 def test_chirality_matrix(fam, side, ex):
+    # 2026-09-11: every one of the 24 (family, side, exit) combinations is
+    # constructible.  The eight "bad-handedness" cases used to be declined
+    # because the stretched seam's end record was the bare weight-2 lobe
+    # even when the corridor continued past the band end; the paper's
+    # concave-corner rule (weight-3 there) hosts them, so the handedness
+    # veto is gone and this test verifies all 24 the same way.
     px, tgt, tree, bus = _scenario(D, fam, side, ex)
-    allowed = _cross(side, ex) != BAD_CROSS[fam]
-    if not allowed:
-        with pytest.raises(BentLayoutError):
-            with contextlib.redirect_stdout(io.StringIO()):
-                r = route_and_build(px, tgt, seam=True, route=tree, bus=bus,
-                                    conj_names=frozenset())
-            if r.status != 'ok':          # no_verified_route counts as reject
-                raise BentLayoutError(r.message)
-        return
     with contextlib.redirect_stdout(io.StringIO()):
         r = route_and_build(px, tgt, seam=True, route=tree, bus=bus,
                             conj_names=frozenset())
@@ -112,7 +103,9 @@ def test_corner_mixed_step_litinski_only_example4():
         rotate_saving_threshold=1)
     with contextlib.redirect_stdout(io.StringIO()):
         c = exp.build()
-    assert exp.rotation_log == [(0, "q1", "litinski")]
+    # 2026-09-11: the east-seam #6 wall with the east exit is constructible
+    # directly (concave-corner end record), so no rotation is needed
+    assert exp.rotation_log == []
     kf = [ch for ch in exp._routes[0].layout.checks if ch.get('kf')]
     assert len(kf) == D
     det, obs = c.compile_detector_sampler(seed=0).sample(

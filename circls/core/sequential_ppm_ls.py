@@ -383,7 +383,17 @@ class SequentialPPMExperiment(RotationPlannerMixin,
                 # BEFORE that reset (design decision 2026-08-03), i.e. it is an
                 # obstacle for steps >= fu-2 regardless of first_use_init
                 return i < fu - 2
-            if self.first_use_init and fu > i:
+            if self.first_use_init and fu > i \
+                    and nm not in self.system.patches:
+                # the ledger is the PHYSICAL allocation, not the lifetime
+                # alone: a demoted shared-window batch leaves its preamble
+                # allocations standing (_try_run_batch: "allocations
+                # stick"), so a patch first used at a later step can
+                # already be alive here -- routing through its cell as
+                # borrowed ground then collides at add_patch (measured
+                # 2026-09-07: multiply_n13 d3 liveness off, row_major:
+                # batch [4..9] allocated q4 (fu=9) at step 4, demoted,
+                # and ppm_4's serial corridor ran through q4's cell)
                 return True
             return False
         return [replace(s, orientation=orient_map[s.name])
@@ -1070,7 +1080,9 @@ class SequentialPPMExperiment(RotationPlannerMixin,
                 self.rotations.append((i, nm))
                 self.rotation_log.append((i, nm, 'litinski'))
                 self._invalidate_downstream_registration(i, nm)
-                return self._register_ppm(i, step, exclude=exclude)
+                return self._register_ppm(
+                    i, step, exclude=exclude,
+                    repair_route=(bus_c, cj, sorted(tuple(c) for c in ok.tree)))
             raise original
 
     def _pick_schedule(self, step, *, is_wall, collinear):
@@ -1090,7 +1102,8 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         return 'bent' if collinear else 'diagonal'
 
     def _register_ppm(self, i, step, exclude=frozenset(),
-                      blocked_cells=frozenset(), force_present=frozenset()):
+                      blocked_cells=frozenset(), force_present=frozenset(),
+                      repair_route=None):
         """Route and register PPM ``i``'s coupler.  ``exclude`` names retired patches
         whose freed cells this corridor reuses — dropping them from the spec/obstacle
         set lets the router pass THROUGH their coarse cells.  Specs carry each patch's
@@ -1106,10 +1119,26 @@ class SequentialPPMExperiment(RotationPlannerMixin,
             _pt = getattr(self, '_planned_tree', {}).get(i)
             if _pt is not None:
                 step = replace(step, route=_pt)   # build the PLANNED corridor
-        r = self._route_result(specs, step, bus=self._derived_bus.get(i),
-                               conj=getattr(self, '_planned_conj', {}).get(i),
-                               raise_errors=True, blocked_cells=blocked_cells,
-                               step_index=i)
+        try:
+            r = self._route_result(
+                specs, step, bus=self._derived_bus.get(i),
+                conj=getattr(self, '_planned_conj', {}).get(i),
+                raise_errors=True, blocked_cells=blocked_cells, step_index=i)
+        except BentLayoutError:
+            if repair_route is None:
+                raise
+            # Preserve a successful legacy retry verbatim. Only a geometry
+            # failure, before schedule/registry mutations below, may replay
+            # the feasibility probe's (bus, conjugation, corridor) choice.
+            repair_bus, repair_conj, repair_tree = repair_route
+            repair_step = replace(step, route=repair_tree)
+            r = self._route_result(
+                specs, repair_step, bus=repair_bus, conj=repair_conj,
+                raise_errors=True, blocked_cells=blocked_cells, step_index=i)
+            if r.status == 'ok':
+                self._derived_bus[i] = repair_bus
+                self._planned_conj[i] = repair_conj
+                self._planned_tree[i] = repair_tree
         if r.status != 'ok':
             raise ValueError(
                 f'route_and_build failed at PPM {i}: {r.status} — {r.message}')
@@ -1412,6 +1441,7 @@ class SequentialPPMExperiment(RotationPlannerMixin,
                 self._plan_rotations(reg))
         else:
             self._rotate_plan, self._rot_lazy = {}, set()
+            self._derived_bus = {}  # reset runtime-rescue choices on rebuild
 
         # Allocate patches: all up front, or — with first_use_init — only those first used at
         # step 0. The rest are allocated + initialised at their first PPM in the loop below

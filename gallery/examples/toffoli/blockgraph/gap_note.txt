@@ -1,9 +1,0 @@
-toffoli_n3 does not map onto TQEC's ZXCube vocabulary under a
-one-cube-per-tile reading of the CircLS schedule: the Y-state
-approximation consumes seven |Y>-initialized ancilla patches, and no
-wall assignment satisfies the ZXCube rules together with the merge
-pins -- robustly: the exporter searched 32 seam-side contact variants
-and every one fails the wall rules (see export_log.txt).  Same
-vocabulary corner as twistedghz_8; tqec's tracker has it open too
-("Y cube is not implemented" in the fixed-boundary builder, issue
-#967).  The geometry is recorded in toffoli_n3_blockstructure.json.

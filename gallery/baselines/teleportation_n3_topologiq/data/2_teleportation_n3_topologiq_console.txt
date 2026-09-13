@@ -1,0 +1,4 @@
+=> Building BlockGraph.
+=> SUCCESS! Habemus BlockGraph. 
+  - Volume: 12. 
+  - Duration: 0.03s.

@@ -1,6 +1,0 @@
---- contact variant 0
-note: omitting 3 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(1, 5), (5, 1), (5, 3)]
-legal kind assignments (cap 500): 16
-correlation-surface counts among valid assignments: {2: 16}
-(CircLS circuit has 5 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
-exported steane_blockgraph.dae/.html  (20 cubes, 18 pipes, 2 surfaces)

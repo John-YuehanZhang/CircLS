@@ -1,0 +1,27 @@
+{
+ "k": 1,
+ "d": 3,
+ "convention": "fixed_boundary",
+ "seconds": 10.6,
+ "errors": [
+  "fixed_bulk: NotImplementedError: The method 'FixedBulkConventionGenerator.get_spatial_horizontal_hadamard_raw_template' has not been implemented but is required to continue."
+ ],
+ "p0": {
+  "dem_deterministic": true,
+  "det_stable": true,
+  "det_fired": 0,
+  "obs_values": {
+   "0": [
+    0
+   ]
+  },
+  "obs_nondet": [],
+  "p0_deterministic": true
+ },
+ "qubits": 362,
+ "detectors": 733,
+ "observables": 1,
+ "sha256_prefix": "4b0deee58b8fc52e",
+ "byte_identical_to_table2_circuit": true,
+ "graphlike_distance": 2
+}
