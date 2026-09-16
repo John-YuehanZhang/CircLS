@@ -4,8 +4,8 @@
       <author>TQEC Community</author>
       <authoring_tool>https://github.com/tqec/tqec</authoring_tool>
     </contributor>
-    <created>2026-09-11T14:47:45.799827</created>
-    <modified>2026-09-11T14:47:45.799833</modified>
+    <created>2026-09-15T00:48:23.469106</created>
+    <modified>2026-09-15T00:48:23.469107</modified>
     <unit name="inch" meter="0.02539999969303608" />
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -2424,7 +2424,7 @@
         </bind_material>
       </instance_geometry>
       </node>
-    <node id="ZXX-without-+Y--Z-+Z" name="ZXX">
+    <node id="ZXX-without--Z-+Z-+Y" name="ZXX">
       <instance_geometry url="#FaceID9">
         <bind_material>
           <technique_common>
@@ -2491,7 +2491,7 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZXX-without-+Y--Z" name="ZXX">
+    <node id="ZXX-without--Z-+Y" name="ZXX">
       <instance_geometry url="#FaceID9">
         <bind_material>
           <technique_common>
@@ -2529,7 +2529,7 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZXZ-without-+Z--Z--X" name="ZXZ">
+    <node id="ZXZ-without--Z-+Z--X" name="ZXZ">
       <instance_geometry url="#FaceID5">
         <bind_material>
           <technique_common>
@@ -2587,7 +2587,7 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZXZ-without--X-+Z-+X" name="ZXZ">
+    <node id="ZXZ-without-+Z--X-+X" name="ZXZ">
       <instance_geometry url="#FaceID6">
         <bind_material>
           <technique_common>
@@ -3369,7 +3369,7 @@
         </node>
         <node id="ID7" name="instance_7">
           <matrix>1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Z-+Z" />
+          <instance_node url="#ZXX-without--Z-+Z-+Y" />
         </node>
         <node id="ID8" name="instance_8">
           <matrix>1.0 0.0 0.0 0.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
@@ -3377,11 +3377,11 @@
         </node>
         <node id="ID9" name="instance_9">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Z" />
+          <instance_node url="#ZXX-without--Z-+Y" />
         </node>
         <node id="ID10" name="instance_10">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXZ-without-+Z--Z--X" />
+          <instance_node url="#ZXZ-without--Z-+Z--X" />
         </node>
         <node id="ID11" name="instance_11">
           <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
@@ -3393,11 +3393,11 @@
         </node>
         <node id="ID13" name="instance_13">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Z-+Z" />
+          <instance_node url="#ZXX-without--Z-+Z-+Y" />
         </node>
         <node id="ID14" name="instance_14">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXZ-without--X-+Z-+X" />
+          <instance_node url="#ZXZ-without-+Z--X-+X" />
         </node>
         <node id="ID15" name="instance_15">
           <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>

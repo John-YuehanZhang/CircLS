@@ -1,7 +1,7 @@
 {
  "mode": "bfs-cross",
  "seed": 1,
- "seconds": 0.033,
+ "seconds": 0.022,
  "zx_vertices": 22,
  "zx_edges": 21,
  "zx_inputs": 5,

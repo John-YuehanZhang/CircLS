@@ -2,7 +2,7 @@
  "k": 1,
  "d": 3,
  "convention": "fixed_boundary",
- "seconds": 10.6,
+ "seconds": 4.4,
  "errors": [
   "fixed_bulk: NotImplementedError: The method 'FixedBulkConventionGenerator.get_spatial_horizontal_hadamard_raw_template' has not been implemented but is required to continue."
  ],

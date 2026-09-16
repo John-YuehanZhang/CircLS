@@ -31,6 +31,10 @@ def build_closed_graph(here, name, original_qasm, meta):
         {"bridge": info, "equivalence": why, "absorbed_h": {"in": sorted(lead), "out": sorted(trail)},
          "fill": fill, "cubes_open": g_open.num_cubes - g_open.num_ports, "ports": g_open.num_ports,
          "cubes_closed": g_closed.num_cubes, "pipes": g_closed.num_pipes, "observables": len(surfaces)}, indent=1))
+    print(f"open {info['cubes_open']} cubes (topologiq's {info['cubes_open_raw']} + {info['padding_blocks']} "
+          f"Hadamard shim) + {info['ports']} ports  ->  closed {g_closed.num_cubes} cubes = the Table 2 volume\n"
+          f'  (section 2\'s "Volume: {info["cubes_open_raw"]}" is topologiq\'s own count of its open graph: '
+          f"its cubes only, no ports and no shim padding)")
     return g_open, g_closed, fill, surfaces
 
 

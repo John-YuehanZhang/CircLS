@@ -1,0 +1,5 @@
+(+XII)_pi/4 rotation
+(-ZII)_pi/4 rotation
+(-XXI) measurement
+(+ZZX) measurement
+(+IIX) measurement

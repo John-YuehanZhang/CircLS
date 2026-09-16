@@ -28,6 +28,7 @@ parallel merge windows) are switched off, as in the paper.
 | example | circuit | number of joint PPMs | TQEC block graph |
 |---|---|---|---|
 | `toffoli_n3/` | Toffoli, 7 T gates (QASMBench `toffoli_n3`, the paper's Table 2 form; \|+⟩ stands in for every \|T⟩, the paper's X-state proxy) | 7 | **Yes** |
+| `teleportation_n3/` | Teleportation, 1 T gate (QASMBench `teleportation_n3`, the paper's Table 2 form; same X-state proxy).  The second gadget is the pi/4 rotation the Y-free rewrite adds for the Y that the commuted S leaves in a terminal measurement | 4 | **Yes** |
 
 Every exported block graph is validated with tqec's own toolchain —
 loaded back from the `.dae`, compiled, and sampled silent at p=0 (logs
@@ -67,6 +68,6 @@ PPM sequence).
 
 ## Install
 
-Python 3.9–3.12, then `pip install -r requirements.txt` — see the
+Python 3.10–3.12, then `pip install -r requirements.txt` — see the
 comments inside for the version constraint's reason and the two non-pip
 pieces (tested end to end on 3.12).
