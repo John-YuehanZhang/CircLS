@@ -112,7 +112,8 @@ print(report.ok, stats.logical_error_rate)
 
 `verify` runs the suite's checks (p = 0 silence, observable
 determinism, graphlike distance, logical-simulation match);
-`measure_ler` injects the paper's uniform circuit-level noise and
+`measure_ler` injects the paper's uniform circuit-level noise (the
+same model as `experiments/noise_inject.py`) and
 decodes with PyMatching (MWPF fallback).  The compiler's decisions
 are readable off the result: `out.placement`, `out.routes`,
 `out.lifetimes`, `out.stats()`.

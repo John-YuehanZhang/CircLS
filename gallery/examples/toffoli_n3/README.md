@@ -9,7 +9,7 @@ the block graph and the LER points are reused unless deleted.
     pipeline_demo.ipynb          QASM -> PBC -> PPM -> CircLS -> tqec export -> stim -> LER
     data/
       1_*.qasm                   input circuit
-      2_*.txt, 3_*.txt, 4_*.txt  Pauli-based circuit, Y-free form, PPM sequence
+      2_*.txt, 3_*.txt, 4_*.txt  Pauli-based circuit, re-selected and Y-free forms, PPM sequence
       5_*.json                   placement, routing, schedule
       8_*.json                   LER points (cached)
       compile_summary.json       front-end stage counts and per-distance circuit metrics (hand-maintained)

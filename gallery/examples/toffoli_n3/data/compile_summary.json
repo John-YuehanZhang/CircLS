@@ -1,5 +1,5 @@
 {
- "config": "paper: optimized mapping, first-use initialization, last-use freeing; no re-selection, no step scheduler, no parallel windows; S gates kept; X-state proxy",
+ "config": "paper: optimized mapping, first-use initialization, last-use freeing, terminal-measurement re-selection; no step scheduler, no parallel windows; S gates kept; X-state proxy",
  "stages": {
   "nwqec_pbc": 10,
   "rotations": 7,

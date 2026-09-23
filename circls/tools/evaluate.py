@@ -45,9 +45,16 @@ def inject_uniform_noise(circuit: stim.Circuit, p: float) -> stim.Circuit:
     """Uniform circuit-level depolarizing noise at rate ``p``.
 
     After every 1q gate DEPOLARIZE1, after every 2q gate DEPOLARIZE2,
-    measurement flip p, reset flip p, and DEPOLARIZE1 on every gated
-    qubit idling in a TICK moment.  Identical to the pass used for
-    every measurement in the paper (experiments/noise_inject.py)."""
+    measurement flip p (``M(p)``), reset flip p (X_ERROR after R,
+    Z_ERROR after RX), and DEPOLARIZE1 in every TICK span, including
+    empty spans, on every qubit that is gated somewhere in the circuit
+    but not in that span (qubits that never appear in a gate get no
+    noise).  This is the model of experiments/noise_inject.py, the pass
+    behind every LER in the paper, and the two give byte-identical
+    output on circuits that carry no noise, no inverted (``!``)
+    measurement targets and no Pauli-product measurements; on those
+    inputs noise_inject.py raises while this pass copies the
+    instruction through without adding noise."""
     flat = circuit.flattened()
     gated = set()
     for inst in flat:
@@ -64,7 +71,8 @@ def inject_uniform_noise(circuit: stim.Circuit, p: float) -> stim.Circuit:
             nm = inst.name
             ts = inst.targets_copy()
             qs = [t.value for t in ts if t.is_qubit_target]
-            busy.update(qs)
+            if nm not in _ANNOT:
+                busy.update(qs)
             if nm in _MEAS:
                 out.append(_MEAS[nm], ts, p)
             else:
@@ -76,7 +84,7 @@ def inject_uniform_noise(circuit: stim.Circuit, p: float) -> stim.Circuit:
                 elif nm in _RESET:
                     out.append(_RESET[nm], qs, p)
         idle = sorted(gated - busy)
-        if moment and idle:
+        if idle:
             out.append("DEPOLARIZE1", idle, p)
         moment.clear()
 

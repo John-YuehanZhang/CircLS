@@ -140,7 +140,9 @@ def test_stats_do_not_mutate_circuit():
 def test_reuse_gap_not_billed():
     # q0 is measured out in round 1 and RE-RESET in round 3 (a retired cell
     # reused later): holding = {1} ∪ {3} = 2 rounds, while the naive span is 3.
-    # q1 holds throughout: 3.  Layers L0..L5, measurement layers L1/L3/L5.
+    # q1 is worked on throughout (a gate follows its round-2 measurement, so
+    # its round-3 readout is real): 3.  Layers L0..L5, measurement layers
+    # L1/L3/L5.
     c = stim.Circuit("""
         R 0 1
         TICK
@@ -151,6 +153,7 @@ def test_reuse_gap_not_billed():
         M 1
         TICK
         R 0
+        H 1
         TICK
         M 0 1
     """)
@@ -160,6 +163,87 @@ def test_reuse_gap_not_billed():
     assert s.occupancy[1] == ((1, 3),)
     assert s.qubit_rounds == 2 + 3
     assert s.qubit_rounds_span == 3 + 3
+
+
+def test_remeasure_without_reset_not_billed():
+    # q0 is measured out at L1 and measured AGAIN at L5 with no reset and no
+    # gate in between (a redundant readout of an already measured-out cell):
+    # the second measurement holds nothing, so q0 is billed round 1 only.
+    # q1 is worked on throughout: rounds 1..3.  Measurement layers L1/L3/L5.
+    c = stim.Circuit("""
+        R 0 1
+        TICK
+        M 0
+        TICK
+        H 1
+        TICK
+        M 1
+        TICK
+        H 1
+        TICK
+        M 0 1
+    """)
+    s = circuit_stats(c)
+    assert s.measurement_layers == 3
+    assert s.occupancy[0] == ((1, 1),)
+    assert s.live_rounds[0] == (1, 1)
+    assert s.occupancy[1] == ((1, 3),)
+    assert s.qubit_rounds == 1 + 3
+    assert s.qubit_rounds_span == 1 + 3
+
+
+def test_gate_after_measurement_reopens_hold():
+    # A gate on a measured-out qubit puts it back to work: the later
+    # measurement is a real readout and the hold runs L0..L3 → rounds 1..2.
+    c = stim.Circuit("""
+        R 0
+        TICK
+        M 0
+        TICK
+        H 0
+        TICK
+        M 0
+    """)
+    s = circuit_stats(c)
+    assert s.measurement_layers == 2
+    assert s.occupancy[0] == ((1, 2),)
+    assert s.qubit_rounds == 2
+
+
+def test_product_measurements_do_not_close_hold():
+    # MPP / MZZ are not destructive: repeated product measurements with no
+    # reset keep both qubits held (rounds 1..3 each), and the final M is billed.
+    c = stim.Circuit("""
+        R 0 1
+        TICK
+        MPP X0*X1
+        TICK
+        MZZ 0 1
+        TICK
+        M 0 1
+    """)
+    s = circuit_stats(c)
+    assert s.measurement_layers == 3
+    assert s.occupancy[0] == s.occupancy[1] == ((1, 3),)
+    assert s.qubit_rounds == 3 + 3
+
+
+def test_mr_chain_unchanged_by_close_rule():
+    # Ancilla measure+reset chains stay contiguous: MR closes and reopens in
+    # the same moment, so q0 is billed every round, 1..3.
+    c = stim.Circuit("""
+        R 0
+        TICK
+        MR 0
+        TICK
+        MR 0
+        TICK
+        M 0
+    """)
+    s = circuit_stats(c)
+    assert s.measurement_layers == 3
+    assert s.live_rounds[0] == (1, 3)
+    assert s.qubit_rounds == 3
 
 
 # ── layer 2: hand-derived oracle on the 2-patch adjacent-cell ZZ case ─────────

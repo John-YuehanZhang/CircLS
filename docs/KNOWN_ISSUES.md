@@ -99,3 +99,32 @@ state-free, but later failure points inside `add_patch` /
 partially registered patch behind, and `_register_with_blocked_repair`
 would then die on "already exists" instead of running its rotation
 fallback.  Pre-existing behaviour, narrowed but not closed.
+
+## first_use_init=False, liveness=False: five seam qubits without QUBIT_COORDS on qram_n20
+
+**Symptom.** Compiling qram_n20 at d = 3 with both allocation rules off
+(`first_use_init=False, liveness=False`; `assignment="optimized"`,
+re-selection on or off, scheduler and parallel windows off, X proxy,
+the Table 2 input file) succeeds, and the circuit passes the p = 0
+checks (no detector fires, all 33 observables deterministic), but five
+qubits (indices 6164, 6165, 6166, 6198, 9847 of 13 738) carry R/RX,
+CX and M/MX instructions and no `QUBIT_COORDS`.  `experiment_stats`
+then raises `KeyError` on the first of them, so a driver that computes
+the metrics before saving the circuit records the compile as failed.
+
+**What is established** (2026-09-17).  The five qubits' two-qubit
+partners all sit on tiles (10, 9) and (11, 9): they are the seam
+between those two tiles, used in merges around rounds 90-103 and
+307-326.  Placing each on its partners' tile adds no tile-round, so the
+allocated volume is unaffected (32 820.7 blocks); the circuit compiled
+with re-selection off is byte-identical.  None of the paper-
+configuration circuits (Table 2, Table 3, the other nine Static
+circuits) has a coordinate-less qubit, so no reported number is
+touched.  Where the registration path drops the coordinates has not
+been located.
+
+**Status.** Not fixed (decided 2026-09-17): the circuit is correct and
+the metric is recoverable, so the fix is bookkeeping only.  Contained:
+`fig9_v2/make_fig9.py` (campaign tooling) places a coordinate-less
+qubit on its most frequent partner tile and reports how many rounds
+that adds (zero here).  Reproducer: the compile above, about 6 h.

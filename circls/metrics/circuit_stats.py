@@ -17,9 +17,14 @@ tables use one measuring stick.  Conventions:
 * ``qubit_rounds`` (V2) bills *holding intervals*: a qubit holds state from a
   reset to its last touch before the next reset (idling included), and is
   free in between.  A qubit that is measured out and later re-reset (a
-  retired cell reused as corridor) is NOT billed for the gap.  For circuits
-  without qubit reuse this equals the simpler first-to-last span, which is
-  also reported (``qubit_rounds_span``).
+  retired cell reused as corridor) is NOT billed for the gap.  A destructive
+  single-qubit measurement (``M``/``MX``/``MY``) closes the hold: measuring
+  the same qubit again with no reset and no other operation in between (a
+  redundant readout of a cell that was already measured out) does not extend
+  it, while any gate on the qubit reopens the hold.  Product measurements
+  (``MPP``, ``MXX``, ...) are not destructive and never close a hold.  For
+  circuits without qubit reuse this equals the simpler first-to-last span,
+  which is also reported (``qubit_rounds_span``).
 """
 from __future__ import annotations
 
@@ -44,13 +49,16 @@ class CircuitStats:
     occupancy: Dict[int, Tuple[Tuple[int, int], ...]]  # active qubit -> merged holding round-intervals
 
 
-def _gate_kind(name: str, _cache: dict = {}) -> Tuple[bool, bool, bool]:
-    """Return ``(is_operational, produces_measurements, is_reset)`` for a gate."""
+_DESTRUCTIVE = frozenset({"M", "MX", "MY"})   # canonical names of the single-qubit collapsing measurements
+
+
+def _gate_kind(name: str, _cache: dict = {}) -> Tuple[bool, bool, bool, bool]:
+    """Return ``(is_operational, produces_measurements, is_reset, is_destructive_measurement)`` for a gate."""
     hit = _cache.get(name)
     if hit is None:
         gd = stim.gate_data(name)
         operational = bool(gd.is_unitary or gd.is_reset or gd.produces_measurements)
-        hit = (operational, bool(gd.produces_measurements), bool(gd.is_reset))
+        hit = (operational, bool(gd.produces_measurements), bool(gd.is_reset), gd.name in _DESTRUCTIVE)
         _cache[name] = hit
     return hit
 
@@ -61,8 +69,12 @@ def circuit_stats(circuit: stim.Circuit) -> CircuitStats:
     allocated: set[int] = set()
     # per active qubit: holding segments in LAYER units [(start, last), ...];
     # a reset starts a new segment (MR extends the previous one to this layer
-    # first, so ancilla measure+reset chains stay contiguous in round units)
+    # first, so ancilla measure+reset chains stay contiguous in round units).
+    # ``closed`` holds the qubits whose current segment ended in a destructive
+    # measurement: a further destructive measurement with no reset or gate in
+    # between measures a qubit that holds nothing and does not extend the hold.
     segments: Dict[int, List[Tuple[int, int]]] = {}
+    closed: set[int] = set()
     meas_layers: list[int] = []
 
     layer = 0
@@ -76,7 +88,7 @@ def circuit_stats(circuit: stim.Circuit) -> CircuitStats:
             qv = t.qubit_value
             if qv is not None:
                 allocated.add(qv)
-        operational, measures, resets = _gate_kind(name)
+        operational, measures, resets, destructive = _gate_kind(name)
         if not operational:
             continue
         if measures and (not meas_layers or meas_layers[-1] != layer):
@@ -90,10 +102,17 @@ def circuit_stats(circuit: stim.Circuit) -> CircuitStats:
                 if segs and measures:      # MR: the measurement closes the old hold here
                     segs[-1] = (segs[-1][0], layer)
                 segs.append((layer, layer))
+                closed.discard(qv)
+            elif destructive and qv in closed:
+                continue                   # re-measuring a measured-out qubit: nothing is held
             elif segs:
                 segs[-1] = (segs[-1][0], layer)
             else:
                 segs.append((layer, layer))
+            if destructive:
+                closed.add(qv)
+            else:
+                closed.discard(qv)
 
     n_rounds = len(meas_layers)
 

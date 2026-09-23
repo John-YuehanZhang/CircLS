@@ -21,8 +21,8 @@ bridges; the voxel count is the paper's allocated-volume metric.
 
 The gallery keeps the programs of the paper's Table 2 that have a walkthrough
 here, compiled in the paper's configuration: optimized mapping, first-use
-initialization and last-use freeing.  The compiler's optional passes
-(terminal-measurement re-selection, the lifetime-aware step scheduler and
+initialization, last-use freeing and terminal-measurement re-selection.  The
+compiler's other optional passes (the lifetime-aware step scheduler and
 parallel merge windows) are switched off, as in the paper.
 
 | example | circuit | number of joint PPMs | TQEC block graph |
@@ -60,6 +60,10 @@ and its own environment (see the entry's README).
   helpers
 - `ler_sampler.py` — shard-parallel LER estimation (results independent
   of the worker count)
+- `table2_row.py` — compile one Table 2 program (input from
+  `../experiments/table2_inputs/`) and print its row (PPMs, rounds,
+  allocated volume, qubit-cycles); `--config reselect|off|full` or the
+  three pass switches `--reselect/--reorder/--parallel on|off`
 
 Beyond the examples: `../notebooks/custom_compilation_api.ipynb` is a
 runnable guide to overriding each compiler decision (mapping,

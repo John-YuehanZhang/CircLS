@@ -1,6 +1,7 @@
 seam-side space: 1 embedding(s), 1 distinct geometries, 1 pass the wall-letter pre-filter
 --- contact variant 0 [pre-filter pass]
-legal kind assignments (cap 500): 16
-correlation-surface counts among valid assignments: {2: 16}
-(CircLS circuit has 2 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
-exported teleportation_n3_blockgraph.dae/.html  (28 cubes, 28 pipes, 2 surfaces)
+note: omitting 1 unjoined column(s) with mixed init/readout bases (non-deterministic memories): [(5, 1)]
+legal kind assignments (cap 500): 32
+correlation-surface counts among valid assignments: {2: 32}
+(CircLS circuit has 1 deterministic observables; TQEC's surface count convention differs, so this is context, not a filter)
+exported teleportation_n3_blockgraph.dae/.html  (24 cubes, 24 pipes, 2 surfaces)
