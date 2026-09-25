@@ -1,5 +1,5 @@
 {
- "config": "paper: optimized mapping, first-use initialization, last-use freeing, terminal-measurement re-selection; no step scheduler, no parallel windows; S gates kept; X-state proxy",
+ "config": "paper: optimized mapping, first-use initialization, last-use freeing, terminal-measurement re-selection; no step scheduler, no parallel windows; S gates kept; X-state proxy; each |+> gadget ancilla born facing the step that consumes it (magic_proxy=X, added 2026-09-25)",
  "stages": {
   "nwqec_pbc": 10,
   "rotations": 7,
@@ -10,22 +10,22 @@
   "gadgets": 7
  },
  "3": {
-  "volume_blocks": 83.0,
-  "qubit_cycles": 4386,
-  "qubits": 655,
-  "detectors": 1680,
+  "volume_blocks": 75.0,
+  "qubit_cycles": 3917,
+  "qubits": 520,
+  "detectors": 1498,
   "observables": 5
  },
  "5": {
-  "qubit_cycles": 17174,
-  "qubits": 1666,
-  "detectors": 7400,
+  "qubit_cycles": 15249,
+  "qubits": 1314,
+  "detectors": 6556,
   "observables": 5
  },
  "7": {
-  "qubit_cycles": 43322,
-  "qubits": 3125,
-  "detectors": 19520,
+  "qubit_cycles": 38357,
+  "qubits": 2460,
+  "detectors": 17246,
   "observables": 5
  }
 }

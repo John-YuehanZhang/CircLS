@@ -23,7 +23,12 @@ The gallery keeps the programs of the paper's Table 2 that have a walkthrough
 here, compiled in the paper's configuration: optimized mapping, first-use
 initialization, last-use freeing and terminal-measurement re-selection.  The
 compiler's other optional passes (the lifetime-aware step scheduler and
-parallel merge windows) are switched off, as in the paper.
+parallel merge windows) are switched off, as in the paper.  One rule
+postdates the paper's runs: each |+⟩ gadget ancilla is born facing the
+step that consumes it (`compile_qasm(magic_proxy="X")`; the paper pinned
+every ancilla to one orientation, which made some corridors detour).
+It lowers toffoli's volume below its Table 2 cell and leaves teleportation
+unchanged (both of its ancillas already faced their partner).
 
 | example | circuit | number of joint PPMs | TQEC block graph |
 |---|---|---|---|

@@ -37,7 +37,7 @@ Both share the same hook keywords.
 | `placement=` | result | `{patch_name: tile}` | `assignment=` portfolio ('row_major' / 'optimized') |
 | `router=` | callable | `route(board_state, step) -> Corridor` | corridor search (Find Corridor) |
 | `lifetime=` | result | `{patch_name: (init_layer, free_layer)}` — allocated at init_layer, freed at free_layer | first-use init / last-use free; `keep_patches` pins output patches |
-| `orientation=` | result | `{patch_name: "X_horizontal" \| "X_vertical"}` — the patch's birth orientation | derived from the first-use letter |
+| `orientation=` | result | `{patch_name: "X_horizontal" \| "X_vertical"}` — the patch's birth orientation | derived from the first-use letter; gadget ancillas under `magic_proxy='X'` face the step that consumes them (`mapping.magic_orientations`) |
 
 Validation on injection (reject loudly, never repair silently):
 
@@ -58,8 +58,10 @@ Validation on injection (reject loudly, never repair silently):
   no patch in `keep_patches` may be freed early.
 - `orientation`: a partial dict is fine (unnamed patches keep the
   derived orientation); values must be `X_horizontal` or
-  `X_vertical`; |Y> patches cannot be overridden (the Gidney birth
-  layout is protocol-fixed).  Composes with `placement=` and with
+  `X_vertical`; gadget ancillas cannot be overridden under the default
+  `magic_proxy='Y'` (the Gidney birth layout is protocol-fixed
+  `X_vertical`); under `magic_proxy='X'` they may be, and otherwise
+  default to `mapping.magic_orientations`.  Composes with `placement=` and with
   `assignment='optimized'` — the optimizer plans its cells against
   the forced orientations.  It fixes the BIRTH orientation only:
   with `auto_rotate` on, the rotation planner may still rotate the

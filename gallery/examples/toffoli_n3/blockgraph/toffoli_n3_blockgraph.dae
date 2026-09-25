@@ -4,8 +4,8 @@
       <author>TQEC Community</author>
       <authoring_tool>https://github.com/tqec/tqec</authoring_tool>
     </contributor>
-    <created>2026-09-17T00:53:45.661103</created>
-    <modified>2026-09-17T00:53:45.661107</modified>
+    <created>2026-09-25T20:42:04.188403</created>
+    <modified>2026-09-25T20:42:04.188405</modified>
     <unit name="inch" meter="0.02539999969303608" />
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -215,7 +215,7 @@
     <geometry id="FaceID1" name="FaceID1">
       <mesh>
         <source id="FaceID1_positions">
-          <float_array count="12" id="FaceID1_positions-array">0 0 0 0 0 1 1 0 1 1 0 0</float_array>
+          <float_array count="12" id="FaceID1_positions-array">1 0 0 1 1 0 1 1 1 1 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID1_positions-array" stride="3">
               <param type="float" name="X" />
@@ -225,7 +225,7 @@
           </technique_common>
         </source>
         <source id="FaceID1_normals">
-          <float_array count="12" id="FaceID1_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
+          <float_array count="12" id="FaceID1_normals-array">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID1_normals-array" stride="3">
               <param type="float" name="X" />
@@ -247,7 +247,7 @@
     <geometry id="FaceID2" name="FaceID2">
       <mesh>
         <source id="FaceID2_positions">
-          <float_array count="12" id="FaceID2_positions-array">0 0 0 1 0 0 1 1 0 0 1 0</float_array>
+          <float_array count="12" id="FaceID2_positions-array">0 0 0 0 0 1 1 0 1 1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID2_positions-array" stride="3">
               <param type="float" name="X" />
@@ -257,7 +257,7 @@
           </technique_common>
         </source>
         <source id="FaceID2_normals">
-          <float_array count="12" id="FaceID2_normals-array">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
+          <float_array count="12" id="FaceID2_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID2_normals-array" stride="3">
               <param type="float" name="X" />
@@ -279,7 +279,7 @@
     <geometry id="FaceID3" name="FaceID3">
       <mesh>
         <source id="FaceID3_positions">
-          <float_array count="12" id="FaceID3_positions-array">0 0 1 1 0 1 1 1 1 0 1 1</float_array>
+          <float_array count="12" id="FaceID3_positions-array">0 1 0 0 1 1 1 1 1 1 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID3_positions-array" stride="3">
               <param type="float" name="X" />
@@ -289,7 +289,7 @@
           </technique_common>
         </source>
         <source id="FaceID3_normals">
-          <float_array count="12" id="FaceID3_normals-array">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
+          <float_array count="12" id="FaceID3_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID3_normals-array" stride="3">
               <param type="float" name="X" />
@@ -311,7 +311,7 @@
     <geometry id="FaceID4" name="FaceID4">
       <mesh>
         <source id="FaceID4_positions">
-          <float_array count="12" id="FaceID4_positions-array">1 0 0 1 1 0 1 1 1 1 0 1</float_array>
+          <float_array count="12" id="FaceID4_positions-array">0 0 0 1 0 0 1 1 0 0 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID4_positions-array" stride="3">
               <param type="float" name="X" />
@@ -321,7 +321,7 @@
           </technique_common>
         </source>
         <source id="FaceID4_normals">
-          <float_array count="12" id="FaceID4_normals-array">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
+          <float_array count="12" id="FaceID4_normals-array">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID4_normals-array" stride="3">
               <param type="float" name="X" />
@@ -343,7 +343,7 @@
     <geometry id="FaceID5" name="FaceID5">
       <mesh>
         <source id="FaceID5_positions">
-          <float_array count="12" id="FaceID5_positions-array">0 0 0 0 0 1 1 0 1 1 0 0</float_array>
+          <float_array count="12" id="FaceID5_positions-array">0 0 1 1 0 1 1 1 1 0 1 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID5_positions-array" stride="3">
               <param type="float" name="X" />
@@ -353,7 +353,7 @@
           </technique_common>
         </source>
         <source id="FaceID5_normals">
-          <float_array count="12" id="FaceID5_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
+          <float_array count="12" id="FaceID5_normals-array">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID5_normals-array" stride="3">
               <param type="float" name="X" />
@@ -375,7 +375,7 @@
     <geometry id="FaceID6" name="FaceID6">
       <mesh>
         <source id="FaceID6_positions">
-          <float_array count="12" id="FaceID6_positions-array">0 1 0 0 1 1 1 1 1 1 1 0</float_array>
+          <float_array count="12" id="FaceID6_positions-array">0 0 0 0 1 0 0 1 1 0 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID6_positions-array" stride="3">
               <param type="float" name="X" />
@@ -385,7 +385,7 @@
           </technique_common>
         </source>
         <source id="FaceID6_normals">
-          <float_array count="12" id="FaceID6_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+          <float_array count="12" id="FaceID6_normals-array">-1 0 0 -1 0 0 -1 0 0 -1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID6_normals-array" stride="3">
               <param type="float" name="X" />
@@ -407,7 +407,7 @@
     <geometry id="FaceID7" name="FaceID7">
       <mesh>
         <source id="FaceID7_positions">
-          <float_array count="12" id="FaceID7_positions-array">0 1 0 0 1 1 1 1 1 1 1 0</float_array>
+          <float_array count="12" id="FaceID7_positions-array">1 0 0 1 1 0 1 1 1 1 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID7_positions-array" stride="3">
               <param type="float" name="X" />
@@ -417,7 +417,7 @@
           </technique_common>
         </source>
         <source id="FaceID7_normals">
-          <float_array count="12" id="FaceID7_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+          <float_array count="12" id="FaceID7_normals-array">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID7_normals-array" stride="3">
               <param type="float" name="X" />
@@ -439,7 +439,7 @@
     <geometry id="FaceID8" name="FaceID8">
       <mesh>
         <source id="FaceID8_positions">
-          <float_array count="12" id="FaceID8_positions-array">0 0 0 0 1 0 0 1 1 0 0 1</float_array>
+          <float_array count="12" id="FaceID8_positions-array">0 0 0 0 0 1 1 0 1 1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID8_positions-array" stride="3">
               <param type="float" name="X" />
@@ -449,7 +449,7 @@
           </technique_common>
         </source>
         <source id="FaceID8_normals">
-          <float_array count="12" id="FaceID8_normals-array">-1 0 0 -1 0 0 -1 0 0 -1 0 0</float_array>
+          <float_array count="12" id="FaceID8_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID8_normals-array" stride="3">
               <param type="float" name="X" />
@@ -471,7 +471,7 @@
     <geometry id="FaceID9" name="FaceID9">
       <mesh>
         <source id="FaceID9_positions">
-          <float_array count="12" id="FaceID9_positions-array">1 0 0 1 1 0 1 1 1 1 0 1</float_array>
+          <float_array count="12" id="FaceID9_positions-array">0 1 0 0 1 1 1 1 1 1 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID9_positions-array" stride="3">
               <param type="float" name="X" />
@@ -481,7 +481,7 @@
           </technique_common>
         </source>
         <source id="FaceID9_normals">
-          <float_array count="12" id="FaceID9_normals-array">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
+          <float_array count="12" id="FaceID9_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID9_normals-array" stride="3">
               <param type="float" name="X" />
@@ -567,7 +567,7 @@
     <geometry id="FaceID12" name="FaceID12">
       <mesh>
         <source id="FaceID12_positions">
-          <float_array count="12" id="FaceID12_positions-array">0 0 0 0 2 0 0 2 1 0 0 1</float_array>
+          <float_array count="12" id="FaceID12_positions-array">0 0 0 0 1 0 0 1 2 0 0 2</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID12_positions-array" stride="3">
               <param type="float" name="X" />
@@ -599,7 +599,7 @@
     <geometry id="FaceID13" name="FaceID13">
       <mesh>
         <source id="FaceID13_positions">
-          <float_array count="12" id="FaceID13_positions-array">1 0 0 1 2 0 1 2 1 1 0 1</float_array>
+          <float_array count="12" id="FaceID13_positions-array">1 0 0 1 1 0 1 1 2 1 0 2</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID13_positions-array" stride="3">
               <param type="float" name="X" />
@@ -631,7 +631,7 @@
     <geometry id="FaceID14" name="FaceID14">
       <mesh>
         <source id="FaceID14_positions">
-          <float_array count="12" id="FaceID14_positions-array">0 0 0 1 0 0 1 2 0 0 2 0</float_array>
+          <float_array count="12" id="FaceID14_positions-array">0 0 0 0 0 2 1 0 2 1 0 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID14_positions-array" stride="3">
               <param type="float" name="X" />
@@ -641,7 +641,7 @@
           </technique_common>
         </source>
         <source id="FaceID14_normals">
-          <float_array count="12" id="FaceID14_normals-array">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
+          <float_array count="12" id="FaceID14_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID14_normals-array" stride="3">
               <param type="float" name="X" />
@@ -663,7 +663,7 @@
     <geometry id="FaceID15" name="FaceID15">
       <mesh>
         <source id="FaceID15_positions">
-          <float_array count="12" id="FaceID15_positions-array">0 0 1 1 0 1 1 2 1 0 2 1</float_array>
+          <float_array count="12" id="FaceID15_positions-array">0 1 0 0 1 2 1 1 2 1 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID15_positions-array" stride="3">
               <param type="float" name="X" />
@@ -673,7 +673,7 @@
           </technique_common>
         </source>
         <source id="FaceID15_normals">
-          <float_array count="12" id="FaceID15_normals-array">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
+          <float_array count="12" id="FaceID15_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID15_normals-array" stride="3">
               <param type="float" name="X" />
@@ -823,7 +823,7 @@
     <geometry id="FaceID20" name="FaceID20">
       <mesh>
         <source id="FaceID20_positions">
-          <float_array count="12" id="FaceID20_positions-array">0 0 0 0 1 0 0 1 2 0 0 2</float_array>
+          <float_array count="12" id="FaceID20_positions-array">0 0 0 0 2 0 0 2 1 0 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID20_positions-array" stride="3">
               <param type="float" name="X" />
@@ -855,7 +855,7 @@
     <geometry id="FaceID21" name="FaceID21">
       <mesh>
         <source id="FaceID21_positions">
-          <float_array count="12" id="FaceID21_positions-array">1 0 0 1 1 0 1 1 2 1 0 2</float_array>
+          <float_array count="12" id="FaceID21_positions-array">1 0 0 1 2 0 1 2 1 1 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID21_positions-array" stride="3">
               <param type="float" name="X" />
@@ -887,7 +887,7 @@
     <geometry id="FaceID22" name="FaceID22">
       <mesh>
         <source id="FaceID22_positions">
-          <float_array count="12" id="FaceID22_positions-array">0 0 0 0 0 2 1 0 2 1 0 0</float_array>
+          <float_array count="12" id="FaceID22_positions-array">0 0 0 1 0 0 1 2 0 0 2 0</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID22_positions-array" stride="3">
               <param type="float" name="X" />
@@ -897,7 +897,7 @@
           </technique_common>
         </source>
         <source id="FaceID22_normals">
-          <float_array count="12" id="FaceID22_normals-array">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
+          <float_array count="12" id="FaceID22_normals-array">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID22_normals-array" stride="3">
               <param type="float" name="X" />
@@ -919,7 +919,7 @@
     <geometry id="FaceID23" name="FaceID23">
       <mesh>
         <source id="FaceID23_positions">
-          <float_array count="12" id="FaceID23_positions-array">0 1 0 0 1 2 1 1 2 1 1 0</float_array>
+          <float_array count="12" id="FaceID23_positions-array">0 0 1 1 0 1 1 2 1 0 2 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID23_positions-array" stride="3">
               <param type="float" name="X" />
@@ -929,7 +929,7 @@
           </technique_common>
         </source>
         <source id="FaceID23_normals">
-          <float_array count="12" id="FaceID23_normals-array">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+          <float_array count="12" id="FaceID23_normals-array">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
           <technique_common>
             <accessor count="4" source="#FaceID23_normals-array" stride="3">
               <param type="float" name="X" />
@@ -1098,11 +1098,11 @@
     </material>
   </library_materials>
   <library_nodes>
-    <node id="ZZX-without-+Y-+X" name="ZZX">
+    <node id="XZX-without-+Z" name="XZX">
       <instance_geometry url="#FaceID0">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1111,7 +1111,7 @@
       <instance_geometry url="#FaceID1">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1120,24 +1120,13 @@
       <instance_geometry url="#FaceID2">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
       <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZXX-without-+Z" name="ZXX">
-      <instance_geometry url="#FaceID0">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1147,6 +1136,73 @@
         </bind_material>
       </instance_geometry>
       <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      </node>
+    <node id="XZX-without--Z-+Z-+X" name="XZX">
+      <instance_geometry url="#FaceID0">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID2">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID3">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      </node>
+    <node id="XZX-without--Z" name="XZX">
+      <instance_geometry url="#FaceID0">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID1">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID2">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID3">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1164,56 +1220,18 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-    <instance_geometry url="#FaceID6">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      </node>
-    <node id="ZXX-without--Z--Y-+Z" name="ZXX">
-      <instance_geometry url="#FaceID0">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID4">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
+    </node>
+    <node id="ZZX-without-+Y-+X" name="ZZX">
       <instance_geometry url="#FaceID6">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
-      </node>
-    <node id="ZXX-without--Z" name="ZXX">
-      <instance_geometry url="#FaceID0">
+      <instance_geometry url="#FaceID2">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1225,7 +1243,7 @@
       <instance_geometry url="#FaceID4">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1240,54 +1258,36 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-    <instance_geometry url="#FaceID6">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
     </node>
-    <node id="ZZX-without-+Y--X" name="ZZX">
-      <instance_geometry url="#FaceID4">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID1">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
+    <node id="XZX-without--X-+X" name="XZX">
       <instance_geometry url="#FaceID2">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
       <instance_geometry url="#FaceID3">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID5">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1297,8 +1297,8 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZZX-without--Y-+X" name="ZZX">
-      <instance_geometry url="#FaceID0">
+    <node id="ZXX-without--Y-+Y" name="ZXX">
+      <instance_geometry url="#FaceID6">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1316,68 +1316,10 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZZX-without-+Y--X--Y" name="ZZX">
       <instance_geometry url="#FaceID4">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZXX-without-+Y--Z-+Z" name="ZXX">
-      <instance_geometry url="#FaceID0">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID4">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1393,7 +1335,92 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="XZZ-without-+Z" name="XZZ">
+    <node id="ZZX-without--Y--X-+X" name="ZZX">
+      <instance_geometry url="#FaceID3">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID5">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    </node>
+    <node id="ZZX-without--Y-+X" name="ZZX">
+      <instance_geometry url="#FaceID6">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID3">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID5">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    </node>
+    <node id="ZXX-without-+Z" name="ZXX">
+      <instance_geometry url="#FaceID6">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID7">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
       <instance_geometry url="#FaceID8">
         <bind_material>
           <technique_common>
@@ -1412,7 +1439,18 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID1">
+    <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      </node>
+    <node id="ZXX-without--Z-+Z-+Y" name="ZXX">
+      <instance_geometry url="#FaceID6">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1422,6 +1460,100 @@
         </bind_material>
       </instance_geometry>
       <instance_geometry url="#FaceID7">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID8">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      </node>
+    <node id="ZXX-without--Z" name="ZXX">
+      <instance_geometry url="#FaceID6">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID7">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID8">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID9">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    <instance_geometry url="#FaceID5">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    </node>
+    <node id="XZZ-without-+Z" name="XZZ">
+      <instance_geometry url="#FaceID0">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID1">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID2">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID3">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1440,37 +1572,8 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="XZX-without--Z-+X-+Z" name="XZX">
-      <instance_geometry url="#FaceID8">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID1">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID7">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      </node>
     <node id="XZX-without--Z--X-+Z" name="XZX">
-      <instance_geometry url="#FaceID9">
+      <instance_geometry url="#FaceID1">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1479,7 +1582,7 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID1">
+      <instance_geometry url="#FaceID2">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1488,7 +1591,7 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID7">
+      <instance_geometry url="#FaceID3">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1499,16 +1602,7 @@
       </instance_geometry>
       </node>
     <node id="XZX-without--Z-+Z" name="XZX">
-      <instance_geometry url="#FaceID8">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID9">
+      <instance_geometry url="#FaceID0">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1520,13 +1614,22 @@
       <instance_geometry url="#FaceID1">
         <bind_material>
           <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID2">
+        <bind_material>
+          <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID7">
+      <instance_geometry url="#FaceID3">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1537,16 +1640,7 @@
       </instance_geometry>
       </node>
     <node id="XZZ-without--Z" name="XZZ">
-      <instance_geometry url="#FaceID8">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID9">
+      <instance_geometry url="#FaceID0">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1558,13 +1652,22 @@
       <instance_geometry url="#FaceID1">
         <bind_material>
           <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID2">
+        <bind_material>
+          <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID7">
+      <instance_geometry url="#FaceID3">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1583,27 +1686,7 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZZX-without-+Y--X--Y-+X" name="ZZX">
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZZX-without--X--Y-+X" name="ZZX">
+    <node id="ZZX-without--X-+Y" name="ZZX">
       <instance_geometry url="#FaceID7">
         <bind_material>
           <technique_common>
@@ -1616,55 +1699,6 @@
       <instance_geometry url="#FaceID2">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZZX-without-+Y--Y-+X" name="ZZX">
-      <instance_geometry url="#FaceID0">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-    </node>
-    <node id="ZXX-without-+Y--Y" name="ZXX">
-      <instance_geometry url="#FaceID0">
-        <bind_material>
-          <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
@@ -1674,22 +1708,13 @@
       <instance_geometry url="#FaceID4">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID3">
+      <instance_geometry url="#FaceID5">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1699,8 +1724,8 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZZX-without--X--Y" name="ZZX">
-      <instance_geometry url="#FaceID4">
+    <node id="ZXX-without--Y-+Z--Z" name="ZXX">
+      <instance_geometry url="#FaceID6">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#Z_material">
@@ -1718,16 +1743,7 @@
           </technique_common>
         </bind_material>
       </instance_geometry>
-      <instance_geometry url="#FaceID2">
-        <bind_material>
-          <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
-              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
-            </instance_material>
-          </technique_common>
-        </bind_material>
-      </instance_geometry>
-      <instance_geometry url="#FaceID3">
+      <instance_geometry url="#FaceID9">
         <bind_material>
           <technique_common>
             <instance_material symbol="MaterialSymbol" target="#X_material">
@@ -1737,11 +1753,69 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZOX" name="ZOX">
+    <node id="ZZX-without--Y--X-+Y-+X" name="ZZX">
+      <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID5">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    </node>
+    <node id="ZZX-without--Y--X" name="ZZX">
+      <instance_geometry url="#FaceID7">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID3">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID4">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+      <instance_geometry url="#FaceID5">
+        <bind_material>
+          <technique_common>
+            <instance_material symbol="MaterialSymbol" target="#X_material">
+              <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
+            </instance_material>
+          </technique_common>
+        </bind_material>
+      </instance_geometry>
+    </node>
+    <node id="XZO" name="XZO">
       <instance_geometry url="#FaceID12">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1750,7 +1824,7 @@
       <instance_geometry url="#FaceID13">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1759,7 +1833,7 @@
       <instance_geometry url="#FaceID14">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1768,7 +1842,7 @@
       <instance_geometry url="#FaceID15">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1813,7 +1887,7 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="ZXO" name="ZXO">
+    <node id="ZOX" name="ZOX">
       <instance_geometry url="#FaceID20">
         <bind_material>
           <technique_common>
@@ -1851,11 +1925,11 @@
         </bind_material>
       </instance_geometry>
     </node>
-    <node id="XZO" name="XZO">
+    <node id="ZXO" name="ZXO">
       <instance_geometry url="#FaceID24">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1864,7 +1938,7 @@
       <instance_geometry url="#FaceID25">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#X_material">
+            <instance_material symbol="MaterialSymbol" target="#Z_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1873,7 +1947,7 @@
       <instance_geometry url="#FaceID26">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1882,7 +1956,7 @@
       <instance_geometry url="#FaceID27">
         <bind_material>
           <technique_common>
-            <instance_material symbol="MaterialSymbol" target="#Z_material">
+            <instance_material symbol="MaterialSymbol" target="#X_material">
               <bind_vertex_input semantic="UVSET0" input_semantic="TEXCOORD" input_set="0" />
             </instance_material>
           </technique_common>
@@ -1894,564 +1968,516 @@
     <visual_scene id="scene">
       <node id="SketchUp" name="SketchUp">
         <node id="ID0" name="instance_0">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y-+X" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without-+Z" />
         </node>
         <node id="ID1" name="instance_1">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
         <node id="ID2" name="instance_2">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z--Y-+Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 24.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z" />
         </node>
         <node id="ID3" name="instance_3">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 24.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without-+Z" />
         </node>
         <node id="ID4" name="instance_4">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y-+X" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
         <node id="ID5" name="instance_5">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z" />
         </node>
         <node id="ID6" name="instance_6">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z--Y-+Z" />
-        </node>
-        <node id="ID7" name="instance_7">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z" />
-        </node>
-        <node id="ID8" name="instance_8">
-          <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X" />
-        </node>
-        <node id="ID9" name="instance_9">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without-+Y-+X" />
         </node>
-        <node id="ID10" name="instance_10">
+        <node id="ID7" name="instance_7">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--Y-+X" />
+          <instance_node url="#XZX-without--X-+X" />
         </node>
-        <node id="ID11" name="instance_11">
+        <node id="ID8" name="instance_8">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X--Y" />
+          <instance_node url="#ZXX-without--Y-+Y" />
         </node>
-        <node id="ID12" name="instance_12">
+        <node id="ID9" name="instance_9">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--Y-+X" />
+          <instance_node url="#ZZX-without--Y--X-+X" />
         </node>
-        <node id="ID13" name="instance_13">
+        <node id="ID10" name="instance_10">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without-+Y-+X" />
         </node>
-        <node id="ID14" name="instance_14">
+        <node id="ID11" name="instance_11">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 18.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without--Y-+X" />
         </node>
-        <node id="ID15" name="instance_15">
+        <node id="ID12" name="instance_12">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without-+Z" />
         </node>
-        <node id="ID16" name="instance_16">
+        <node id="ID13" name="instance_13">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Z-+Z" />
+          <instance_node url="#ZXX-without--Z-+Z-+Y" />
         </node>
-        <node id="ID17" name="instance_17">
+        <node id="ID14" name="instance_14">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without--Z" />
         </node>
-        <node id="ID18" name="instance_18">
+        <node id="ID15" name="instance_15">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without--Y-+X" />
         </node>
-        <node id="ID19" name="instance_19">
+        <node id="ID16" name="instance_16">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without-+Z" />
         </node>
-        <node id="ID20" name="instance_20">
+        <node id="ID17" name="instance_17">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#XZX-without--Z-+X-+Z" />
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
-        <node id="ID21" name="instance_21">
+        <node id="ID18" name="instance_18">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID22" name="instance_22">
+        <node id="ID19" name="instance_19">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z-+Z" />
         </node>
-        <node id="ID23" name="instance_23">
+        <node id="ID20" name="instance_20">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z-+Z" />
         </node>
-        <node id="ID24" name="instance_24">
+        <node id="ID21" name="instance_21">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#XZX-without--Z-+X-+Z" />
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
-        <node id="ID25" name="instance_25">
+        <node id="ID22" name="instance_22">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID26" name="instance_26">
+        <node id="ID23" name="instance_23">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 24.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without--Z" />
         </node>
-        <node id="ID27" name="instance_27">
+        <node id="ID24" name="instance_24">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without-+Z" />
         </node>
-        <node id="ID28" name="instance_28">
+        <node id="ID25" name="instance_25">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#XZX-without--Z-+X-+Z" />
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
-        <node id="ID29" name="instance_29">
+        <node id="ID26" name="instance_26">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#XZX-without--Z-+X-+Z" />
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
-        <node id="ID30" name="instance_30">
+        <node id="ID27" name="instance_27">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID31" name="instance_31">
+        <node id="ID28" name="instance_28">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z-+Z" />
         </node>
-        <node id="ID32" name="instance_32">
+        <node id="ID29" name="instance_29">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID33" name="instance_33">
+        <node id="ID30" name="instance_30">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without--Z" />
         </node>
-        <node id="ID34" name="instance_34">
+        <node id="ID31" name="instance_31">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 18.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X" />
+          <instance_node url="#ZZX-without--X-+Y" />
         </node>
-        <node id="ID35" name="instance_35">
+        <node id="ID32" name="instance_32">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 21.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without-+Z" />
         </node>
-        <node id="ID36" name="instance_36">
+        <node id="ID33" name="instance_33">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 21.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z--Y-+Z" />
+          <instance_node url="#ZXX-without--Y-+Z--Z" />
         </node>
-        <node id="ID37" name="instance_37">
+        <node id="ID34" name="instance_34">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 21.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without--Z" />
         </node>
-        <node id="ID38" name="instance_38">
+        <node id="ID35" name="instance_35">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without-+Y-+X" />
         </node>
-        <node id="ID39" name="instance_39">
+        <node id="ID36" name="instance_36">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X" />
+          <instance_node url="#ZZX-without--X-+Y" />
         </node>
-        <node id="ID40" name="instance_40">
+        <node id="ID37" name="instance_37">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZZX-without-+Y-+X" />
         </node>
-        <node id="ID41" name="instance_41">
+        <node id="ID38" name="instance_38">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X--Y-+X" />
+          <instance_node url="#ZZX-without--Y--X-+Y-+X" />
+        </node>
+        <node id="ID39" name="instance_39">
+          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#ZZX-without--Y--X-+X" />
+        </node>
+        <node id="ID40" name="instance_40">
+          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#ZXX-without--Y-+Y" />
+        </node>
+        <node id="ID41" name="instance_41">
+          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#ZXX-without--Y-+Y" />
         </node>
         <node id="ID42" name="instance_42">
-          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--X--Y-+X" />
+          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#ZZX-without--Y--X-+X" />
         </node>
         <node id="ID43" name="instance_43">
-          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--Y-+X" />
+          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#ZZX-without--Y--X" />
         </node>
         <node id="ID44" name="instance_44">
-          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Y" />
-        </node>
-        <node id="ID45" name="instance_45">
-          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--X--Y" />
-        </node>
-        <node id="ID46" name="instance_46">
-          <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--X--Y" />
-        </node>
-        <node id="ID47" name="instance_47">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without-+Z" />
         </node>
-        <node id="ID48" name="instance_48">
+        <node id="ID45" name="instance_45">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Y--Z-+Z" />
+          <instance_node url="#ZXX-without--Z-+Z-+Y" />
         </node>
-        <node id="ID49" name="instance_49">
+        <node id="ID46" name="instance_46">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXX-without--Z" />
         </node>
-        <node id="ID50" name="instance_50">
+        <node id="ID47" name="instance_47">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--X--Y" />
+          <instance_node url="#ZZX-without--Y--X" />
         </node>
-        <node id="ID51" name="instance_51">
+        <node id="ID48" name="instance_48">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without-+Z" />
         </node>
-        <node id="ID52" name="instance_52">
+        <node id="ID49" name="instance_49">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID53" name="instance_53">
+        <node id="ID50" name="instance_50">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID54" name="instance_54">
+        <node id="ID51" name="instance_51">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z-+Z" />
         </node>
-        <node id="ID55" name="instance_55">
+        <node id="ID52" name="instance_52">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#XZX-without--Z-+X-+Z" />
+          <instance_node url="#XZX-without--Z-+Z-+X" />
         </node>
-        <node id="ID56" name="instance_56">
+        <node id="ID53" name="instance_53">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z-+Z" />
         </node>
-        <node id="ID57" name="instance_57">
+        <node id="ID54" name="instance_54">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
-        <node id="ID58" name="instance_58">
+        <node id="ID55" name="instance_55">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZZ-without--Z" />
         </node>
+        <node id="ID56" name="instance_56">
+          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without-+Z" />
+        </node>
+        <node id="ID57" name="instance_57">
+          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z--X-+Z" />
+        </node>
+        <node id="ID58" name="instance_58">
+          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z" />
+        </node>
         <node id="ID59" name="instance_59">
-          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X" />
+          <matrix>1.0 0.0 0.0 18.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--X-+X" />
         </node>
         <node id="ID60" name="instance_60">
-          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Z" />
+          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without-+Z" />
         </node>
         <node id="ID61" name="instance_61">
-          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z--Y-+Z" />
+          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z--X-+Z" />
         </node>
         <node id="ID62" name="instance_62">
-          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z" />
+          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZX-without--Z" />
         </node>
         <node id="ID63" name="instance_63">
-          <matrix>1.0 0.0 0.0 18.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y-+X" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 19.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZO" />
         </node>
         <node id="ID64" name="instance_64">
-          <matrix>1.0 0.0 0.0 18.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without--X--Y" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 22.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZO" />
         </node>
         <node id="ID65" name="instance_65">
-          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZZX-without-+Y--X" />
+          <matrix>1.0 0.0 0.0 4.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#OZX" />
         </node>
         <node id="ID66" name="instance_66">
-          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without-+Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZO" />
         </node>
         <node id="ID67" name="instance_67">
-          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z--Y-+Z" />
+          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#XZO" />
         </node>
         <node id="ID68" name="instance_68">
-          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXX-without--Z" />
+          <matrix>1.0 0.0 0.0 4.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#OZX" />
         </node>
         <node id="ID69" name="instance_69">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID70" name="instance_70">
-          <matrix>1.0 0.0 0.0 4.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#OZX" />
-        </node>
-        <node id="ID71" name="instance_71">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 19.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
-        </node>
-        <node id="ID72" name="instance_72">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 22.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
-        </node>
-        <node id="ID73" name="instance_73">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 13.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID74" name="instance_74">
-          <matrix>1.0 0.0 0.0 4.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#OZX" />
-        </node>
-        <node id="ID75" name="instance_75">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
-        </node>
-        <node id="ID76" name="instance_76">
-          <matrix>1.0 0.0 0.0 3.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
-        </node>
-        <node id="ID77" name="instance_77">
-          <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID78" name="instance_78">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 10.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID79" name="instance_79">
+        <node id="ID70" name="instance_70">
           <matrix>1.0 0.0 0.0 7.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID80" name="instance_80">
+        <node id="ID71" name="instance_71">
           <matrix>1.0 0.0 0.0 7.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 21.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID81" name="instance_81">
+        <node id="ID72" name="instance_72">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 13.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID82" name="instance_82">
+        <node id="ID73" name="instance_73">
           <matrix>1.0 0.0 0.0 7.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 9.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID83" name="instance_83">
+        <node id="ID74" name="instance_74">
           <matrix>1.0 0.0 0.0 6.0 0.0 1.0 0.0 16.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID84" name="instance_84">
+        <node id="ID75" name="instance_75">
           <matrix>1.0 0.0 0.0 7.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID85" name="instance_85">
+        <node id="ID76" name="instance_76">
           <matrix>1.0 0.0 0.0 7.0 0.0 1.0 0.0 18.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID86" name="instance_86">
+        <node id="ID77" name="instance_77">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 16.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID87" name="instance_87">
+        <node id="ID78" name="instance_78">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 19.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID88" name="instance_88">
+        <node id="ID79" name="instance_79">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 4.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID89" name="instance_89">
+        <node id="ID80" name="instance_80">
           <matrix>1.0 0.0 0.0 10.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID90" name="instance_90">
+        <node id="ID81" name="instance_81">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 4.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID91" name="instance_91">
+        <node id="ID82" name="instance_82">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID92" name="instance_92">
+        <node id="ID83" name="instance_83">
           <matrix>1.0 0.0 0.0 10.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID93" name="instance_93">
+        <node id="ID84" name="instance_84">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID94" name="instance_94">
+        <node id="ID85" name="instance_85">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 13.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID95" name="instance_95">
+        <node id="ID86" name="instance_86">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 16.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID96" name="instance_96">
+        <node id="ID87" name="instance_87">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 19.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID97" name="instance_97">
+        <node id="ID88" name="instance_88">
           <matrix>1.0 0.0 0.0 10.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID98" name="instance_98">
+        <node id="ID89" name="instance_89">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 22.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID99" name="instance_99">
+        <node id="ID90" name="instance_90">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID100" name="instance_100">
+        <node id="ID91" name="instance_91">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 4.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID101" name="instance_101">
+        <node id="ID92" name="instance_92">
           <matrix>1.0 0.0 0.0 10.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID102" name="instance_102">
+        <node id="ID93" name="instance_93">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID103" name="instance_103">
+        <node id="ID94" name="instance_94">
           <matrix>1.0 0.0 0.0 10.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID104" name="instance_104">
+        <node id="ID95" name="instance_95">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID105" name="instance_105">
+        <node id="ID96" name="instance_96">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 13.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID106" name="instance_106">
+        <node id="ID97" name="instance_97">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 16.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID107" name="instance_107">
+        <node id="ID98" name="instance_98">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 19.0 0.0 0.0 1.0 15.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID108" name="instance_108">
+        <node id="ID99" name="instance_99">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 21.0 0.0 0.0 1.0 13.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID109" name="instance_109">
+        <node id="ID100" name="instance_100">
           <matrix>1.0 0.0 0.0 9.0 0.0 1.0 0.0 21.0 0.0 0.0 1.0 16.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID110" name="instance_110">
+        <node id="ID101" name="instance_101">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID111" name="instance_111">
+        <node id="ID102" name="instance_102">
           <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID112" name="instance_112">
+        <node id="ID103" name="instance_103">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID113" name="instance_113">
+        <node id="ID104" name="instance_104">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 10.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID114" name="instance_114">
+        <node id="ID105" name="instance_105">
           <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID115" name="instance_115">
+        <node id="ID106" name="instance_106">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 10.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID116" name="instance_116">
+        <node id="ID107" name="instance_107">
           <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID117" name="instance_117">
+        <node id="ID108" name="instance_108">
           <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 18.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID118" name="instance_118">
+        <node id="ID109" name="instance_109">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 13.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID119" name="instance_119">
-          <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 12.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#OZX" />
-        </node>
-        <node id="ID120" name="instance_120">
+        <node id="ID110" name="instance_110">
           <matrix>1.0 0.0 0.0 12.0 0.0 1.0 0.0 13.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID121" name="instance_121">
+        <node id="ID111" name="instance_111">
+          <matrix>1.0 0.0 0.0 13.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
+          <instance_node url="#OZX" />
+        </node>
+        <node id="ID112" name="instance_112">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 4.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID122" name="instance_122">
+        <node id="ID113" name="instance_113">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 3.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZXO" />
         </node>
-        <node id="ID123" name="instance_123">
+        <node id="ID114" name="instance_114">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 4.0 0.0 0.0 1.0 6.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#ZOX" />
         </node>
-        <node id="ID124" name="instance_124">
+        <node id="ID115" name="instance_115">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID125" name="instance_125">
+        <node id="ID116" name="instance_116">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 4.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID126" name="instance_126">
+        <node id="ID117" name="instance_117">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 7.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID127" name="instance_127">
+        <node id="ID118" name="instance_118">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID128" name="instance_128">
+        <node id="ID119" name="instance_119">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 13.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID129" name="instance_129">
+        <node id="ID120" name="instance_120">
           <matrix>1.0 0.0 0.0 16.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID130" name="instance_130">
+        <node id="ID121" name="instance_121">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 16.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID131" name="instance_131">
+        <node id="ID122" name="instance_122">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 19.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#XZO" />
         </node>
-        <node id="ID132" name="instance_132">
-          <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 13.0 0.0 0.0 1.0 3.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID133" name="instance_133">
+        <node id="ID123" name="instance_123">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 1.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
+          <instance_node url="#XZO" />
         </node>
-        <node id="ID134" name="instance_134">
+        <node id="ID124" name="instance_124">
           <matrix>1.0 0.0 0.0 15.0 0.0 1.0 0.0 15.0 0.0 0.0 1.0 4.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
+          <instance_node url="#XZO" />
         </node>
-        <node id="ID135" name="instance_135">
-          <matrix>1.0 0.0 0.0 18.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID136" name="instance_136">
-          <matrix>1.0 0.0 0.0 19.0 0.0 1.0 0.0 6.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
+        <node id="ID125" name="instance_125">
+          <matrix>1.0 0.0 0.0 19.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
           <instance_node url="#OZX" />
         </node>
-        <node id="ID137" name="instance_137">
-          <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 7.0 0.0 0.0 1.0 12.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZOX" />
-        </node>
-        <node id="ID138" name="instance_138">
+        <node id="ID126" name="instance_126">
           <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 10.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
+          <instance_node url="#XZO" />
         </node>
-        <node id="ID139" name="instance_139">
+        <node id="ID127" name="instance_127">
           <matrix>1.0 0.0 0.0 21.0 0.0 1.0 0.0 9.0 0.0 0.0 1.0 13.0 0.0 0.0 0.0 1.0</matrix>
-          <instance_node url="#ZXO" />
+          <instance_node url="#XZO" />
         </node>
       </node>
     </visual_scene>

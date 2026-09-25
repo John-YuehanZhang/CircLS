@@ -21,6 +21,13 @@
    3
   ]
  },
+ "orientation": {
+  "q0": "X_vertical",
+  "q1": "X_vertical",
+  "q2": "X_vertical",
+  "y0": "X_vertical",
+  "y1": "X_vertical"
+ },
  "routing": [
   {
    "step": 0,

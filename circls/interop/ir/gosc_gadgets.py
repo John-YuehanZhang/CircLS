@@ -322,15 +322,34 @@ def append_program_observables(circuit, exp, program: PPMProgram):
 
 
 # --------------------------------------------------------------- pass 2b shim
+def _with_magic(cells, steps, free_magic, orientation, first_letters):
+    """Forced orientations plus the geometry-chosen ones of the free
+    (|+>-proxy) gadget ancillas; an explicit ``orientation`` entry wins."""
+    from circls.compiler.mapping import (magic_orientations,
+                                         patch_orientation)
+    forced = dict(orientation or {})
+    free = [nm for nm in free_magic if nm not in forced]
+    if free:
+        known = {nm: forced.get(nm) or patch_orientation(
+                     nm, first_letters.get(nm)) for nm in cells}
+        return {**magic_orientations(
+            cells, [s.interaction_type for s in steps], free,
+            orients=known), **forced}
+    return forced or None
+
+
 def to_experiment_inputs(program: PPMProgram, distance: int = 3,
                          assignment: str = "row_major", placement=None,
-                         orientation=None):
+                         orientation=None, magic_proxy: str = "Y"):
     """Structural mapping of a PPMProgram onto SequentialPPMExperiment inputs.
 
     Returns ``(specs, steps, initial_states, final_measure_states, program)``.
     Data patches are named ``q{i}`` (ppm_import convention), gadget ancillas
-    ``y{k}``.  Ancilla lifecycle: initial state 'Y' (realised on the
-    experiment side via the Gidney in-place birth), final state 'X' (the
+    ``y{k}``.  Ancilla lifecycle: initial state ``magic_proxy`` ('Y' = the
+    Gidney in-place birth, realised on the experiment side, orientation
+    pinned ``X_vertical``; 'X' = the |+> proxy of the paper's evaluation,
+    whose orientation is free and chosen per ancilla to face the step that
+    consumes it, ``mapping.magic_orientations``), final state 'X' (the
     gadget's X readout IS the ancilla's terminal measurement).  Data patches get placeholder 'Z' initial/final states, as
     in ppm_import.to_experiment; the observable assembly that turns PPM
     records + XOR rules into the program's classical bits is experiment-side
@@ -341,7 +360,9 @@ def to_experiment_inputs(program: PPMProgram, distance: int = 3,
     """
     from circls.core.sequential_ppm_ls import PPMStep
     from circls.interop.ir.ppm_import import patch_name
-    from circls.compiler.mapping import place_patches, place_patches_optimized
+    from circls.compiler.mapping import (place_patches,
+                                         place_patches_optimized,
+                                         _natural_key)
 
     def name(q: int) -> str:
         if q < program.num_data:
@@ -355,6 +376,10 @@ def to_experiment_inputs(program: PPMProgram, distance: int = 3,
 
     names = ({nm for s in steps for nm, _ in s.interaction_type}
              | {name(q) for q in folded_qubits})
+    if magic_proxy not in ("Y", "X"):
+        raise ValueError(f"magic_proxy must be 'Y' or 'X', got {magic_proxy!r}")
+    magic_names = sorted(nm for nm in names if nm.startswith("y"))
+    free_magic = magic_names if magic_proxy != "Y" else []
     first_letters: dict = {}
     for s in steps:
         for nm, letter in s.interaction_type:
@@ -375,7 +400,7 @@ def to_experiment_inputs(program: PPMProgram, distance: int = 3,
             raise ValueError(
                 f"orientation values must be in {sorted(legal)}: {bad}")
         ybad = sorted(nm for nm in orientation if nm.startswith("y"))
-        if ybad:
+        if ybad and magic_proxy == "Y":
             raise ValueError(
                 "orientation cannot override |Y> patches (the Gidney "
                 f"birth layout is protocol-fixed X_vertical): {ybad}")
@@ -406,17 +431,27 @@ def to_experiment_inputs(program: PPMProgram, distance: int = 3,
             raise ValueError("placement assigns two patches to one cell")
         specs = place_patches(names, distance,
                               first_letters=first_letters, cells=cells,
-                              orients=orientation)
+                              orients=_with_magic(cells, steps, free_magic,
+                                                  orientation,
+                                                  first_letters))
     elif assignment == "optimized":
         specs = place_patches_optimized(
             names, [s.interaction_type for s in steps], distance,
-            first_letters=first_letters, orients=orientation)
+            first_letters=first_letters, orients=orientation,
+            free_magic=free_magic)
     elif assignment == "row_major":
+        from circls.compiler.mapping import square_sparse_cells
+        ordered = sorted(names, key=_natural_key)
+        cells = dict(zip(ordered, square_sparse_cells(len(ordered))))
         specs = place_patches(names, distance, first_letters=first_letters,
-                              orients=orientation)
+                              cells=cells,
+                              orients=_with_magic(cells, steps, free_magic,
+                                                  orientation,
+                                                  first_letters))
     else:
         raise ValueError(f"unknown assignment policy {assignment!r}")
-    initial_states = {nm: ("Y" if nm.startswith("y") else "Z") for nm in names}
+    initial_states = {nm: (magic_proxy if nm.startswith("y") else "Z")
+                      for nm in names}
     final_measure_states = {nm: ("X" if nm.startswith("y") else "Z")
                             for nm in names}
     for q, letter in folded.values():

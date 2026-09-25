@@ -41,6 +41,18 @@
    3
   ]
  },
+ "orientation": {
+  "q0": "X_horizontal",
+  "q1": "X_horizontal",
+  "q2": "X_vertical",
+  "y0": "X_horizontal",
+  "y1": "X_vertical",
+  "y2": "X_horizontal",
+  "y3": "X_horizontal",
+  "y4": "X_vertical",
+  "y5": "X_vertical",
+  "y6": "X_horizontal"
+ },
  "routing": [
   {
    "step": 0,
@@ -66,10 +78,6 @@
     [
      4,
      5
-    ],
-    [
-     5,
-     4
     ],
     [
      4,
@@ -148,10 +156,6 @@
     [
      2,
      5
-    ],
-    [
-     1,
-     4
     ]
    ]
   },
@@ -170,15 +174,7 @@
    "corridor_tiles": [
     [
      6,
-     2
-    ],
-    [
-     6,
      3
-    ],
-    [
-     7,
-     2
     ]
    ]
   },
@@ -256,14 +252,6 @@
     [
      2,
      3
-    ],
-    [
-     1,
-     2
-    ],
-    [
-     2,
-     2
     ]
    ]
   }

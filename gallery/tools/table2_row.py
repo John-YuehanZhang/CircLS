@@ -16,7 +16,10 @@ The program is read from experiments/table2_inputs/<program>.qasm, the circuit e
 in Table 2 compiles (see the README there), with a Z readout of every qubit appended.  Every T
 is read as a pi/4 rotation gadget and the gadget ancilla is prepared in |+> (the paper's X-state
 proxy), so the circuit is Clifford and stim can sample it; the PPM sequence and every mapping and
-routing decision are the ones the real program gets.
+routing decision are the ones the real program gets.  The proxy goes through the pre-2026-09-25
+path (ancilla orientation pinned X_vertical), which reproduces the paper's Table 2 rows; the
+gallery's own numbers use ``compile_qasm(magic_proxy="X")``, where each ancilla faces the step
+that consumes it.
 """
 import argparse
 import contextlib

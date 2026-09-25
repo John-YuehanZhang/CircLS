@@ -73,6 +73,7 @@ def save_routing(cp, steps, path):
                         "targets": [[nm, P] for nm, P in st.interaction_type],
                         "corridor_tiles": tree})
     info = {"placement": {nm: list(c) for nm, c in cp.placement.items()},
+            "orientation": {s.name: s.orientation for s in exp.patches},
             "routing": routing}
     pathlib.Path(path).write_text(json.dumps(info, indent=1))
     joint = sum(1 for r in routing if len(r["targets"]) > 1)

@@ -123,19 +123,20 @@ def compile_ppm_sequence(program, distance: int = 3,
                          rounds: Optional[int] = None, noise=None,
                          assignment: str = "row_major",
                          placement=None, orientation=None, lifetime=None,
-                         router=None,
+                         router=None, magic_proxy: str = "Y",
                          **experiment_kwargs) -> CompiledProgram:
     """PPMProgram -> compiled program: the mid-pipeline entry point.
 
     Enter with a PPM sequence from ANY front-end (docs/API_HOOKS.md)
     and skip the QASM loading, re-selection and scheduling passes;
-    the placement/orientation/lifetime/router hooks apply exactly as in
-    ``compile_qasm``.  Returns a CompiledProgram whose reconstruction
+    the placement/orientation/lifetime/router hooks and ``magic_proxy``
+    apply exactly as in ``compile_qasm``.  Returns a CompiledProgram whose reconstruction
     and reorder metadata are identity (no front-end rewrites
     happened here)."""
     specs, steps, init, final, _ = to_experiment_inputs(
         program, distance=distance, assignment=assignment,
-        placement=placement, orientation=orientation)
+        placement=placement, orientation=orientation,
+        magic_proxy=magic_proxy)
     if lifetime is not None:
         experiment_kwargs["lifetime_overrides"] = lifetime
     if router is not None:
@@ -292,7 +293,7 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
                  parallel_steps: bool = True,
                  reselector=None, scheduler=None, placement=None,
                  orientation=None, lifetime=None, router=None,
-                 t_as_s: bool = False,
+                 t_as_s: bool = False, magic_proxy: str = "Y",
                  graphlike_detectors: bool = True,
                  graphlike_closures: Optional[bool] = None,
                  **experiment_kwargs) -> CompiledProgram:
@@ -314,6 +315,15 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     default.  ``experiment_kwargs`` pass through to
     ``SequentialPPMExperiment`` (e.g. ``liveness=True, keep_patches={...}``).
     Non-Clifford input is rejected loudly by the front-end.
+
+    ``magic_proxy``: the state every gadget ancilla is born in (the T
+    gadgets of ``t_as_s`` and the pi/4 gadgets the Y-free rewrite adds).  'Y' (default) is the Gidney in-place |Y> birth, whose layout
+    pins the ancilla to ``X_vertical``; 'X' is the |+> proxy of the paper's
+    evaluation, and then every ancilla's orientation is chosen to face the
+    step that consumes it (``mapping.magic_orientations``: Z through an
+    E/W seam wants ``X_horizontal``, through a N/S seam ``X_vertical``),
+    so the corridor attaches on the near side instead of detouring; a tied
+    vote is settled by the assignment's exact corridor judge.
 
     ``measure_reduction`` (default ON): re-select the terminal measurement
     set as a minimum-weight generating set of the same commuting group
@@ -438,7 +448,8 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     prog = expand_gadgets(swept)
     specs, steps, init, final, _ = to_experiment_inputs(
         prog, distance=distance, assignment=assignment,
-        placement=placement, orientation=orientation)
+        placement=placement, orientation=orientation,
+        magic_proxy=magic_proxy)
     if birth_colouring and "colour_swapped" not in experiment_kwargs:
         from circls.core.colouring import plan_birth_colours
         experiment_kwargs["colour_swapped"] = plan_birth_colours(

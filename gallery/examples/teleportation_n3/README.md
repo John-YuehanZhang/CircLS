@@ -1,6 +1,8 @@
 # teleportation_n3: CircLS
 
-One program of the paper's Table 2: `teleportation_n3` (QASMBench), compiled by CircLS in the paper's configuration.
+One program of the paper's Table 2: `teleportation_n3` (QASMBench), compiled by CircLS in the paper's configuration, plus the ancilla-orientation rule added on 2026-09-25
+(each |+> gadget ancilla is born facing the step that consumes it, `magic_proxy="X"`), which leaves this
+program unchanged (both ancillas already face their partner), so the numbers equal the paper's Table 2 cells.
 Everything is regenerated when `pipeline_demo.ipynb` runs, except `data/compile_summary.json`;
 the block graph and the LER points are reused unless deleted.
 The same program through the other toolchain of Table 2 is in `../../baselines/teleportation_n3_topologiq/`.
