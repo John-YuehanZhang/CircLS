@@ -3,7 +3,7 @@
 Routing, seam-table construction, scheduling and sequential-PPM
 experiments on top of the vendored LightStim detector backend.
 """
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .core.multi_patch_coupler import (PatchSpec, BentLayoutError,
                                   MultiPatchLayout, origin_of,
