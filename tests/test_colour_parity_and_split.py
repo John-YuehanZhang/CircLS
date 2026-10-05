@@ -182,7 +182,7 @@ def test_zero_rotation_snake_sequence_d3():
         c = exp.build()
     assert exp.rotation_log == []
     assert sorted(exp._snake_plans) == [2]
-    assert c.num_observables == 1
+    assert c.num_observables == 6  # PPM outcome checks (vs preparation / readout) are observables
     # Wall records: the #6 mixed family -- d-1 stretched weight-4 checks + 1
     # stretched weight-2 end cap, each with opposite letters on its left and
     # right legs, alternating '+'/'−' variants
@@ -217,7 +217,7 @@ def test_three_target_one_step_all_standard():
     with contextlib.redirect_stdout(io.StringIO()):
         c = exp.build()
     assert exp.rotation_log == []
-    assert c.num_observables == 2
+    assert c.num_observables == 4  # PPM outcome checks (vs preparation / readout) are observables
     det, obs = c.compile_detector_sampler(seed=0).sample(
         1024, separate_observables=True)
     assert not det.any() and not obs.any()

@@ -196,22 +196,21 @@ def test_length1_matches_single_ppm():
     assert _dist(c) == D
 
 
-def test_joint_closure_detector_emitted():
-    # PR#68 review blocker #1 (ruling reversed 2026-08-09): the terminal
-    # closure of the merge-promoted joint is a legitimate long-range detector —
-    # under matched noise, emitting it measures ~30% better MWPM LER, a
-    # nine-configuration sweep found none made undecomposable by it, and the
-    # weight filter has been removed wholesale (back to upstream main
-    # behaviour).  Guards: the closure must exist (long-range, record count
-    # > 2D+2), be deterministic without noise, keep the DEM decomposable, and
-    # keep full graphlike distance.
+def test_joint_closure_is_observable():
+    # The terminal closure of a merge-promoted joint checks the PPM outcome m
+    # against the later readout: a logical check, so it is emitted as an
+    # OBSERVABLE (2026-10-05, agreed with the LightStim author), never as a
+    # long-range DETECTOR.  Guards: it exists as an observable (record count
+    # > 2D+2), no long-range detector remains, everything is deterministic
+    # without noise, the DEM stays decomposable at full graphlike distance.
     px = [_spec("Q1", 0, 0, "X_horizontal"), _spec("Q2", 2, 0, "X_horizontal")]
     seq = [PPMStep([("Q1", "Z"), ("Q2", "Z")])]
     st = {"Q1": "Z", "Q2": "Z"}
     clean = _build(_exp(px, seq, st, st))
-    longrange = [inst for inst in clean.flattened() if inst.name == "DETECTOR"
-                 and len(inst.targets_copy()) > 2 * D + 2]
-    assert longrange, "joint-closure long-range detector was not emitted"
+    longrange = lambda name: [inst for inst in clean.flattened() if inst.name == name
+                              and len(inst.targets_copy()) > 2 * D + 2]
+    assert longrange("OBSERVABLE_INCLUDE"), "joint closure was not emitted as an observable"
+    assert not longrange("DETECTOR")
     det, obs = clean.compile_detector_sampler(seed=0).sample(
         2048, separate_observables=True)
     assert not det.any() and not obs.any()
@@ -272,7 +271,7 @@ def test_role_switch_sequence_builds_full_distance():
     # alternative hosts directly — ZERO rotations, cheaper than the
     # rotate_90 the old planner inserted; physics gates stay
     assert exp.rotation_log == []
-    assert c.num_observables == 2
+    assert c.num_observables == 4  # PPM outcome checks (vs preparation / readout) are observables
     assert _dist(c) == D
 
 

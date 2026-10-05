@@ -132,11 +132,9 @@ QEC_EN_PAPER_PLACEMENT = {"q0": (3, 3), "q1": (1, 3), "q2": (5, 3), "q3": (3, 1)
 
 def test_qec_en_paper_configuration_is_graph_decodable(monkeypatch):
     """The one Table 2 program whose paper-configuration compile banks cross-window relations: qec_en_n5 with
-    measurement re-selection, step scheduling and parallel windows off, under the X-state proxy (gadget ancillas
-    prepared in |+> instead of |i>, the Table 2 convention; with |i> ancillas the relations close within a window).
-    On the pinned layout two of its banked closures (tick spans 127 and 69) share records with the local checks and
-    stim cannot split them off; the pass re-emits exactly those two -- not the split's own 2-tick closure, which
-    stays a detector -- and stim can then decompose the DEM."""
+    measurement re-selection, step scheduling and parallel windows off, under the X-state proxy.  Those relations
+    check PPM outcomes, so since 2026-10-05 the tracker itself emits them as observables: the raw circuit is
+    already graph-decodable, and the graphlike pass has nothing left to convert."""
     pytest.importorskip("nwqec")
     import contextlib, io
     import circls.pipeline as P
@@ -151,23 +149,9 @@ def test_qec_en_paper_configuration_is_graph_decodable(monkeypatch):
     with contextlib.redirect_stdout(io.StringIO()):
         raw = P.compile_qasm(QEC_EN_N5, distance=3, t_as_s=True, graphlike_detectors=False, **kw)
         cp = P.compile_qasm(QEC_EN_N5, distance=3, t_as_s=True, **kw)
-    with pytest.raises(ValueError):                 # without the pass: hyperedges, PyMatching cannot be built
-        inject_uniform_noise(raw.circuit, 5e-4).detector_error_model(decompose_errors=True)
     assert cp.placement == QEC_EN_PAPER_PLACEMENT and raw.placement == QEC_EN_PAPER_PLACEMENT
-    assert cp.circuit.num_detectors == raw.circuit.num_detectors - 2
-    assert cp.circuit.num_observables == raw.circuit.num_observables + 2
-    inject_uniform_noise(cp.circuit, 5e-4).detector_error_model(decompose_errors=True)   # graphlike now
+    inject_uniform_noise(raw.circuit, 5e-4).detector_error_model(decompose_errors=True)   # graphlike already
+    assert cp.circuit.num_detectors == raw.circuit.num_detectors
+    assert cp.circuit.num_observables == raw.circuit.num_observables
     det, obs = cp.circuit.compile_detector_sampler(seed=0).sample(64, separate_observables=True)
-    assert not det.any() and (obs == obs[0]).all()  # still deterministic at p = 0
-    # the converted rows are the two cross-window relations, not the split's own closure
-    spans = []
-    n, tick, rec_tick = 0, 0, []
-    for inst in cp.circuit.flattened():
-        if inst.name == "TICK":
-            tick += 1
-        elif inst.num_measurements:
-            rec_tick += [tick] * inst.num_measurements; n += inst.num_measurements
-        elif inst.name == "OBSERVABLE_INCLUDE" and int(inst.gate_args_copy()[0]) >= raw.circuit.num_observables:
-            ts = [rec_tick[n + t.value] for t in inst.targets_copy()]
-            spans.append(max(ts) - min(ts))
-    assert sorted(spans) == [69, 127]
+    assert not det.any() and (obs == obs[0]).all()  # deterministic at p = 0

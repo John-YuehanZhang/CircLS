@@ -169,8 +169,9 @@ def _check(builder, d, n_obs):
 @pytest.mark.parametrize("d", [3, 5])
 def test_same_type_wall(d):
     # X-basis init of both patches: X̄b and X̄t individually deterministic,
-    # joint measured by the wall -> 2 observables
-    _check(build_same_type_case(d, 'X', 'X'), d, 2)
+    # joint measured by the wall -> 2 observables, plus the wall outcome
+    # checked against the preparation -> 3
+    _check(build_same_type_case(d, 'X', 'X'), d, 3)
 
 
 @pytest.mark.parametrize("d", [3, 5])
@@ -182,8 +183,9 @@ def test_same_type_wall_teleport(d):
 @pytest.mark.parametrize("d", [3, 5])
 def test_mirror_mixed_wall(d):
     # this arrangement's carriers: bottom rect('Z','X',1) contributes Z̄,
-    # top rect('X','Z',1) contributes X̄ — aligned init is (Z, X)
-    _check(build_mirror_mixed_case(d, 'Z', 'X'), d, 2)
+    # top rect('X','Z',1) contributes X̄ — aligned init is (Z, X); + the wall
+    # outcome checked against the preparation
+    _check(build_mirror_mixed_case(d, 'Z', 'X'), d, 3)
 
 
 @pytest.mark.parametrize("d", [3, 5])

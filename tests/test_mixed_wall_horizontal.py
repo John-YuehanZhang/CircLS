@@ -149,11 +149,11 @@ def _check(d, init_qr, init_ql, n_obs):
     assert len(noisy.shortest_graphlike_error()) == d
 
 
-@pytest.mark.parametrize("init,n_obs", [(('X', 'Z'), 2), (('Z', 'X'), 1)])
+@pytest.mark.parametrize("init,n_obs", [(('X', 'Z'), 3), (('Z', 'X'), 1)])  # aligned init: + m vs preparation
 def test_mixed_wall_horizontal_d3(init, n_obs):
     _check(3, init[0], init[1], n_obs)
 
 
-@pytest.mark.parametrize("init,n_obs", [(('X', 'Z'), 2), (('Z', 'X'), 1)])
+@pytest.mark.parametrize("init,n_obs", [(('X', 'Z'), 3), (('Z', 'X'), 1)])  # aligned init: + m vs preparation
 def test_mixed_wall_horizontal_d5(init, n_obs):
     _check(5, init[0], init[1], n_obs)

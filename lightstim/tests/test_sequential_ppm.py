@@ -92,20 +92,22 @@ def test_explicit_corridor_zz_full_distance():
                    _spec("B", 2, 0, "X_horizontal")],
                   [("A", "Z"), ("B", "Z")], {"A": "Z", "B": "Z"},
                   route=[(1, 0)])
-    assert c.num_observables == 1
+    # m vs the |00> preparation, m vs the final readout (closure), standing Z
+    assert c.num_observables == 3
     _verify(exp, c)
 
 
 def test_three_target_one_step_t_corridor():
     # one step measures 3 patches through a 3-cell T corridor: two
-    # independent pairwise products (obs=2), full distance
+    # independent pairwise products, plus the outcome m checked against the
+    # |000> preparation and against the readout (obs=4), full distance
     exp, c = _run([_spec("q1", 0, 0, "X_horizontal"),
                    _spec("q2", 4, 0, "X_horizontal"),
                    _spec("q3", 2, 1, "X_vertical")],
                   [("q1", "Z"), ("q2", "Z"), ("q3", "Z")],
                   {"q1": "Z", "q2": "Z", "q3": "Z"},
                   route=[(1, 0), (2, 0), (3, 0)])
-    assert c.num_observables == 2
+    assert c.num_observables == 4
     _verify(exp, c)
 
 

@@ -253,10 +253,10 @@ def test_routed_repair_preserves_a_successful_legacy_retry():
     # Captured from the unmodified 3d9aaa9 compiler on this real eight-patch
     # circuit; the unconditional replay instead gave 1417bf71af941f76....
     assert hashlib.sha256(str(circuit).encode()).hexdigest() == (
-        # 2026-09-11: re-pinned after the stretched-seam end record gained the
-        # concave-corner foot (verify all true, p=0 silent, observables
-        # deterministic, graphlike distance 3 on this circuit)
-        '28060f0fbd71933e51ee45dacc1cfce28e24ad4d3e7976b0960d1d996999f866')
+        # 2026-10-05: re-pinned after PPM outcome checks became observables
+        # (542 det / 9 obs; p=0 silent, observables deterministic, graphlike
+        # distance 3 on this circuit)
+        'e56cb40a398c5170e8730c4f2efd7429acc656c433b1845b14ed59a8d3a4fab8')
     # 2026-09-11: the geometry now builds without any rotation (the probe's
     # first bus is constructible once the stretched-seam end record takes the
     # concave-corner foot), so the repair is never entered.

@@ -84,7 +84,7 @@ def test_rotation_between_ppms_full_distance():
     c = _build(exp)
     assert exp.rotation_count == 1
     assert exp.rotations == [(2, "Q")]          # Q rotated before PPM 2
-    assert c.num_observables == 2
+    assert c.num_observables == 5  # PPM outcome checks (vs preparation / readout) are observables
     assert _dist(c) == D                         # full joint distance
 
 
@@ -95,7 +95,7 @@ def test_rotation_between_ppms_noiseless_valid():
     assert_valid_circuit(c)
     assert_noiseless(c)                          # detectors deterministic at p=0
     assert_dem_valid(c)
-    assert c.num_observables == 2
+    assert c.num_observables == 5  # PPM outcome checks (vs preparation / readout) are observables
     assert exp.rotation_count == 1
 
 
@@ -110,5 +110,5 @@ def test_without_rotation_wall_serves():
     exp = _exp(px, seq, init, meas, noise_params=NP, auto_rotate=False)
     c = _build(exp)
     assert exp.rotation_count == 0
-    assert c.num_observables == 2
+    assert c.num_observables == 5  # PPM outcome checks (vs preparation / readout) are observables
     assert _dist(c) == D

@@ -58,7 +58,7 @@ def test_mixed_minority_full_distance():
                 _spec("Q2", 2, 0, "X_horizontal")],
                [("Q1", "X"), ("Q2", "Z")],
                {"Q1": "X", "Q2": "Z"}, {"Q1": "X", "Q2": "Z"})
-    assert c.num_observables == 2
+    assert c.num_observables == 3  # PPM outcome checks (vs preparation / readout) are observables
     assert _w(c) == D
 
 
@@ -80,7 +80,7 @@ def test_t_junction_mixed():
                [("Q1", "X"), ("Q2", "Z"), ("Q3", "Z")],
                {"Q1": "X", "Q2": "Z", "Q3": "Z"},
                {"Q1": "X", "Q2": "Z", "Q3": "Z"})
-    assert c.num_observables == 3
+    assert c.num_observables == 4  # PPM outcome checks (vs preparation / readout) are observables
     assert _w(c) == D
 
 
@@ -93,7 +93,7 @@ def test_no_morph_layer_full_distance():
     IT = [("Q1", "X"), ("Q2", "Z")]
     for init, meas, n_obs in [
             ({"Q1": "X", "Q2": "X"}, {"Q1": "Z", "Q2": "Z"}, 1),   # teleport
-            ({"Q1": "X", "Q2": "Z"}, {"Q1": "X", "Q2": "Z"}, 2)]:  # state
+            ({"Q1": "X", "Q2": "Z"}, {"Q1": "X", "Q2": "Z"}, 3)]:  # state (+ m checks)
         c = _build(px, IT, init, meas)
         assert c.num_observables == n_obs
         assert _w(c) == D

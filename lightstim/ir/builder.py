@@ -358,6 +358,8 @@ class CircuitBuilder:
             self.tracker.total_measurements += meas_record_offset
             for i in range(len(syn_coords)):
                 records = self.tracker.stabilizers.records[i]
+                # repeated rounds of the same check carry the same label
+                self.tracker.shift_record_tags(records, meas_record_offset)
                 shift_records = [rec + meas_record_offset for rec in records]
                 self.tracker.stabilizers.records[i] = shift_records
 
@@ -892,6 +894,12 @@ class CircuitBuilder:
             or tracker.post_select_row_indices
             or self.circuit.num_observables > 0
             or tracker.total_observables > 0
+            # compressed rounds bypass the tracker's per-record labels
+            or any(
+                tracker.records_tag(records)
+                for tableau in (tracker.stabilizers, tracker.logicals)
+                for records in tableau.records
+            )
         ):
             return None
 
