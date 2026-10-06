@@ -184,8 +184,8 @@ defects) and per-patch distances are natural next steps on top of the
 - `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`) and three
   examples: a memory experiment with the Kishony–Fowler diagonal syndrome
   extraction (`diagonal_syndrome_extraction_example_memory.ipynb`), in-place Y-basis preparation
-  and readout (`inplace_y_basis.ipynb`), and a Z̄⊗Z̄ lattice-surgery
-  measurement through a routed U-shaped corridor (`diagonal_syndrome_extraction_example_zz_ppm.ipynb`)
+  and readout (`inplace_y_basis.ipynb`), and three routed lattice-surgery measurements through
+  bent corridors, two of them with stretched seams (`diagonal_syndrome_extraction_example_zz_ppm.ipynb`)
 - `gallery/` — six worked examples with TQEC block-graph exports (see `gallery/README.md`)
 - `experiments/` — the paper's measurement harnesses; they expect the
   baseline checkouts described in their headers (`TOPOLS_DIR` etc.)
