@@ -63,7 +63,7 @@ CircLS/
 │   └── benchmarks/             # Its benchmark scripts
 ├── experiments/                # Paper harnesses and the benchmark suite
 ├── tests/                      # Compiler test suite
-├── notebooks/                  # Runnable API guide
+├── notebooks/                  # Runnable API guide and examples
 ├── gallery/                    # Compiler-generated 3D spacetime structures
 ├── docs/
 │   ├── ARCHITECTURE.md         # Paper-section <-> package map; how to extend
@@ -181,7 +181,11 @@ defects) and per-patch distances are natural next steps on top of the
   paper's tables; `experiments/METRICS.md` — metric definitions
 - `VENDORED.md` — what changed in the vendored LightStim and how it
   relates to [upstream](https://github.com/QuTone/LightStim)
-- `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`)
+- `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`) and three
+  examples: a memory experiment with the Kishony–Fowler diagonal syndrome
+  extraction (`diagonal_syndrome_extraction_example_memory.ipynb`), in-place Y-basis preparation
+  and readout (`inplace_y_basis.ipynb`), and a Z̄⊗Z̄ lattice-surgery
+  measurement through a routed U-shaped corridor (`diagonal_syndrome_extraction_example_zz_ppm.ipynb`)
 - `gallery/` — six worked examples with TQEC block-graph exports (see `gallery/README.md`)
 - `experiments/` — the paper's measurement harnesses; they expect the
   baseline checkouts described in their headers (`TOPOLS_DIR` etc.)
