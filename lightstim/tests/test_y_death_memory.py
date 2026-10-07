@@ -33,13 +33,23 @@ from lightstim.noise.config import NoiseConfig
 NP = NoiseConfig(p_1q=1e-3, p_2q=1e-3, p_meas=1e-3, p_reset=1e-3, p_idle=1e-3)
 
 
-def build_y_memory(d, memory_rounds=None, pad_rounds=None):
-    """Gidney b=Y memory: [birth | memory x r | death], fully honest."""
+def build_y_memory(d, memory_rounds=None, pad_rounds=None, transpose=False):
+    """Gidney b=Y memory: [birth | memory x r | death], fully honest.
+
+    ``transpose=True`` builds the other boundary orientation (``X_horizontal``,
+    X boundaries left/right): both patches are reflected across ``y = x`` with
+    ``transpose_coords`` and everything else is unchanged — the transition
+    chunk reads the orientation off the patches and the SE blocks read the
+    ``'gidney'`` schedule through the patch's ``transform_vector``.  All
+    detectors and observables below come from the tracker either way.
+    """
     r = memory_rounds if memory_rounds is not None else d
     rb = pad_rounds if pad_rounds is not None else d // 2
 
     system = QECSystem()
     degen = make_degenerate_y_boundary_patch(d)
+    if transpose:
+        degen.transpose_coords()
     gp_degen = system.add_patch(degen, name="P", offset=(0, 0))
     degen_uids = set(gp_degen._registered_stabilizer_uids)
     tracker = SyndromeTracker(num_qubits=system.num_qubits,
@@ -48,6 +58,7 @@ def build_y_memory(d, memory_rounds=None, pad_rounds=None):
                              if_detector=True)
     system.register_tracker(tracker)
     system.register_builder(builder)
+    builder.write_coordinates()          # QUBIT_COORDS for every qubit (annotation only)
 
     # birth: anti-diagonal reset, reversed-order degenerate rounds, transition
     init = {}
@@ -59,7 +70,10 @@ def build_y_memory(d, memory_rounds=None, pad_rounds=None):
         system, scheduling='gidney_reversed').circuit
     builder.apply_syndrome_extraction(circuit_chunk=ch_rev, rounds=1)
     builder.apply_syndrome_extraction(circuit_chunk=ch_rev, rounds=rb)
-    system.grow_patch("P", RotatedSurfaceCode(distance=d), offset=(0, 0))
+    qubit_patch = RotatedSurfaceCode(distance=d)
+    if transpose:
+        qubit_patch.transpose_coords()
+    system.grow_patch("P", qubit_patch, offset=(0, 0))
     qubit_uids = set(system.active_stabilizer_indices)
     t_init = make_y_transition_chunk(system, "P", gp_degen, direction='init')
     builder.apply_relay_chunk(t_init)
@@ -151,3 +165,63 @@ def test_full_y_memory_d5_fault_distance():
     noisy = builder.build_noisy_circuit(noise_params=NP,
                                         noise_model='circuit_level')
     assert len(noisy.shortest_graphlike_error()) == 5
+
+
+# ------------------------------------------- the other boundary orientation
+def _annotation_sets(circuit, system, swap_xy):
+    """DETECTOR / OBSERVABLE record sets, each record named by (qubit
+    coordinate, n-th measurement of that qubit); ``swap_xy`` reflects the
+    coordinates across y = x so the two orientations can be compared."""
+    coords = {q: (tuple(xy)[::-1] if swap_xy else tuple(xy))
+              for q, xy in system.qubit_coords.items()}
+    events, seen, dets, obs = [], {}, set(), {}
+    for inst in circuit.flattened():
+        name = inst.name
+        if name in ('DETECTOR', 'OBSERVABLE_INCLUDE'):
+            recs = set()
+            for t in inst.targets_copy():
+                recs ^= {events[len(events) + t.value]}
+            if name == 'DETECTOR':
+                dets.add(frozenset(recs))
+            else:
+                k = int(inst.gate_args_copy()[0])
+                obs[k] = obs.get(k, set()) ^ recs
+        elif name not in ('TICK', 'QUBIT_COORDS', 'SHIFT_COORDS') \
+                and stim.gate_data(name).produces_measurements:
+            for t in inst.targets_copy():
+                c = coords[t.value]
+                events.append((c, seen.get(c, 0)))
+                seen[c] = seen.get(c, 0) + 1
+    return dets, {k: frozenset(v) for k, v in obs.items()}
+
+
+def test_transposed_y_memory_is_the_reflected_original():
+    """X_horizontal = the X_vertical construction reflected across y = x:
+    same detectors and the same observable, record for record.  On an
+    isolated patch this is a self-consistency check of the coordinate
+    bridge (the transposed build is the same instruction stream on the
+    same qubit indices, so the tracker sees the same circuit); the
+    orientation-dependent evidence is the compiler path, where the patch
+    meets patches of either orientation (tests/test_gidney_y_experiment.py)."""
+    for d in (3, 5):
+        sys_v, _, b_v = build_y_memory(d, memory_rounds=d)
+        sys_h, _, b_h = build_y_memory(d, memory_rounds=d, transpose=True)
+        dets_v, obs_v = _annotation_sets(b_v.circuit, sys_v, swap_xy=True)
+        dets_h, obs_h = _annotation_sets(b_h.circuit, sys_h, swap_xy=False)
+        assert dets_v == dets_h, f"d={d}: detector sets differ"
+        assert obs_v == obs_h, f"d={d}: observable differs"
+        assert b_h.circuit.num_detectors == (74 if d == 3 else 316)
+
+
+def test_transposed_y_memory_silent_and_full_distance():
+    for d in (3, 5):
+        _, tracker, b = build_y_memory(d, memory_rounds=d, transpose=True)
+        c = b.circuit
+        s = c.compile_detector_sampler(seed=7).sample(
+            512, append_observables=True)
+        assert not s.any(), f"d={d}: detectors/observable must be silent"
+        assert tracker.logicals.count == 0
+        noisy = b.build_noisy_circuit(noise_params=NP,
+                                      noise_model='circuit_level')
+        assert len(noisy.shortest_graphlike_error(
+            ignore_ungraphlike_errors=False)) == d

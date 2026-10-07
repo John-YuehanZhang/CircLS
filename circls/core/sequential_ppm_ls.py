@@ -10,6 +10,7 @@ from dataclasses import dataclass, replace
 from itertools import product
 from typing import Dict, List, Optional, Tuple
 
+import numbers
 import numpy as np
 import stim
 
@@ -141,8 +142,19 @@ class SequentialPPMExperiment(RotationPlannerMixin,
                  rotation_kind: str = 'litinski', schedule: str = 'auto',
                  parallel_steps: bool = False,
                  colour_swapped=frozenset(), lifetime_overrides=None,
-                 router=None):
+                 router=None, y_pad_rounds=None):
         self.patches = list(patches)
+        # y_pad_rounds: reversed-order rounds on the degenerate patch before
+        # the |Y> transition (Gidney's rb), on top of the one round that
+        # establishes the stabilizers after the mixed reset.  None = d // 2,
+        # Gidney's reference padding; notebooks/inplace_y_basis.ipynb
+        # (Section 1) uses max(d // 2, d - 3) and passes it explicitly.
+        if y_pad_rounds is not None and (isinstance(y_pad_rounds, bool)
+                                         or not isinstance(y_pad_rounds, numbers.Integral)
+                                         or y_pad_rounds < 0):
+            raise ValueError(
+                f"y_pad_rounds must be a non-negative int or None; got {y_pad_rounds!r}")
+        self.y_pad_rounds = y_pad_rounds
         self.ppm_sequence = list(ppm_sequence)
         # parallel_steps: execute contiguous runs of patch-disjoint steps in
         # ONE shared merge window (batch) — corridors coexist, one SE block
@@ -658,11 +670,18 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         diagonal block's kf near-side mirror (``y_coords``): the mirror may
         only fire where a vertical relay wall's near side rests both feet
         on a Y wedge.  The scoping is mandatory -- an unscoped mirror
-        collides where the wall abuts plain-K&F checks (measured)."""
+        collides where the wall abuts plain-K&F checks (measured).
+
+        Only UNTRANSPOSED (X_vertical) Y patches are in scope: the mirror
+        is the re-parametrization derived for that wedge, and on the
+        reflected (X_horizontal) wedge it produces a K&F slot clash while
+        the plain Fig 4b order keeps full distance (measured on the
+        horizontal-seam Z(x)X gadget at d = 3, 5)."""
         return frozenset(
             tuple(self.system.qubit_coords[q])
             for q, o in self.system.index_to_owner_map.items()
-            if o in self._y_names)
+            if o in self._y_names
+            and not getattr(self.system.patches[o][0], 'is_transposed', False))
 
     def _standalone_se(self, n_rounds):
         if n_rounds < 1:
@@ -883,15 +902,19 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         if self.idle_rounds:
             self._standalone_se(self.idle_rounds)
         # live-|Y> interior checks ride the wall rounds on Gidney's order
-        # (same SE_block contract as _merged_chunk); gathered before the
-        # activation, which only pauses facing lobes / adds kf checks and
-        # leaves the Y interiors untouched.  The |Y>-owned coordinates go
-        # along too: a vertical wall whose near side rests on the Y wedge
-        # mirrors that side's subslot order (the block's kf near-side
-        # mirror; see DiagonalSurfaceCodeExtractionBlock).
-        yuids = self._live_y_uids()
+        # (same SE_block contract as _merged_chunk); gathered AFTER the
+        # activation, which pauses the |Y> patch's facing lobe: a paused
+        # lobe left in gidney_uids lands in the override map without being
+        # a gathered check, and when the wall's kf apparatus sits on its
+        # coordinate the drop cascade reads that apparatus' label as the
+        # lobe and _solve_forced fails with KeyError (measured on the
+        # horizontal-seam X(x)Z gadget, both orientations).  The |Y>-owned
+        # coordinates go along too: a vertical wall whose near side rests
+        # on the Y wedge mirrors that side's subslot order (the block's kf
+        # near-side mirror; see DiagonalSurfaceCodeExtractionBlock).
         ycoords = self._y_owned_coords()
         self.builder.activate_coupler(cname)
+        yuids = self._live_y_uids()
         self.builder.apply_syndrome_extraction(
             DiagonalSurfaceCodeExtractionBlock(
                 self.system, gidney_uids=yuids, y_coords=ycoords).circuit,
@@ -1195,15 +1218,20 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         """Allocate a 'Y' patch as Gidney's degenerate XXZZ-boundary patch (the
         pre-birth form; ``_gidney_birth_prologue`` grows it into the real code)."""
         s = self._by_name[name]
-        if s.orientation != 'X_vertical':
+        if s.orientation not in ('X_vertical', 'X_horizontal'):
             raise ValueError(
-                f"Y initial state on {name!r}: the Gidney birth (v1) supports "
-                f"only X_vertical orientation — the degenerate XXZZ patch has "
-                f"a fixed boundary layout; got {s.orientation!r}")
+                f"Y initial state on {name!r}: unknown orientation "
+                f"{s.orientation!r}")
         if name in self.colour_swapped:
             raise ValueError(
                 f"Y initial state on {name!r} cannot be colour-swapped (v1)")
         degen = make_degenerate_y_boundary_patch(s.distance)
+        if s.orientation == 'X_horizontal':
+            # the other boundary orientation = the whole Gidney construction
+            # reflected across y = x (same reflection the ordinary patch gets
+            # in _alloc_patch); the transition chunk and the SE blocks read
+            # the orientation off the patches
+            degen.transpose_coords()
         gp = self.system.add_patch(
             degen, name=name, offset=(s.origin[0] - 1, s.origin[1] - 1))
         self._y_gps[name] = gp      # PRE-grow view: the transition chunk needs it
@@ -1276,7 +1304,8 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         self.builder.initialize(init_dict=init, n=self.system.num_qubits)
         self._birth_state = {
             'names': names, 'd': d, 'degen_uids': uids, 'rides': 0,
-            'pre_rounds': 1 + d // 2,
+            'pre_rounds': 1 + (self.y_pad_rounds if self.y_pad_rounds is not None
+                               else d // 2),
             'rev_chunk': self._gidney_chunk(uids, 'gidney_reversed')}
         return self._birth_state
 
@@ -1299,7 +1328,10 @@ class SequentialPPMExperiment(RotationPlannerMixin,
         others = set(sysm.active_stabilizer_indices) - uids
         for nm in names:
             sp = self._by_name[nm]
-            sysm.grow_patch(nm, RotatedSurfaceCode(distance=d),
+            full = RotatedSurfaceCode(distance=d)
+            if sp.orientation == 'X_horizontal':
+                full.transpose_coords()
+            sysm.grow_patch(nm, full,
                             offset=(sp.origin[0] - 1, sp.origin[1] - 1))
         grown = set(sysm.active_stabilizer_indices) - others
         trans = _zip_round_chunks(

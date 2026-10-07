@@ -218,7 +218,7 @@ class RotationPlannerMixin:
                 ks = [None]
                 if nm in self._y_names:
                     # |Y> ancillas never rotate: the Gidney birth layout is
-                    # protocol-fixed (v1: X_vertical only) and rotating a
+                    # fixed at allocation (either orientation) and rotating a
                     # just-born ancilla collides its post-protocol geometry
                     # with the coupler's registration (measured: s-twist
                     # ppm_1 vs active y0 at (24,28), 2026-08-04).  The

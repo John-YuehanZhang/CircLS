@@ -20,8 +20,10 @@ it for magic states — none in the Clifford scope, but the clear ring
 preserves boundary routing).
 
 Assignment is row-major in natural name order — a disclosed heuristic, not a
-contribution.  Orientation: |Y> gadget ancillas must be ``X_vertical`` (the
-Gidney birth v1 constraint); data patches default from their first-use
+contribution.  Orientation: |Y> gadget ancillas default to ``X_vertical``
+(Gidney's xtop layout; the birth also supports ``X_horizontal``, the
+construction reflected across y = x, through the ``orientation=`` hook); data
+patches default from their first-use
 letter (``Z -> X_horizontal``, ``X -> X_vertical``) so the first joint tends
 to satisfy the seam-parallel orientation rule without a rotation; the
 planner's auto-rotate covers the rest.
@@ -60,8 +62,9 @@ def _natural_key(name: str):
 
 
 def patch_orientation(name: str, first_letter: Optional[str]) -> str:
-    """Birth-orientation rule: |Y> ancillas are pinned ``X_vertical``
-    (Gidney birth v1); data patches follow their first-use letter."""
+    """Birth-orientation rule: |Y> ancillas default to ``X_vertical``
+    (Gidney's xtop layout; ``orientation=`` may pick ``X_horizontal``);
+    data patches follow their first-use letter."""
     if name.startswith("y"):
         return "X_vertical"
     return "X_horizontal" if first_letter == "Z" else "X_vertical"
@@ -86,8 +89,9 @@ def magic_orientations(cells: Dict[str, Tuple[int, int]], steps,
     partners on both sides) is settled by the assignment's exact corridor
     judge (``assignment.ExactScorer``) on the consuming step, both
     orientations scored with the partners' orientations ``orients``; a tie
-    there keeps ``default``.  Only |+> (or any non-|Y>) ancillas may use
-    this: the Gidney |Y> birth layout is fixed ``X_vertical``."""
+    there keeps ``default``.  Only |+> (or any non-|Y>) ancillas go
+    through this rule: |Y> ancillas keep the ``X_vertical`` default unless
+    ``orientation=`` overrides them."""
     orients = orients or {}
     out: Dict[str, str] = {}
     for nm in magic_names:

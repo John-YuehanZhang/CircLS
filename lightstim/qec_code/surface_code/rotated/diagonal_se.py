@@ -69,7 +69,7 @@ FIXED_SLOTS = {
 }
 
 
-#: K&F relay-template program (Fig 39 / interface plaquette): per-check slot
+#: K&F relay-template program (Fig. 4(c), the three-auxiliary-qubit circuit): per-check slot
 #: offsets for the two-aux + shared-relay realization of a wide mixed check.
 #: A = flag aux (RX -> MZ, couples the Z feet via CZ), B = syndrome aux
 #: (RZ -> MX, couples the X feet via CX), S = shared relay (RZ -> MZ).
@@ -550,7 +550,20 @@ class DiagonalSurfaceCodeExtractionBlock:
                 best_err = err
                 continue
             kept = {k: v for k, v in full.items() if k not in dropped}
-            solved = self._solve_forced(checks, kf_checks, kept, dropped, full)
+            try:
+                solved = self._solve_forced(checks, kf_checks, kept, dropped,
+                                            full)
+            except RuntimeError as e:
+                # the backtracking solve has a time budget per base: a base
+                # whose forced set is too large to solve in time is treated
+                # like a base with no solution, and the sweep moves on (an
+                # X_horizontal |Y> patch in a d = 5 three-target merge
+                # drops 33 of 44 override checks at base 0 and times out,
+                # while base 1 drops 30 and solves in 2.5 s -- measured)
+                if 'solver timeout' not in str(e):
+                    raise
+                best_err = e
+                continue
             if solved is None:
                 continue
             try:

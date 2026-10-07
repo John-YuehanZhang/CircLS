@@ -3,8 +3,9 @@
 ``mapping.magic_orientations`` picks each ancilla's birth orientation from
 the position of its partners (Z through an E/W seam wants X_horizontal,
 through a N/S seam X_vertical); ``compile_qasm(magic_proxy="X")`` applies
-it, while the default ``magic_proxy="Y"`` keeps the Gidney birth pinned to
-X_vertical and the compiled circuit unchanged."""
+it, while the default ``magic_proxy="Y"`` keeps the Gidney birth at its
+X_vertical default (the compiled circuit unchanged) unless ``orientation=``
+asks for X_horizontal."""
 import contextlib
 import io
 
@@ -101,13 +102,17 @@ def test_x_proxy_orientation_matches_the_rule_and_verifies(assignment):
     assert rep.silent and rep.deterministic and rep.distance is True
 
 
-def test_y_proxy_default_stays_pinned_and_rejects_override():
+def test_y_proxy_defaults_to_x_vertical_and_accepts_override():
     cp = _compile()
     assert set(_orients(cp).values()) == {"X_vertical"}
     assert all(v == "Y" for k, v in cp.experiment.initial_states.items()
                if k.startswith("y"))
-    with pytest.raises(ValueError, match="cannot override"):
-        _compile(orientation={"y0": "X_horizontal"})
+    # the Gidney birth also runs in the other boundary orientation
+    cp = _compile(orientation={"y0": "X_horizontal"})
+    assert _orients(cp) == {"y0": "X_horizontal"}
+    assert cp.experiment.initial_states["y0"] == "Y"
+    rep = verify(cp)
+    assert rep.silent and rep.deterministic and rep.distance is True
 
 
 def test_x_proxy_accepts_an_explicit_override():

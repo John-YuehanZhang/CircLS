@@ -36,6 +36,19 @@ Half-integer ``g`` (his measure qubits) therefore land on even LightStim
 coordinates.  The origin ``g = 0`` is taken to be the lowest data coordinate of
 the qubit patch, so a shifted placement works unchanged.
 
+Boundary orientation
+--------------------
+Gidney's round is written for his ``xtop`` patch (X boundaries top/bottom,
+LightStim ``X_vertical``).  The other orientation (``X_horizontal``, X
+boundaries left/right) is the reflection of the whole construction across the
+line ``y = x``: the degenerate patch maps onto itself, the twist line stays on
+the main diagonal, the H-conjugated side moves to the other side of it.  Both
+patches carry that reflection as ``QECPatch.is_transposed`` (set by
+``transpose_coords``), so the bridge simply swaps the two coordinates when the
+patches are transposed; the round in Gidney coordinates is byte-identical, and
+the syndrome-extraction blocks read the ``'gidney'`` schedule through the same
+``transform_vector``, so the neighbouring rounds reflect with it.
+
 Faithfulness notes
 ------------------
 * Gate order, target order and the pairing/orientation of every two-qubit gate
@@ -209,7 +222,10 @@ def make_y_transition_chunk(system,
             registered on; supplies the coordinate -> global index map.
         patch_qubit: the ordinary ``RotatedSurfaceCode`` patch — its name in the
             system, or the patch object itself (already in global coordinates).
-        patch_degenerate: the degenerate XXZZ patch, same footprint, same forms.
+            A transposed patch (``is_transposed``, i.e. ``X_horizontal``) gets
+            the reflected round; see *Boundary orientation* above.
+        patch_degenerate: the degenerate XXZZ patch, same footprint, same forms,
+            same orientation flag.
         direction: ``'measure'`` for Gidney's round as published (qubit patch ->
             degenerate patch, ``Y_L`` measured out); ``'init'`` for its time
             reverse (degenerate patch -> qubit patch, ``Y_L`` prepared).
@@ -222,6 +238,16 @@ def make_y_transition_chunk(system,
 
     qubit_patch = _resolve(system, patch_qubit)
     degenerate_patch = _resolve(system, patch_degenerate)
+
+    # --- boundary orientation: reflect the bridge across y = x -------------
+    transposed = bool(getattr(qubit_patch, 'is_transposed', False))
+    if transposed != bool(getattr(degenerate_patch, 'is_transposed', False)):
+        raise ValueError("the qubit patch and the degenerate patch must have "
+                         "the same orientation (is_transposed)")
+    for patch in (qubit_patch, degenerate_patch):
+        if abs(getattr(patch, 'rotation_angle', 0.0)) > 1e-9:
+            raise NotImplementedError("rotated (rotation_angle != 0) patches "
+                                      "are not supported by the Y transition")
 
     # --- origin and distance, read off the qubit patch ----------------------
     data_coords = sorted(tuple(qubit_patch.qubit_coords[i])
@@ -241,10 +267,12 @@ def make_y_transition_chunk(system,
                          f"patch, found {len(data_coords)}")
 
     def to_g(coord) -> complex:
-        return complex((coord[0] - x0) / 2.0, (coord[1] - y0) / 2.0)
+        gx, gy = (coord[0] - x0) / 2.0, (coord[1] - y0) / 2.0
+        return complex(gy, gx) if transposed else complex(gx, gy)
 
     def to_l(g: complex) -> Tuple[float, float]:
-        return QECPatch.snap_coord((x0 + 2.0 * g.real, y0 + 2.0 * g.imag))
+        gx, gy = (g.imag, g.real) if transposed else (g.real, g.imag)
+        return QECPatch.snap_coord((x0 + 2.0 * gx, y0 + 2.0 * gy))
 
     # --- `used` = union of both patches' qubits, in Gidney coordinates ------
     used = {to_g(c) for c in _coords(qubit_patch) | _coords(degenerate_patch)}

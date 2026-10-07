@@ -91,14 +91,32 @@ def test_y_final_state_still_rejected():
             final_measure_states={"q0": "Z", "y0": "Y"})
 
 
-def test_y_patch_requires_x_vertical():
+def _gadget_exp_horizontal(**kw):
+    """The same gadget with the |Y> ancilla in the other boundary
+    orientation (X_horizontal): the Gidney construction reflected across
+    y = x, detectors and observable again derived by the tracker."""
     px = [_spec("q0", 0, 0), _spec("y0", 2, 0, "X_horizontal")]
-    exp = SequentialPPMExperiment(
-        px, [PPMStep([("q0", "Z"), ("y0", "Z")])],
-        initial_states={"q0": "Z", "y0": "Y"},
-        final_measure_states={"q0": "Z", "y0": "X"})
-    with pytest.raises(ValueError, match="X_vertical"):
-        _build(exp)
+    seq = [PPMStep([("q0", "Z"), ("y0", "Z")])]
+    return SequentialPPMExperiment(
+        px, seq, initial_states={"q0": "Z", "y0": "Y"},
+        final_measure_states={"q0": "Z", "y0": "X"},
+        rounds=D, rounds_init=1, **kw)
+
+
+def test_y_birth_x_horizontal_noiseless_silent():
+    c = _build(_gadget_exp_horizontal())
+    det, obs = c.compile_detector_sampler(seed=0).sample(
+        1024, separate_observables=True)
+    assert not det.any(), "noiseless detectors must be silent"
+    assert not obs.any(), "noiseless observables must be silent"
+    assert c.num_observables == 1
+
+
+def test_y_birth_x_horizontal_full_distance():
+    c = _build(_gadget_exp_horizontal(noise_params=NP))
+    c.detector_error_model(decompose_errors=True)
+    assert len(c.shortest_graphlike_error(
+        ignore_ungraphlike_errors=False)) == D
 
 
 # ------------------------------------------------- deferred birth (C1 redesign)
@@ -329,3 +347,127 @@ def test_second_build_identical_after_rotation():
     c2 = _build(exp)
     assert exp.rotation_log == log1, "rotation log must not accumulate"
     assert str(c1) == str(c2), "second build differs from the first"
+
+
+# ------------------------------------------------- review regressions (2026-10-06)
+def _wall_gadget(y_cell, y_orient, y_letter, q_cell, q_orient, q_letter, d=D, **kw):
+    """Rule-table row 3 (mixed Pauli, different type): the |Y> patch on one
+    side of a K&F relay wall."""
+    px = [PatchSpec("q0", origin_of(*q_cell, d, seam=True), d, q_orient),
+          PatchSpec("y0", origin_of(*y_cell, d, seam=True), d, y_orient)]
+    return SequentialPPMExperiment(
+        px, [PPMStep([("q0", q_letter), ("y0", y_letter)])],
+        initial_states={"q0": q_letter, "y0": "Y"},
+        final_measure_states={"q0": q_letter, "y0": "X"},
+        rounds=d, rounds_init=1, **kw)
+
+
+def _closure_distance(exp_noisy):
+    """Distance over the circuit's observables (the tracker emits the wall
+    step's closure as an observable) plus, when the experiment exposes the
+    step's joint records, the pre xor post closure as one more."""
+    import stim as _stim
+    cn = _build(exp_noisy)
+    pre = exp_noisy.step_joint_records_pre.get(0)
+    post = exp_noisy.step_joint_records_post.get(0)
+    if pre is not None and post is not None:
+        recs = sorted(set(pre) ^ set(post))
+        if recs:
+            cn.append("OBSERVABLE_INCLUDE",
+                      [_stim.target_rec(r - cn.num_measurements) for r in recs],
+                      [cn.num_observables])
+    assert cn.num_observables > 0
+    cn.detector_error_model(decompose_errors=True)
+    return len(cn.shortest_graphlike_error(ignore_ungraphlike_errors=False))
+
+
+def test_x_horizontal_y_on_the_lo_side_of_a_horizontal_wall():
+    """The kf near-side mirror is scoped to untransposed Y wedges: with the
+    X_horizontal |Y> below a horizontal seam the un-mirrored Fig 4b order
+    compiles and keeps full distance (it used to raise a K&F slot clash)."""
+    c = _build(_wall_gadget((0, 0), "X_horizontal", "X", (0, 1), "X_vertical", "Z"))
+    det, obs = c.compile_detector_sampler(seed=0).sample(1024, separate_observables=True)
+    assert not det.any() and not obs.any()
+    assert _closure_distance(_wall_gadget((0, 0), "X_horizontal", "X",
+                                          (0, 1), "X_vertical", "Z", noise_params=NP)) == D
+
+
+def test_paused_y_lobe_stays_out_of_the_gidney_override():
+    """The |Y> patch's facing lobe is paused by the wall activation; it must
+    not stay in gidney_uids (it used to end in a KeyError when the wall's kf
+    apparatus sat on its coordinate).  Both orientations."""
+    for y_orient, q_orient, cells in (("X_vertical", "X_horizontal", ((0, 0), (0, 1))),
+                                      ("X_horizontal", "X_vertical", ((0, 0), (1, 0)))):
+        exp = _wall_gadget(cells[0], y_orient, "Z", cells[1], q_orient, "X")
+        c = _build(exp)
+        det, obs = c.compile_detector_sampler(seed=0).sample(1024, separate_observables=True)
+        assert not det.any() and not obs.any()
+        assert _closure_distance(_wall_gadget(cells[0], y_orient, "Z", cells[1], q_orient, "X",
+                                              noise_params=NP)) == D
+
+
+@pytest.mark.slow
+def test_mixed_orientation_birth_batch_three_targets_d5():
+    """Two |Y> ancillas of different orientation born in one batch, consumed
+    by one three-target step at d = 5: the gidney-override solve times out
+    at base offset 0 and must fall through to base 1 (it used to abort)."""
+    d = 5
+    px = [PatchSpec("q0", origin_of(0, 0, d, seam=True), d, "X_vertical"),
+          PatchSpec("y0", origin_of(2, 0, d, seam=True), d, "X_vertical"),
+          PatchSpec("y1", origin_of(4, 0, d, seam=True), d, "X_horizontal")]
+    seq = [PPMStep([("q0", "Z"), ("y0", "Z"), ("y1", "Z")])]
+    kw = dict(initial_states={"q0": "Z", "y0": "Y", "y1": "Y"},
+              final_measure_states={"q0": "Z", "y0": "X", "y1": "X"},
+              rounds=d, rounds_init=1)
+    c = _build(SequentialPPMExperiment(px, seq, **kw))
+    det, obs = c.compile_detector_sampler(seed=0).sample(512, separate_observables=True)
+    assert not det.any() and not obs.any()
+    cn = _build(SequentialPPMExperiment(px, seq, noise_params=NP, **kw))
+    cn.detector_error_model(decompose_errors=True)
+    assert len(cn.shortest_graphlike_error(ignore_ungraphlike_errors=False)) == d
+
+
+def test_y_pad_rounds_overrides_the_birth_padding():
+    """``y_pad_rounds`` sets Gidney's rb for the |Y> birth: None and d // 2 give
+    the same circuit, a larger value adds reversed rounds before the
+    transition and keeps the gadget silent and deterministic at p = 0."""
+    import contextlib, io
+    import pytest
+    from circls.core.sequential_ppm_ls import PPMStep, SequentialPPMExperiment
+    from circls.core.routed_multi_patch_ls import PatchSpec, origin_of
+    d = 5
+
+    def build(**kw):
+        px = [PatchSpec("q0", origin_of(0, 0, d, seam=True), d, "X_vertical"),
+              PatchSpec("y0", origin_of(2, 0, d, seam=True), d, "X_vertical")]
+        exp = SequentialPPMExperiment(px, [PPMStep([("q0", "Z"), ("y0", "Z")])],
+                                      initial_states={"q0": "Z", "y0": "Y"},
+                                      final_measure_states={"q0": "Z", "y0": "X"},
+                                      rounds=d, rounds_init=1, **kw)
+        with contextlib.redirect_stdout(io.StringIO()):
+            return exp.build()
+
+    base, same, more = build(), build(y_pad_rounds=d // 2), build(y_pad_rounds=d - 2)
+    assert str(same) == str(base)
+    assert more.num_detectors > base.num_detectors
+    assert more.num_observables == base.num_observables == 1
+    det, obs = more.compile_detector_sampler(seed=0).sample(256, separate_observables=True)
+    assert not det.any() and not obs.any()
+    for bad in (-1, 1.5, True, "2"):
+        with pytest.raises(ValueError, match="y_pad_rounds"):
+            build(y_pad_rounds=bad)
+
+    # the ride path: y0 is first used at step 1, so its birth rides on the
+    # rounds of step 0 and the padding beyond the ride is added standalone
+    px = [PatchSpec("q0", origin_of(0, 0, d, seam=True), d, "X_vertical"),
+          PatchSpec("q1", origin_of(2, 0, d, seam=True), d, "X_vertical"),
+          PatchSpec("y0", origin_of(0, 2, d, seam=True), d, "X_vertical")]
+    steps = [PPMStep([("q0", "Z"), ("q1", "Z")]), PPMStep([("q0", "Z"), ("y0", "Z")])]
+    for pad in (None, d):
+        exp = SequentialPPMExperiment(px, steps, initial_states={"q0": "Z", "q1": "Z", "y0": "Y"},
+                                      final_measure_states={"q0": "Z", "q1": "Z", "y0": "X"},
+                                      rounds=d, rounds_init=1, y_pad_rounds=pad)
+        with contextlib.redirect_stdout(io.StringIO()):
+            c = exp.build()
+        det, obs = c.compile_detector_sampler(seed=0).sample(256, separate_observables=True)
+        assert not det.any() and not obs.any(), f"ride path broke at y_pad_rounds={pad}"

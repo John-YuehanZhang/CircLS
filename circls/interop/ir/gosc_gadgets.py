@@ -399,11 +399,11 @@ def to_experiment_inputs(program: PPMProgram, distance: int = 3,
         if bad:
             raise ValueError(
                 f"orientation values must be in {sorted(legal)}: {bad}")
-        ybad = sorted(nm for nm in orientation if nm.startswith("y"))
-        if ybad and magic_proxy == "Y":
-            raise ValueError(
-                "orientation cannot override |Y> patches (the Gidney "
-                f"birth layout is protocol-fixed X_vertical): {ybad}")
+        # |Y> patches may be overridden too: the Gidney birth supports
+        # both boundary orientations (X_vertical = Gidney's xtop layout,
+        # X_horizontal = the same construction reflected across y = x);
+        # without an override they keep the X_vertical default of
+        # mapping.patch_orientation.
     if placement is not None:
         # result-injection hook (docs/API_HOOKS.md): an externally
         # computed {patch_name: coarse cell} — validate loudly, then

@@ -263,18 +263,27 @@ def test_orientation_composes_with_placement():
     assert str(hook.circuit) == str(base.circuit)
 
 
-def test_orientation_rejected_unknown_bad_value_and_y():
+def test_orientation_rejected_unknown_and_bad_value_but_y_accepted():
     with pytest.raises(ValueError, match="unknown"):
         compile_qasm(QASM, distance=3, orientation={"nope": "X_vertical"})
     with pytest.raises(ValueError, match="values"):
         compile_qasm(QASM, distance=3, orientation={"q0": "vertical"})
+    # |Y> gadget ancillas may be overridden: the Gidney birth supports both
+    # boundary orientations (X_vertical default, X_horizontal = reflected)
     from benchsuite import twisted_ghz
     tg = twisted_ghz(4)
     y_base = compile_qasm(tg, distance=3)
     ynm = next(s.name for s in y_base.experiment.patches
                if s.name.startswith("y"))
-    with pytest.raises(ValueError, match="Y"):
-        compile_qasm(tg, distance=3, orientation={ynm: "X_horizontal"})
+    assert next(s.orientation for s in y_base.experiment.patches
+                if s.name == ynm) == "X_vertical"
+    out = compile_qasm(tg, distance=3, orientation={ynm: "X_horizontal"})
+    assert next(s.orientation for s in out.experiment.patches
+                if s.name == ynm) == "X_horizontal"
+    assert out.experiment.initial_states[ynm] == "Y"
+    det, obs = out.circuit.compile_detector_sampler(seed=0).sample(
+        256, separate_observables=True)
+    assert not det.any() and not obs.any()
 
 
 def test_analyze_qasm_matches_compiled_steps():

@@ -37,7 +37,11 @@ Faithfulness notes
   ``measure_qubits`` and ``data_qubits`` filters are transcribed unchanged.
 * ``order_func`` is transcribed including the ``and False`` branch that Gidney
   left disabled, so the surviving branch (and therefore the interaction order
-  stored in each record's ``data_indices``) is his.
+  stored in each record's ``data_indices``) is his.  After
+  ``transpose_coords()`` (the ``X_horizontal`` orientation) that stored order
+  is NOT reflected -- the tile set maps onto itself and the records keep
+  their index order; the syndrome-extraction blocks derive their gate order
+  from the schedule table through ``transform_vector``, not from this order.
 * Gidney's ``ordered_data_qubits`` may contain ``None`` placeholders for the
   interaction layers in which a measure qubit idles.  LightStim's record format
   has no slot for an idle layer, so the ``None`` entries are dropped; the

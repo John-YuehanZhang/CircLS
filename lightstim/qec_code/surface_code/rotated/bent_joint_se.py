@@ -104,7 +104,7 @@ def assign_hook_benign_schedule(checks, domains=None, default=_DEFAULT_ORIENTATI
 
     # direction index within the table, per corner (slot base position).
     # Corners are classified by the SIGN of their offset from the syn coord, so
-    # WIDE checks (Fig 39-style stretched supports, e.g. the mixed-wall dominoes
+    # WIDE checks (Fig. 4(c)-style stretched supports, e.g. the mixed-wall dominoes
     # whose feet sit rows away from the gap-centre ancilla) inherit the same
     # corner-order tables as ordinary (±1, ±1) plaquettes.
     def _sgn(v):

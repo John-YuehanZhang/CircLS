@@ -58,10 +58,11 @@ Validation on injection (reject loudly, never repair silently):
   no patch in `keep_patches` may be freed early.
 - `orientation`: a partial dict is fine (unnamed patches keep the
   derived orientation); values must be `X_horizontal` or
-  `X_vertical`; gadget ancillas cannot be overridden under the default
-  `magic_proxy='Y'` (the Gidney birth layout is protocol-fixed
-  `X_vertical`); under `magic_proxy='X'` they may be, and otherwise
-  default to `mapping.magic_orientations`.  Composes with `placement=` and with
+  `X_vertical`; gadget ancillas may be overridden under either proxy.
+  Under the default `magic_proxy='Y'` they default to `X_vertical`
+  (Gidney's layout; `X_horizontal` is the same construction reflected
+  across y = x), under `magic_proxy='X'` they default to
+  `mapping.magic_orientations`.  Composes with `placement=` and with
   `assignment='optimized'` — the optimizer plans its cells against
   the forced orientations.  It fixes the BIRTH orientation only:
   with `auto_rotate` on, the rotation planner may still rotate the
