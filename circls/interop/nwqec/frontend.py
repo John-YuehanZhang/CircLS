@@ -117,8 +117,10 @@ def load_clifford_mpauli(qasm: str) -> PauliCircuit:
     * nwqec's PBC pass SKIPS ``measure``/``reset`` statements and
       unconditionally emits one terminal ``m_pauli`` per qubit
       (``pbc_pass.hpp``), so the PBC is only faithful to "unitary Clifford
-      circuit with every qubit measured in Z at the very end".  ``reset`` is
-      rejected anywhere; ``measure`` only in trailing position.
+      circuit with every qubit measured in Z at the very end".  A ``reset``
+      that is the first operation on its qubit is the |0> initialisation and
+      is stripped (:func:`_strip_leading_resets`); any other ``reset`` is
+      rejected; ``measure`` only in trailing position.
     * ``keep_cx`` is forced False (``keep_cx=True`` emits a mixed ``s_pauli``
       stream and has a separate double-reversal bug at pbc_pass.hpp:161);
       ``optimize_t_count`` is forced False (``fuse_t`` reverses the m_pauli
@@ -129,13 +131,14 @@ def load_clifford_mpauli(qasm: str) -> PauliCircuit:
     import os
     is_path = os.path.exists(qasm)
     text = open(qasm).read() if is_path else qasm
+    text = _strip_leading_resets(text)
     _check_terminal_measurement_only(text)
 
     try:
         import nwqec  # noqa: WPS433 (lazy optional dependency)
     except ImportError as e:  # pragma: no cover
         raise ImportError("load_clifford_mpauli needs the 'nwqec' package") from e
-    loaded = nwqec.load_qasm(qasm) if is_path else _load_qasm_str(nwqec, text)
+    loaded = _load_qasm_str(nwqec, text)       # text may have had resets stripped
     pbc = nwqec.to_pbc(loaded, keep_cx=False, optimize_t_count=False)
     circuit = from_nwqec(pbc)
 
@@ -275,6 +278,46 @@ def _check_tclass_envelope(text: str) -> None:
                     f"and gridsynth approximation is refused")
 
 
+def _strip_leading_resets(text: str) -> str:
+    """Drop every ``reset`` that is the FIRST operation on all of its qubits:
+    on a fresh qubit a reset is exactly the |0> initialisation the compiler
+    performs when it births the patch, so the circuit's meaning is unchanged.
+    A reset that follows a gate or a measurement on one of its qubits is a
+    mid-circuit reset; nwqec's PBC pass would silently skip it, so it is
+    rejected loudly here.  Returns the statement stream re-joined with
+    ``;`` (comments already stripped by :func:`_qasm_statements`)."""
+    n_qubits = None
+    touched = set()
+    kept = []
+    for stmt in _qasm_statements(text):
+        head = stmt.split()[0].lower()
+        if head == "qreg":
+            m = _QREG_RE.search(stmt + ";")
+            if m and n_qubits is None:
+                n_qubits = int(m.group(1))
+            kept.append(stmt)
+            continue
+        if head in ("openqasm", "include", "creg", "barrier"):
+            kept.append(stmt)
+            continue
+        args = [int(a) for a in _ARG_RE.findall(stmt)]
+        if not args and n_qubits is not None:
+            args = list(range(n_qubits))      # register form, e.g. 'reset q'
+        if head == "reset":
+            late = sorted(q for q in args if q in touched)
+            if late:
+                raise ValueError(
+                    f"mid-circuit reset on qubit(s) {late} ({stmt!r}): "
+                    f"nwqec's PBC pass silently ignores it; only a reset that "
+                    f"is the first operation on its qubit (the |0> "
+                    f"initialisation) is supported in the Clifford-only "
+                    f"pipeline")
+            continue                          # initialisation: already implied
+        touched.update(args)
+        kept.append(stmt)
+    return "\n".join(stmt + ";" for stmt in kept) + "\n"
+
+
 def _check_terminal_measurement_only(text: str) -> None:
     """Reject ``reset`` anywhere; allow ``measure`` only in trailing position
     (nothing but further measures/barriers after it) and only in the one form
@@ -296,8 +339,9 @@ def _check_terminal_measurement_only(text: str) -> None:
             continue
         if head == "reset":
             raise ValueError(
-                "input contains 'reset' — nwqec's PBC pass silently ignores "
-                "it; resets are not supported in the Clifford-only pipeline")
+                "input contains 'reset' after _strip_leading_resets — nwqec's "
+                "PBC pass silently ignores it; only leading (initialisation) "
+                "resets are supported in the Clifford-only pipeline")
         if head == "measure":
             seen_measure = True
             m = _MEASURE_RE.match(stmt)
@@ -378,13 +422,14 @@ def load_clifford_t_as_s(qasm: str, return_proxy_qasm: bool = False):
     import stim
     is_path = os.path.exists(qasm)
     text = open(qasm).read() if is_path else qasm
+    text = _strip_leading_resets(text)
     _check_terminal_measurement_only(text)
     _check_tclass_envelope(text)
     try:
         import nwqec  # noqa: WPS433
     except ImportError as e:  # pragma: no cover
         raise ImportError("load_clifford_t_as_s needs the 'nwqec' package") from e
-    loaded = nwqec.load_qasm(qasm) if is_path else _load_qasm_str(nwqec, text)
+    loaded = _load_qasm_str(nwqec, text)      # text may have had resets stripped
     # to_clifford_t expands composite gates (ccx, cswap) and synthesizes
     # pi/4-multiple rotations into basic Clifford+T; the flattened walk
     # and the PBC are taken from the SAME transformed circuit so the
