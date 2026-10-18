@@ -1,19 +1,50 @@
-"""Per-shot assembly of the compiled program's ORIGINAL output bits.
+"""Program-level and circuit-level readout of a compiled program.
 
-The user-facing missing piece (2026-08-05): run the compiled circuit,
-recover every original terminal-measurement bit — deterministic AND
-random — from the raw measurement records, through every bookkeeping
-layer: swept-op sign flips, |Y>-gadget corrections (c = b_joint XOR b_x
-XOR kappa), weight-1 terminal folding, and the measurement-reduction
-reconstruction (executed bits -> original bits by XOR + const).
+Three views of the ORIGINAL output bits of a CompiledProgram, all in LOAD
+ORDER (original m op order = qubit order), the canonical space shared by
+reduction-on and reduction-off compilations:
 
-Bits are returned in LOAD ORDER (original m op order = qubit order), the
-canonical space shared by reduction-on and reduction-off compilations —
-which is exactly what makes the equivalence verifier possible.
+* ``sample_program_bits``: per-shot bits of the real stim circuit at
+  p = 0, assembled from the measurement records by the record-set
+  symbolic tracker (``_RecTracker``): random outcomes are anchored to
+  the records that produced them, deterministic ones are derived from
+  the seed closures (patch initialisations, |Y> births).  Every
+  bookkeeping layer is applied: |Y>-gadget corrections
+  (c = b_joint XOR b_x XOR kappa, chained through ``Gadget.conds``),
+  swept-op sign flips, weight-1 terminal folding, the weight-1 /
+  scheduling permutation chain (``m_load_trace``) and the
+  measurement-reduction reconstruction.
+* ``logical_program_structure``: the same classical bookkeeping applied
+  to a LOGICAL-level simulation of the expanded PPM program (one qubit
+  per patch), independent of the physical circuit.  Compared with
+  ``source_truth_structure`` it checks the whole front end: loader,
+  re-selection, reordering, Y-free sweep, scheduling, gadget expansion
+  and the reconstruction map.
+* ``logical_state_check``: the physical circuit run noise-free up to its
+  terminal readout, with every logical stabilizer of the expected
+  logical state peeked through the experiment's logical operators;
+  |<S>| = 1 for all of them means the circuit realises the program's
+  logical state up to a Pauli frame (a byproduct can only flip a sign).
+
+The last two read no measurement record at all.  They replaced the
+record-level affine comparison in ``verify`` (CircLS issue #1,
+2026-10-14): the previous raw-record reconstruction mis-accounted the
+lattice-surgery byproducts of programs that contain both X-type merges
+and the pi/4 gadgets inserted by the Y-free rewrite, and reported a
+deterministic program bit as random on circuits that were correct.
+
+Known blind spot: no check in this module or in ``verify`` compares the
+VALUE of a physical outcome with the source truth.  A logical Pauli
+inserted into the circuit (a Pauli-frame error) commutes with every
+check, changes no detector, keeps the program observables constant
+(stim's detector sampler reports flips relative to the noiseless
+reference) and is invisible to ``logical_state_check`` (which takes
+|<S>|).  Deterministic bits of ``sample_program_bits`` are derived from
+the seed closures and do not see it either.
 """
 from __future__ import annotations
 
-from functools import reduce
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -23,6 +54,8 @@ from circls.interop.ir.gosc_gadgets import folded_out_bits, step_roles
 from circls.interop.ir.ppm_import import patch_name
 
 _LETTER = {"X": 1, "Y": 2, "Z": 3}
+_ANNOTATIONS = {"DETECTOR", "OBSERVABLE_INCLUDE", "QUBIT_COORDS",
+                "SHIFT_COORDS", "TICK"}
 
 
 def _support_recs(exp, nm: str, letter: str) -> List[int]:
@@ -55,126 +88,6 @@ def _pstring(n: int, targets: Dict[int, str]) -> stim.PauliString:
     for q, letter in targets.items():
         ps[q] = _LETTER[letter]
     return ps
-
-
-def _mask(ps: stim.PauliString) -> int:
-    n = len(ps)
-    m = 0
-    for q in range(n):
-        v = ps[q]
-        if v in (1, 2):
-            m |= 1 << q
-        if v in (2, 3):
-            m |= 1 << (n + q)
-    return m
-
-
-def _solve_ideal(tgt: stim.PauliString, gens) -> Optional[Tuple[set, int]]:
-    """Express tgt as a product of generators; return (records, sign_flip)
-    or None.  gens: list of (mask, PauliString, records:frozenset, is_seed).
-    Value identity: seeds pairwise commute (one letter per patch), anchors
-    pairwise commute (terminal m-set), and the seed REMAINDER of any
-    solution commutes with every anchor as a whole — so the product taken
-    anchors-then-seeds has a well-defined real sign, and
-    v(tgt) = XOR of generator values XOR [sign == -1]."""
-    if not gens:
-        return None
-    basis = []                                  # (mask, combo bitset)
-    for j, (m0, *_rest) in enumerate(gens):
-        m, c = m0, 1 << j
-        for bm, bc in basis:
-            if (m >> (bm.bit_length() - 1)) & 1:
-                m ^= bm
-                c ^= bc
-        if m:
-            basis.append((m, c))
-            basis.sort(key=lambda t: -t[0].bit_length())
-    t, combo = _mask(tgt), 0
-    for bm, bc in basis:
-        if t and (t >> (bm.bit_length() - 1)) & 1:
-            t ^= bm
-            combo ^= bc
-    if t:
-        return None
-    chosen = [gens[j] for j in range(len(gens)) if (combo >> j) & 1]
-    n = len(tgt)
-    prod = stim.PauliString(n)
-    for grp in (False, True):                   # anchors first, then seeds
-        for _, ps, _, is_seed in chosen:
-            if is_seed == grp:
-                prod = prod * ps
-    check = prod * tgt                          # equal unsigned parts square
-    assert check.weight == 0 and check.sign in (1, -1), \
-        f"ideal-solve sign not real: {check.sign}"
-    recs = reduce(lambda a, b: a ^ b, (g[2] for g in chosen), frozenset())
-    return set(recs), int(check.sign == -1)
-
-
-def executed_bit_recs(cp) -> List[Tuple[List[int], int, List[int]]]:
-    """Per program out-bit (in program order): (record indices, flip,
-    gadget indices whose correction XORs in).
-
-    Joint-step bits are reconstructed at their IDEAL value where possible:
-    a bit whose operator factors over seed-pinned logicals (plus earlier
-    raw-anchored bits) gets the frame-free seed-closure recipe — a window
-    executed earlier (scheduling/parallelism) can no longer contaminate it
-    with its split byproduct.  Bits outside that span keep the raw
-    post-closure and become anchors themselves; gadget-corrected and
-    folded bits keep their legacy (actual-branch) paths."""
-    prog, exp = cp.program, cp.experiment
-    roles = step_roles(prog)
-    folded = folded_out_bits(prog)
-    m_step_of = {bit: j for j, (kind, bit) in enumerate(roles)
-                 if kind == "m"}
-    targets = _bit_targets(prog)
-    n = prog.num_data
-    qubit_of = {patch_name(q): q for q in range(n)}
-    gens = []                                   # seeds, then anchors as met
-    for (nm, letter), recs in sorted(getattr(exp, "seed_closure", {}).items()):
-        q = qubit_of.get(nm)
-        if q is None:
-            continue                            # y-ancilla patch: gadget flow
-        ps = _pstring(n, {q: letter})
-        gens.append((_mask(ps), ps, frozenset(recs), True))
-    out = []
-    for i, ob in enumerate(prog.out_bits):
-        if i in folded:
-            q, letter = folded[i]
-            out.append((_support_recs(exp, patch_name(q), letter),
-                        ob.flip, list(ob.gadgets)))
-            continue
-        post = exp.step_joint_records_post.get(m_step_of[i])
-        if not ob.gadgets:
-            tgt = _pstring(n, targets[i])
-            sol = _solve_ideal(tgt, gens)
-            if sol is not None:
-                recs, sflip = sol
-                out.append((sorted(recs), ob.flip ^ sflip, []))
-                continue
-            if post is not None:
-                gens.append((_mask(tgt), tgt, frozenset(post), False))
-        if post is None:
-            raise RuntimeError(f"out bit {i}: no post records captured")
-        out.append((sorted(post), ob.flip, list(ob.gadgets)))
-    return out
-
-
-def _gadget_cond_recs(cp):
-    """Per gadget: (joint-outcome records, ancilla-X records, kappa,
-    earlier-gadget chain ``conds``)."""
-    prog, exp = cp.program, cp.experiment
-    roles = step_roles(prog)
-    g_step_of = {k: j for j, (kind, k) in enumerate(roles)
-                 if kind == "gadget"}
-    out = []
-    for k, g in enumerate(prog.gadgets):
-        post = exp.step_joint_records_post.get(g_step_of[k])
-        if post is None:
-            raise RuntimeError(f"gadget {k}: no post records captured")
-        anc_nm = f"y{g.ancilla - prog.num_data}"
-        out.append((sorted(post), _support_recs(exp, anc_nm, "X"), g.kappa,
-                    list(getattr(g, "conds", []))))
-    return out
 
 
 class _RecTracker:
@@ -317,60 +230,18 @@ def _tracker_bit_specs(cp) -> List[Tuple[List[int], int]]:
     return out
 
 
-def sample_program_bits(cp, shots: int, seed: int) -> np.ndarray:
-    """(shots x n_original_bits) matrix of the ORIGINAL terminal bits, in
-    load order."""
-    samp = cp.circuit.compile_sampler(seed=seed)
-    m = samp.sample(shots)                        # shots x num_measurements
-    if getattr(cp, "t_as_s", False) or any(
-            l == "X" for g in cp.program.gadgets for l in g.mask.values()):
-        # every t_as_s compile takes the symbolic tracker: the raw-post
-        # path's contamination comes from mixed-axis MERGES anywhere in
-        # the program, not only from X letters in gadget masks (review
-        # 2026-08-20: an all-Z-mask proxy with an X-bearing m frame reads
-        # deterministic parities as random on the legacy path)
-        specs = _tracker_bit_specs(cp)
-        prog_bits = np.zeros((shots, len(specs)), dtype=bool)
-        for i, (recs, const) in enumerate(specs):
-            b = np.zeros(shots, dtype=bool)
-            for r in recs:
-                b ^= m[:, r]
-            prog_bits[:, i] = b ^ bool(const)
-    else:
-        recs_spec = executed_bit_recs(cp)
-        gadgets = _gadget_cond_recs(cp)
-        conds = []
-        for joint, ancx, kappa, chain in gadgets:
-            b = np.zeros(shots, dtype=bool)
-            for r in joint:
-                b ^= m[:, r]
-            for r in ancx:
-                b ^= m[:, r]
-            b ^= bool(kappa)
-            # an earlier gadget's pending frame anticommutes with this
-            # joint: observed b1 is the true value XOR that condition
-            for k in chain:
-                b ^= conds[k]
-            conds.append(b)
-        prog_bits = np.zeros((shots, len(recs_spec)), dtype=bool)
-        for i, (recs, flip, gs) in enumerate(recs_spec):
-            b = np.zeros(shots, dtype=bool)
-            for r in recs:
-                b ^= m[:, r]
-            b ^= bool(flip)
-            for k in gs:
-                b ^= conds[k]
-            prog_bits[:, i] = b
-    # program order -> executed LOAD order via the full permutation chain
-    # (weight-1 reorder AND step scheduling; cp.m_load_trace)
-    trace = cp.m_load_trace
-    n = prog_bits.shape[1]
+def _assemble_original_bits(cp, prog_bits: np.ndarray) -> np.ndarray:
+    """Program-order bits -> executed LOAD order (the weight-1 reorder AND
+    step-scheduling permutation chain, ``cp.m_load_trace``) -> ORIGINAL
+    bits through the measurement-reduction reconstruction (original bit k
+    = const[k] XOR executed bits over inverse[k])."""
+    shots, n = prog_bits.shape
+    trace = cp.m_load_trace if cp.m_load_trace is not None else list(range(n))
     executed = np.zeros((shots, n), dtype=bool)
     for pos, load_idx in enumerate(trace):
         executed[:, load_idx] = prog_bits[:, pos]
     if cp.reconstruction is None:
         return executed
-    # reduced run: original bit k = const[k] XOR executed bits over inverse[k]
     rec = cp.reconstruction
     orig = np.zeros((shots, len(rec.inverse)), dtype=bool)
     for k, inv in enumerate(rec.inverse):
@@ -379,6 +250,299 @@ def sample_program_bits(cp, shots: int, seed: int) -> np.ndarray:
             b ^= executed[:, j]
         orig[:, k] = b ^ bool(rec.const[k])
     return orig
+
+
+def sample_program_bits(cp, shots: int, seed: int) -> np.ndarray:
+    """(shots x n_original_bits) matrix of the ORIGINAL terminal bits, in
+    load order, read off the noise-free circuit through the record-set
+    symbolic tracker (see the module docstring).  A p = 0 oracle: the
+    deterministic bits are reconstructed from the seed closures, so this
+    is not a decoder for noisy records."""
+    samp = cp.circuit.compile_sampler(seed=seed)
+    m = samp.sample(shots)                        # shots x num_measurements
+    specs = _tracker_bit_specs(cp)
+    prog_bits = np.zeros((shots, len(specs)), dtype=bool)
+    for i, (recs, const) in enumerate(specs):
+        b = np.zeros(shots, dtype=bool)
+        for r in recs:
+            b ^= m[:, r]
+        prog_bits[:, i] = b ^ bool(const)
+    return _assemble_original_bits(cp, prog_bits)
+
+
+# ── record-free checks (CircLS issue #1) ─────────────────────────────────────
+
+def _program_patch_name(prog, q: int) -> str:
+    return patch_name(q) if q < prog.num_data else f"y{q - prog.num_data}"
+
+
+def _terminal_mpp_indices(prog) -> List[int]:
+    """Indices (into ``prog.ops``) of the single-patch mpp ops that the
+    experiment realises as a patch's terminal readout: gadget-ancilla X
+    readouts and the folded weight-1 data readouts."""
+    # folded_out_bits raises on a weight-1 op that is reused later, so every
+    # single-patch op of an expanded program is terminal for its qubit
+    return [i for i, op in enumerate(prog.ops)
+            if op.kind == "mpp" and len(op.targets) == 1]
+
+
+_INIT = {"Y": "R {q}\nH {q}\nS {q}",     # |+i>, the +1 eigenstate of Y
+         "X": "R {q}\nH {q}",              # |+>, the |+> proxy ancilla
+         "Z": "R {q}"}
+
+
+def simulate_program(prog, seed: int = 0, skip_ops=(), init_letters=None):
+    """Logical-level run of an expanded PPM program, one qubit per patch.
+
+    ``init_y`` prepares |+i> (the +1 eigenstate of Y; a global flip of
+    every ancilla's sign complex-conjugates a Y-free program and changes
+    no outcome distribution, so the convention is immaterial to the
+    checks built on this) unless ``init_letters`` maps the ancilla to
+    another letter (``'X'``: the |+> proxy ancilla of ``magic_proxy="X"``
+    compiles); every ``mpp`` measures its (positive) Pauli product and
+    consumes the next record index, exactly as ``expand_gadgets`` numbers
+    ``Gadget.rec_joint`` / ``rec_x`` / ``OutBit.rec``.  Ops whose index
+    is in ``skip_ops`` are not executed (their record is None).  Returns
+    ``(records, simulator)``."""
+    n = prog.num_qubits
+    sim = stim.TableauSimulator(seed=seed)
+    sim.set_num_qubits(n)
+    recs: List[Optional[int]] = []
+    skip = set(skip_ops)
+    init_letters = init_letters or {}
+    for i, op in enumerate(prog.ops):
+        if op.kind == "init_y":
+            q, = op.targets
+            sim.do(stim.Circuit(_INIT[init_letters.get(q, "Y")].format(q=q)))
+        elif op.kind == "mpp":
+            if i in skip:
+                recs.append(None)
+                continue
+            recs.append(int(sim.measure_observable(_pstring(n, op.targets))))
+        else:
+            raise ValueError(f"unknown program op kind {op.kind!r}")
+    return recs, sim
+
+
+def program_bits_from_records(cp, recs: List[int]) -> List[int]:
+    """The compiler's own classical rules applied to one shot of program-
+    order outcomes: gadget conditions c = b_joint ^ b_x ^ kappa (chained
+    through ``conds``), out-bit flips and gadget corrections."""
+    prog = cp.program
+    conds: List[int] = []
+    for g in prog.gadgets:
+        c = recs[g.rec_joint] ^ recs[g.rec_x] ^ g.kappa
+        for k in getattr(g, "conds", []):
+            c ^= conds[k]
+        conds.append(c)
+    out = []
+    for ob in prog.out_bits:
+        b = recs[ob.rec] ^ ob.flip
+        for k in ob.gadgets:
+            b ^= conds[k]
+        out.append(b)
+    return out
+
+
+def logical_program_structure(cp, shots: int = 256, seed: int = 0):
+    """Affine structure (``affine_structure``) of the ORIGINAL output bits
+    of a logical-level simulation of ``cp.program`` with the compiler's
+    own correction and reconstruction rules.  Reads no circuit record."""
+    rows = []
+    for shot in range(shots):
+        recs, _ = simulate_program(cp.program, seed=seed * 7919 + shot)
+        rows.append(program_bits_from_records(cp, recs))
+    bits = np.array(rows, dtype=bool).reshape(shots, -1)
+    return affine_structure(_assemble_original_bits(cp, bits))
+
+
+def source_truth_structure(qasm: str, shots: int = 256, seed: int = 0):
+    """Affine structure of the source program's terminal measurements,
+    from the Clifford front end's operators measured on |0..0> by a stim
+    tableau simulation (compilation-independent)."""
+    from circls.interop.nwqec.frontend import load_clifford_mpauli
+    raw = load_clifford_mpauli(qasm)
+    n = raw.num_qubits
+    mops = []
+    for op in raw.ops:
+        ps = stim.PauliString(n)
+        for q, l in op.paulis.items():
+            ps[q] = _LETTER[l]
+        if op.sign == -1:
+            ps.sign = -1
+        mops.append(ps)
+    rows = []
+    for shot in range(shots):
+        ts = stim.TableauSimulator(seed=1000 + seed + shot)
+        rows.append([ts.measure_observable(ps) for ps in mops])
+    return affine_structure(np.array(rows, dtype=bool))
+
+
+@dataclass
+class LogicalStateReport:
+    ok: Optional[bool]                 # None: the readout cut was not clean
+    n_stabilizers: int                 # expected logical stabilizers checked
+    min_abs_expectation: Optional[int] # 1 = all realised; 0 = some not
+    survivors: List[str]               # patches alive at the terminal readout
+    cut_record: Optional[int]          # first record of the terminal readout
+    detail: str = ""
+
+
+def _restrict_to_support(stabs, n: int, keep) -> List[stim.PauliString]:
+    """Generators of the subgroup of <stabs> supported on the qubits in
+    ``keep`` (the stabilizer group of the marginal state): GF(2)
+    elimination on the columns OUTSIDE ``keep``; every generator whose
+    outside part reduces to zero is a product of the input generators
+    with no outside support."""
+    outside = 0
+    for q in range(n):
+        if q not in keep:
+            outside |= (1 << q) | (1 << (n + q))
+
+    def vec(ps):
+        v = 0
+        for q in range(n):
+            c = ps[q]
+            if c in (1, 2):
+                v |= 1 << q
+            if c in (2, 3):
+                v |= 1 << (n + q)
+        return v
+
+    basis: Dict[int, int] = {}                 # pivot bit (outside) -> full vector
+    kept = []
+    for ps in stabs:
+        v = vec(ps)
+        while True:
+            o = v & outside
+            if not o:
+                kept.append(v)
+                break
+            piv = o.bit_length() - 1
+            if piv in basis:
+                v ^= basis[piv]
+            else:
+                basis[piv] = v
+                break
+    out = []
+    for v in kept:
+        if not v:
+            continue
+        ps = stim.PauliString(n)
+        for q in range(n):
+            x, z = (v >> q) & 1, (v >> (n + q)) & 1
+            ps[q] = 1 if (x and not z) else 2 if (x and z) else 3 if z else 0
+        out.append(ps)
+    return out
+
+
+def logical_state_check(cp) -> LogicalStateReport:
+    """Does the noise-free circuit realise the program's logical state?
+
+    The expected state is the logical-level simulation of ``cp.program``
+    with the terminal readouts of the patches that are still alive at the
+    circuit's final readout left unexecuted (patches retired earlier by
+    the liveness pass are measured in the simulation as well).  Its
+    stabilizer group, restricted to the surviving patches, is mapped to
+    physical Paulis through ``exp.system.logical_ops`` and peeked on the
+    stim tableau simulator run up to the first terminal-readout record.
+    Every |<S>| must be 1: Pauli byproducts of the surgery only change the
+    sign, while an operation that is missing, wrong or misplaced gives 0
+    whenever it changes the state (a gadget whose mask stabilises the
+    state at that point acts trivially and is invisible here, as it is in
+    the output distribution).  Reads no record and compares no outcome
+    value (see the module docstring)."""
+    prog, exp, circ = cp.program, cp.experiment, cp.circuit
+    owner = exp.system.index_to_owner_map
+    first_rec: Dict[str, int] = {}
+    for q, r in exp.final_readout_recs.items():
+        nm = owner.get(q)
+        if nm is not None:
+            first_rec[nm] = min(r, first_rec.get(nm, r))
+    if not first_rec:
+        return LogicalStateReport(None, 0, None, [], None,
+                                  "no terminal readout records captured")
+    # the terminal readout = the last run of measuring instructions
+    flat = circ.flattened()
+    rec, run_start = 0, 0
+    for inst in flat:
+        k = inst.num_measurements
+        if k:
+            rec += k
+        elif inst.name not in _ANNOTATIONS:
+            run_start = rec
+    survivors = sorted(nm for nm, r in first_rec.items() if r >= run_start)
+    if not survivors:
+        return LogicalStateReport(None, 0, None, [], None,
+                                  "no patch readout in the circuit's last "
+                                  "run of measurements (instructions after "
+                                  "the terminal readout?)")
+    cut = min(first_rec[nm] for nm in survivors)
+    # expected logical state: everything but the survivors' terminal readouts
+    name_of = {q: _program_patch_name(prog, q) for q in range(prog.num_qubits)}
+    skip = [i for i in _terminal_mpp_indices(prog)
+            if name_of[next(iter(prog.ops[i].targets))] in survivors]
+    # ancillas in the state the experiment actually prepares (|Y> birth, or
+    # the |+> proxy): the check is "the circuit realises the program as
+    # compiled", the ideal semantics are logical_program_structure's job
+    init_letters = {q: exp.initial_states[nm]
+                    for q, nm in name_of.items()
+                    if q >= prog.num_data and nm in exp.initial_states}
+    _, lsim = simulate_program(prog, seed=7, skip_ops=skip,
+                               init_letters=init_letters)
+    keep = {q for q, nm in name_of.items() if nm in survivors}
+    stabs = _restrict_to_support(lsim.canonical_stabilizers(),
+                                 prog.num_qubits, keep)
+    reps = {(r["patch_name"], r["type"]): r["pauli"]
+            for r in exp.system.logical_ops}
+    nphys = circ.num_qubits
+
+    def physical(lp: stim.PauliString) -> stim.PauliString:
+        tot = stim.PauliString(nphys)
+        for q in range(prog.num_qubits):
+            c = lp[q]
+            if not c:
+                continue
+            nm = name_of[q]
+            if c in (1, 2):
+                tot = tot * _pstring(nphys, reps[(nm, "X")])
+            if c in (2, 3):
+                tot = tot * _pstring(nphys, reps[(nm, "Z")])
+        tot.sign = +1
+        return tot
+
+    sim = stim.TableauSimulator(seed=3)
+    sim.set_num_qubits(nphys)
+    rec = 0
+    clean = False
+    for inst in flat:
+        if inst.name in _ANNOTATIONS:
+            continue
+        k = inst.num_measurements
+        if k and rec == cut:
+            clean = True                       # the terminal readout starts here
+            break
+        if k and rec + k > cut:
+            break                              # a measuring instruction straddles the cut
+        sim.do(inst)                           # gates before the readout are applied
+        rec += k
+    else:
+        clean = rec == cut
+    if not clean:
+        return LogicalStateReport(None, len(stabs), None, survivors, cut,
+                                  f"terminal readout does not start at an "
+                                  f"instruction boundary (record {cut})")
+    exps = [abs(sim.peek_observable_expectation(physical(st))) for st in stabs]
+    mn = min(exps) if exps else 1
+    notes = []
+    if mn != 1:
+        notes.append(f"{sum(1 for e in exps if e != 1)} of {len(exps)} "
+                     f"expected logical stabilizers not realised")
+    if len(stabs) < len(survivors):
+        notes.append(f"expected state fixes only {len(stabs)} of "
+                     f"{len(survivors)} surviving logical qubits")
+    return LogicalStateReport(mn == 1, len(stabs), mn, survivors, cut,
+                              "; ".join(notes))
 
 
 def affine_structure(bits: np.ndarray) -> Tuple[List[int], List[int]]:

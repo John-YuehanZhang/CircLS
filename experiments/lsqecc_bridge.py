@@ -282,7 +282,8 @@ def build_compiled(program, init_letters, remap, placement, d=3,
     Observables: the DETERMINISTIC SUBGROUP of the program's output bits
     (terminal data measurements) — one observable per GF(2) basis element
     of the deterministic combinations, record sets from the same
-    closure recipes the CircLS pipeline uses (executed_bit_recs).  This
+    closure recipes the CircLS pipeline uses (the experiment's pre/post
+    joint-parity records, as in append_program_observables).  This
     matches the pipeline's own metric semantics: re-selection there also
     emits exactly a generating set of the deterministic subgroup; the
     replay may not re-select (their plan measures raw per-qubit bits, of

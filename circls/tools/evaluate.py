@@ -9,8 +9,16 @@ The two calls that complete the compile story::
 ``verify`` runs the same checks the test suite runs: no detector
 triggers at p = 0, the program observables are deterministic, the
 graphlike distance stays d (on circuits small enough to search), and
-the extracted program bits carry the same affine structure as a
-logical-level simulation of the source QASM.
+the compiled program is logically right in two record-free senses: a
+logical-level simulation of the expanded PPM program, with the
+compiler's own correction and reconstruction rules, carries the same
+affine structure as a stabilizer simulation of the source QASM
+(``logical_program``), and the noise-free circuit realises the
+program's logical state before its terminal readout, every expected
+logical stabilizer peeking at |<S>| = 1 (``logical_state``).  None of
+these compares the value of a physical outcome with the source truth:
+a Pauli-frame error (a logical Pauli inserted into the circuit) passes
+all four checks.
 
 ``measure_ler`` injects the uniform circuit-level noise pass used
 throughout the paper's measurements and hands the noisy circuit to
@@ -23,7 +31,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-import numpy as np
 import stim
 
 # ── uniform circuit-level noise (the paper's shared noise pass) ──────────────
@@ -105,9 +112,13 @@ class VerifyReport:
     silent: bool                       # no detector triggers at p = 0
     deterministic: bool                # program observables are constant
     distance: Optional[bool]           # graphlike distance == d (None: skipped)
-    logical: Optional[bool]            # affine structure matches the logical
-    #                                    simulation (None: no source QASM)
+    logical: Optional[bool]            # logical_program AND logical_state
+    #                                    (None: neither could run)
     detail: str = ""
+    logical_program: Optional[bool] = None   # program simulation == source
+    #                                          truth (None: no source QASM)
+    logical_state: Optional[bool] = None     # circuit realises the program's
+    #                                          logical state (None: skipped)
 
     @property
     def ok(self) -> bool:
@@ -118,20 +129,26 @@ class VerifyReport:
     @property
     def skipped(self) -> list:
         """Names of the checks that did NOT run (ok treats them as
-        passing).  distance skips above DISTANCE_DETECTOR_CAP; logical
-        skips when the compile carried no source QASM (the
-        compile_ppm_sequence entry)."""
+        passing).  distance skips above DISTANCE_DETECTOR_CAP;
+        logical_program skips when the compile carried no source QASM
+        (the compile_ppm_sequence entry); logical_state skips when the
+        terminal readout cannot be cut at an instruction boundary."""
         out = []
         if self.distance is None:
             out.append("distance")
-        if self.logical is None:
-            out.append("logical")
+        if self.logical_program is None:
+            out.append("logical_program")
+        if self.logical_state is None:
+            out.append("logical_state")
         return out
 
     def __repr__(self):
         base = (f"VerifyReport(ok={self.ok}, silent={self.silent}, "
                 f"deterministic={self.deterministic}, "
                 f"distance={self.distance}, logical={self.logical}")
+        if self.logical is not None:
+            base += (f" [program={self.logical_program}, "
+                     f"state={self.logical_state}]")
         if self.skipped:
             base += f", skipped={self.skipped}"
         if self.detail:
@@ -175,35 +192,37 @@ def verify(compiled, shots: int = 256, seed: int = 0,
         notes.append(f"distance check skipped: {c.num_detectors} detectors "
                      f"> cap {DISTANCE_DETECTOR_CAP}")
 
-    logical = None
+    # logical correctness, two record-free checks (reporting.py):
+    #   program: the expanded PPM program, simulated at the logical level
+    #            with the compiler's own correction/reconstruction rules,
+    #            has the affine structure of the source program;
+    #   state:   the noise-free circuit realises the program's logical
+    #            state before the terminal readout (every expected
+    #            logical stabilizer peeks at |<S>| = 1).
+    from circls.tools.reporting import (logical_program_structure,
+                                          logical_state_check,
+                                          source_truth_structure)
+    logical_program = None
     qasm = getattr(compiled, "source_qasm", None)
     if qasm is not None:
-        from circls.interop.nwqec.frontend import load_clifford_mpauli
-        from circls.tools.reporting import (affine_structure,
-                                              sample_program_bits)
-        raw = load_clifford_mpauli(qasm)
-        n = raw.num_qubits
-        letter = {"X": 1, "Y": 2, "Z": 3}
-        mops = []
-        for op in raw.ops:
-            ps = stim.PauliString(n)
-            for q, l in op.paulis.items():
-                ps[q] = letter[l]
-            if op.sign == -1:
-                ps.sign = -1
-            mops.append(ps)
-        rows = []
-        for shot in range(shots):
-            ts = stim.TableauSimulator(seed=1000 + seed + shot)
-            rows.append([ts.measure_observable(ps) for ps in mops])
-        truth = affine_structure(np.array(rows, dtype=bool))
-        got = affine_structure(sample_program_bits(compiled, shots=shots,
-                                                   seed=seed + 29))
-        logical = got == truth
+        truth = source_truth_structure(qasm, shots=shots, seed=seed)
+        got = logical_program_structure(compiled, shots=shots, seed=seed)
+        logical_program = got == truth
+        if not logical_program:
+            notes.append("logical_program: the program's affine structure "
+                         "differs from the source program's")
+    state = logical_state_check(compiled)
+    logical_state = state.ok
+    if state.detail:
+        notes.append(f"logical_state: {state.detail}")
+    ran = [x for x in (logical_program, logical_state) if x is not None]
+    logical = all(ran) if ran else None
 
     return VerifyReport(silent=silent, deterministic=deterministic,
                         distance=distance, logical=logical,
-                        detail="; ".join(notes))
+                        detail="; ".join(notes),
+                        logical_program=logical_program,
+                        logical_state=logical_state)
 
 
 # ── measure_ler ──────────────────────────────────────────────────────────────

@@ -111,7 +111,10 @@ print(report.ok, stats.logical_error_rate)
 ```
 
 `verify` runs the suite's checks (p = 0 silence, observable
-determinism, graphlike distance, logical-simulation match);
+determinism, graphlike distance, and two record-free logical checks:
+the expanded program simulated at the logical level matches the
+source program, and the circuit realises the program's logical state
+before its terminal readout);
 `measure_ler` injects the paper's uniform circuit-level noise (the
 same model as `experiments/noise_inject.py`) and
 decodes with PyMatching (MWPF fallback).  The compiler's decisions

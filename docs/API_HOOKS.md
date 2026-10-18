@@ -5,8 +5,8 @@ stabilizer construction and circuit emission (Section 4).  The six
 decision points below are open for customization; the construction,
 the emitted circuit, and the verification suite are not.  Whatever a
 hook injects, the compiled circuit still passes the same legality
-checks and verification (p=0 silence, graphlike distance, logical
-simulation match).
+checks and verification (p=0 silence, graphlike distance, the
+logical-program and logical-state checks of `verify`).
 
 Two ways in, one contract:
 
