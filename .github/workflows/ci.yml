@@ -18,6 +18,20 @@ jobs:
           python-version: "3.11"
       - run: pip install -e .[test]
       - name: Core suite
-        run: python -m pytest tests -q
+        run: python -m pytest tests -q -m "not slow"
       - name: LightStim suite
         run: python -m pytest lightstim/tests -q
+
+  slow:
+    # the slow tier (tests/conftest.py): multi-minute compiles such as the
+    # 12-qubit regression circuits of issue #1; kept out of the 45-minute core job
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .[test]
+      - name: Slow suite
+        run: python -m pytest tests -q -m slow
