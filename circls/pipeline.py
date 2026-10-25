@@ -20,7 +20,8 @@ from circls.interop.ir.gosc_gadgets import (append_program_observables,
                                          to_experiment_inputs)
 from circls.interop.nwqec.frontend import (load_clifford_mpauli,
                                            load_clifford_t_as_s)
-from circls.interop.ir.pauli_algebra import (drop_free_prefix,
+from circls.interop.ir.pauli_algebra import (defer_weight1_terminal,
+                                             drop_free_prefix,
                                           reorder_weight1_last, y_free_sweep)
 from circls.core.sequential_ppm_ls import SequentialPPMExperiment
 
@@ -110,7 +111,7 @@ def analyze_qasm(qasm: str, *, measure_reduction: bool = True,
         from circls.compiler.measure_reduce import reduce_measurements
         raw, _ = reduce_measurements(raw)
     ordered, _ = reorder_weight1_last(raw)
-    swept = drop_free_prefix(y_free_sweep(ordered))
+    swept, _ = defer_weight1_terminal(drop_free_prefix(y_free_sweep(ordered)))
     if step_scheduling:
         from circls.compiler.scheduling import schedule_ops
         swept, _ = schedule_ops(swept, parallel=parallel_steps)
@@ -393,7 +394,8 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     # the m-bit permutation chain (2026-08-05, found by the equivalence
     # verifier as a bit-alignment mismatch): reorder_weight1_last permutes
     # the m stream (perm), the sweep and the prefix drop PRESERVE m order
-    # (documented contracts), and step scheduling permutes again below.
+    # (documented contracts), the weight-1 deferral below permutes the m
+    # ops again (dperm), and step scheduling permutes once more.
     # m_load_trace[i] = LOAD-order index of the i-th m op of the final
     # stream = the canonical identity of program out-bit i.
     pre_sched_m_load = [perm[p] for p, op in enumerate(m_only_ordered.ops)
@@ -401,6 +403,11 @@ def compile_qasm(qasm: str, distance: int = 3, rounds: Optional[int] = None,
     # sweep/drop insert 's' ops but keep every m, in order:
     assert len([o for o in swept.ops if o.kind == "m"]) == \
         len(pre_sched_m_load), "sweep/drop changed the m count"
+    # the sweep can widen a later measurement onto a qubit whose weight-1
+    # measurement already ran (issue #2); defer such weight-1 ops to the
+    # tail where they commute with everything they pass (identity otherwise)
+    swept, dperm = defer_weight1_terminal(swept)
+    pre_sched_m_load = [pre_sched_m_load[k] for k in dperm]
     if scheduler is not None or do_sched:
         # lifetime-aware step scheduling (2026-08-05): reorder commuting
         # joint steps so births hug first uses and retirements hug last

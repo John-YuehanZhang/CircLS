@@ -251,6 +251,57 @@ def reorder_weight1_last(circuit) -> Tuple["PauliCircuit", List[int]]:
     return PauliCircuit(circuit.num_qubits, [ops[i] for i in perm]), perm
 
 
+def defer_weight1_terminal(circuit) -> Tuple["PauliCircuit", List[int]]:
+    """Post-sweep pass: move every weight-1 'm' op that is still followed by
+    an op on its qubit to the tail, when that is legal.
+
+    ``reorder_weight1_last`` runs on the m stream before the Y-free sweep,
+    but the sweep can widen a later measurement onto that qubit (a Y
+    letter is rewritten into X/Z by folding the pending pi/4 masks into
+    it, and a mask may carry other qubits — CircLS issue #2: after
+    re-selection every terminal measurement of the proxy program is
+    weight-1, two of them with Y, and the rewrite of ``Y2`` becomes
+    ``-Z1 X2 Z3``, behind the weight-1 ``Z1``).  A weight-1 measurement is
+    realised as its patch's terminal readout, so it must be the last op on
+    its qubit.  Deferring it past a later op is legal iff the two commute:
+    the outcome is the same and no gadget correction changes (a gadget's
+    frame only flips outcomes that anticommute with its mask).  A weight-1
+    op followed by an anticommuting op is a genuine mid-circuit
+    measurement, which the lowering has no primitive for: loud error.
+
+    Returns ``(circuit, m_perm)`` with ``m_perm[new_m_ordinal] =
+    old_m_ordinal`` over the 'm' ops only (the sweep's s ops carry no
+    classical bit); the relative order of the deferred ops is kept."""
+    from circls.interop.ir.pauli_ir import PauliCircuit
+    ops = list(circuit.ops)
+    n = len(ops)
+    pp = [PhasedPauli.from_pauli_op(op) for op in ops]
+    deferred = []
+    for i, op in enumerate(ops):
+        if op.kind != "m" or op.weight != 1:
+            continue
+        (q, _), = op.paulis.items()
+        later = [j for j in range(i + 1, n) if q in ops[j].paulis]
+        if not later:
+            continue
+        bad = [j for j in later if not pp[i].commutes_with(pp[j])]
+        if bad:
+            raise ValueError(
+                f"weight-1 measurement of qubit {q} (op {i}) is followed by "
+                f"an anticommuting operation on qubit {q} (op {bad[0]}: "
+                f"{ops[bad[0]]}) — a mid-circuit measurement, which the "
+                f"lowering has no single-patch primitive for (v1)")
+        deferred.append(i)
+    if not deferred:
+        return circuit, list(range(sum(1 for op in ops if op.kind == "m")))
+    keep = [i for i in range(n) if i not in set(deferred)]
+    order = keep + deferred
+    m_old = [i for i in range(n) if ops[i].kind == "m"]   # old m ordinal by position
+    ordinal = {pos: k for k, pos in enumerate(m_old)}
+    m_perm = [ordinal[i] for i in order if ops[i].kind == "m"]
+    return PauliCircuit(circuit.num_qubits, [ops[i] for i in order]), m_perm
+
+
 def drop_free_prefix(swept) -> "PauliCircuit":
     """m1 peephole: delete the LEADING run of 's' ops from a swept stream.
 
