@@ -1,0 +1,622 @@
+{
+ "source": "toffoli",
+ "distance": 3,
+ "t_as_s": true,
+ "grid": 9,
+ "patches": [
+  {
+   "name": "q0",
+   "tile": [
+    3,
+    5
+   ],
+   "orientation": "X_horizontal",
+   "initial_basis": "Z",
+   "final_basis": "Z",
+   "live_range_layers": [
+    1,
+    53
+   ]
+  },
+  {
+   "name": "q1",
+   "tile": [
+    3,
+    3
+   ],
+   "orientation": "X_horizontal",
+   "initial_basis": "Z",
+   "final_basis": "Z",
+   "live_range_layers": [
+    13,
+    53
+   ]
+  },
+  {
+   "name": "q2",
+   "tile": [
+    1,
+    3
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Z",
+   "final_basis": "Z",
+   "live_range_layers": [
+    13,
+    53
+   ]
+  },
+  {
+   "name": "y0",
+   "tile": [
+    5,
+    7
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    2,
+    12
+   ]
+  },
+  {
+   "name": "y1",
+   "tile": [
+    3,
+    1
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    7,
+    20
+   ]
+  },
+  {
+   "name": "y2",
+   "tile": [
+    1,
+    5
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    15,
+    27
+   ]
+  },
+  {
+   "name": "y3",
+   "tile": [
+    5,
+    5
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    22,
+    34
+   ]
+  },
+  {
+   "name": "y4",
+   "tile": [
+    1,
+    7
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    29,
+    41
+   ]
+  },
+  {
+   "name": "y5",
+   "tile": [
+    3,
+    7
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    36,
+    48
+   ]
+  },
+  {
+   "name": "y6",
+   "tile": [
+    1,
+    1
+   ],
+   "orientation": "X_vertical",
+   "initial_basis": "Y",
+   "final_basis": "X",
+   "live_range_layers": [
+    43,
+    53
+   ]
+  }
+ ],
+ "ppm_sequence": [
+  {
+   "index": 0,
+   "operator": {
+    "q0": "Z",
+    "y0": "Z"
+   },
+   "corridor_tiles": [
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ],
+    [
+     5,
+     6
+    ]
+   ],
+   "layers": [
+    6,
+    9
+   ]
+  },
+  {
+   "index": 1,
+   "operator": {
+    "q1": "Z",
+    "q2": "X",
+    "y1": "Z"
+   },
+   "corridor_tiles": [
+    [
+     2,
+     2
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "layers": [
+    14,
+    17
+   ]
+  },
+  {
+   "index": 2,
+   "operator": {
+    "q0": "Z",
+    "q1": "Z",
+    "q2": "X",
+    "y2": "Z"
+   },
+   "corridor_tiles": [
+    [
+     1,
+     4
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "layers": [
+    21,
+    24
+   ]
+  },
+  {
+   "index": 3,
+   "operator": {
+    "q1": "Z",
+    "y3": "Z"
+   },
+   "corridor_tiles": [
+    [
+     4,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     5,
+     4
+    ]
+   ],
+   "layers": [
+    28,
+    31
+   ]
+  },
+  {
+   "index": 4,
+   "operator": {
+    "q0": "Z",
+    "q2": "X",
+    "y4": "Z"
+   },
+   "corridor_tiles": [
+    [
+     1,
+     5
+    ],
+    [
+     1,
+     6
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     2,
+     4
+    ],
+    [
+     2,
+     5
+    ]
+   ],
+   "layers": [
+    35,
+    38
+   ]
+  },
+  {
+   "index": 5,
+   "operator": {
+    "q0": "Z",
+    "q1": "Z",
+    "y5": "Z"
+   },
+   "corridor_tiles": [
+    [
+     3,
+     6
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     4,
+     6
+    ]
+   ],
+   "layers": [
+    42,
+    45
+   ]
+  },
+  {
+   "index": 6,
+   "operator": {
+    "q2": "X",
+    "y6": "Z"
+   },
+   "corridor_tiles": [
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "layers": [
+    49,
+    52
+   ]
+  }
+ ],
+ "program": [
+  {
+   "kind": "init_y",
+   "targets": {
+    "y0": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q0": "Z",
+    "y0": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y0": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y1": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q1": "Z",
+    "q2": "X",
+    "y1": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y1": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y2": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q0": "Z",
+    "q1": "Z",
+    "q2": "X",
+    "y2": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y2": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y3": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q1": "Z",
+    "y3": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y3": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y4": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q0": "Z",
+    "q2": "X",
+    "y4": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y4": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y5": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q0": "Z",
+    "q1": "Z",
+    "y5": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y5": "X"
+   }
+  },
+  {
+   "kind": "init_y",
+   "targets": {
+    "y6": "Y"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q2": "X",
+    "y6": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "y6": "X"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q0": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q1": "Z"
+   }
+  },
+  {
+   "kind": "mpp",
+   "targets": {
+    "q2": "Z"
+   }
+  }
+ ],
+ "gadgets": [
+  {
+   "ancilla": "y0",
+   "mask": {
+    "q0": "Z"
+   },
+   "kappa": 1,
+   "conds": []
+  },
+  {
+   "ancilla": "y1",
+   "mask": {
+    "q1": "Z",
+    "q2": "X"
+   },
+   "kappa": 0,
+   "conds": []
+  },
+  {
+   "ancilla": "y2",
+   "mask": {
+    "q0": "Z",
+    "q1": "Z",
+    "q2": "X"
+   },
+   "kappa": 0,
+   "conds": []
+  },
+  {
+   "ancilla": "y3",
+   "mask": {
+    "q1": "Z"
+   },
+   "kappa": 1,
+   "conds": []
+  },
+  {
+   "ancilla": "y4",
+   "mask": {
+    "q0": "Z",
+    "q2": "X"
+   },
+   "kappa": 0,
+   "conds": []
+  },
+  {
+   "ancilla": "y5",
+   "mask": {
+    "q0": "Z",
+    "q1": "Z"
+   },
+   "kappa": 1,
+   "conds": []
+  },
+  {
+   "ancilla": "y6",
+   "mask": {
+    "q2": "X"
+   },
+   "kappa": 0,
+   "conds": []
+  }
+ ],
+ "out_bits": [
+  {
+   "record": 14,
+   "flip": 1,
+   "gadget_corrections": []
+  },
+  {
+   "record": 15,
+   "flip": 1,
+   "gadget_corrections": []
+  },
+  {
+   "record": 16,
+   "flip": 0,
+   "gadget_corrections": [
+    1,
+    2,
+    4,
+    6
+   ]
+  }
+ ],
+ "reconstruction": {
+  "executed_bit_j_is_product_of_original": [
+   [
+    0
+   ],
+   [
+    1
+   ],
+   [
+    2
+   ]
+  ],
+  "original_bit_k_is_xor_of_executed": [
+   [
+    0
+   ],
+   [
+    1
+   ],
+   [
+    2
+   ]
+  ],
+  "const": [
+   0,
+   0,
+   0
+  ]
+ }
+}

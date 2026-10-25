@@ -184,11 +184,10 @@ defects) and per-patch distances are natural next steps on top of the
   paper's tables; `experiments/METRICS.md` — metric definitions
 - `VENDORED.md` — what changed in the vendored LightStim and how it
   relates to [upstream](https://github.com/QuTone/LightStim)
-- `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`) and three
-  examples: a memory experiment with the Kishony–Fowler diagonal syndrome
-  extraction (`diagonal_syndrome_extraction_example_memory.ipynb`), in-place Y-basis preparation
-  and readout (`inplace_y_basis.ipynb`), and three routed lattice-surgery measurements through
-  bent corridors, two of them with stretched seams (`diagonal_syndrome_extraction_example_zz_ppm.ipynb`)
+- `notebooks/` — runnable API guide (`custom_compilation_api.ipynb`), in-place Y-basis preparation
+  and readout (`inplace_y_basis.ipynb`), and two step-by-step pipeline walkthroughs that derive every
+  rewrite: a GHZ circuit (`ghz_pipeline.ipynb`) and a Toffoli circuit with T executed as S
+  (`toffoli_pipeline.ipynb`); their compiled programs are written to `notebooks/compiled/`
 - `gallery/` — six worked examples with TQEC block-graph exports (see `gallery/README.md`)
 - `experiments/` — the paper's measurement harnesses; they expect the
   baseline checkouts described in their headers (`TOPOLS_DIR` etc.)
